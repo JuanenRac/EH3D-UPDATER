@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "ecosystem": "EH3D",
+  "name": "EH3D-UPDATER",
+  "version": "0.0.1",
+  "role": "tool",
+  "stack": "python",
+  "technologies": [
+    "Python 3.10+",
+    "PySide6 / Qt Quick (QML)",
+    "Git",
+    "GitHub raw content"
+  ],
+  "deployment_target": "user-pc",
+  "maturity": "scaffolding",
+  "evidence": "host-test",
+  "family": "Ecosystem Operations",
+  "parent": null,
+  "native_version": {
+    "file": "pyproject.toml",
+    "pattern": "^version\\s*=\\s*\"(\\d+)\\.(\\d+)\\.(\\d+)\""
+  },
+  "build": "python -m pytest tests -q; python -I tools/ci_validate.py",
+  "notes": "Scaffolding v0.0.1: the updater of the EH3D ecosystem, with the design of the updaters of the other ecosystems. It finds the EH3D repositories through their eh3d.project.json manifests, compares each local checkout with GitHub and installs or updates one at a time after a confirmation: the replacement is built and checked in a staging clone first and the previous installation is kept as a backup. Tested on a computer with a fake GitHub and local repositories; it has not been used for real work yet, and only EH3D-COMMON and EH3D-CORE-LIBS exist to be installed."
+}
