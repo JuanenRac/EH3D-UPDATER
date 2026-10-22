@@ -56,37 +56,36 @@ echo "      Done."
 echo
 
 echo "[2/5] Creating/activating virtual environment..."
-if [ ! -d .venv ]; then
-    python3 -m venv .venv
+# The venv is made with python3 (or python); the scripts below use the python of the venv directly instead of an activate script: the python that is first on the PATH
+# may be a stripped one (for example the one of ESP-IDF) whose venv has none.
+if [ ! -x .venv/bin/python ] && [ ! -x .venv/Scripts/python.exe ]; then
+    (python3 -m venv .venv 2>/dev/null || python -m venv .venv)
 fi
-# shellcheck disable=SC1091
-# venv layout differs by OS: bin/activate on Linux/macOS, Scripts/activate
-# on Windows (also true for a Windows Python venv used from Git Bash).
-if [ -f .venv/bin/activate ]; then
-    source .venv/bin/activate
-elif [ -f .venv/Scripts/activate ]; then
-    source .venv/Scripts/activate
+if [ -x .venv/bin/python ]; then
+    VPY=".venv/bin/python"
+elif [ -x .venv/Scripts/python.exe ]; then
+    VPY=".venv/Scripts/python.exe"
 else
-    echo "ERROR: could not find the venv activate script." >&2
+    echo "ERROR: the venv has no python; delete the .venv folder and run this again." >&2
     exit 1
 fi
 echo "      Done."
 echo
 
 echo "[3/5] Installing project (editable, with dev and QML GUI extras) into the venv..."
-python -m pip install --upgrade pip >/dev/null
-python -m pip install -e ".[dev,gui]"
+"$VPY" -m pip install --upgrade pip >/dev/null
+"$VPY" -m pip install -e ".[dev,gui]"
 echo "      Done."
 echo
 
 echo "[4/5] Verifying the package compiles/imports without errors..."
-python -m py_compile src/eh3d_updater/__init__.py src/eh3d_updater/registry.py src/eh3d_updater/version_parse.py src/eh3d_updater/detect.py src/eh3d_updater/github_client.py src/eh3d_updater/install.py src/eh3d_updater/main.py src/eh3d_updater/gui.py src/eh3d_updater/qt_gui.py src/eh3d_updater/i18n.py
-python -c "import eh3d_updater; print('import OK - version', eh3d_updater.__version__)"
+"$VPY" -m py_compile src/eh3d_updater/__init__.py src/eh3d_updater/registry.py src/eh3d_updater/version_parse.py src/eh3d_updater/detect.py src/eh3d_updater/github_client.py src/eh3d_updater/install.py src/eh3d_updater/main.py src/eh3d_updater/gui.py src/eh3d_updater/qt_gui.py src/eh3d_updater/i18n.py
+"$VPY" -c "import eh3d_updater; print('import OK - version', eh3d_updater.__version__)"
 echo "      Done."
 echo
 
 echo "[5/5] Running the real test suite (pytest)..."
-python -m pytest tests/ -q
+"$VPY" -m pytest tests/ -q
 echo "      Done."
 echo
 

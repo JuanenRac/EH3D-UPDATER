@@ -2,6 +2,10 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+- **The build scripts work when the python first on the PATH makes a venv with no activate script** (for example the python that ESP-IDF installs): the venv is made with the `py` launcher when there is one and its own python, or its folder first on the PATH, is used instead of the activate script.
+
 ## [0.0.1] - The updater of the EH3D ecosystem
 
 - **Finds the EH3D repositories** through their `eh3d.project.json` manifests (ecosystem `EH3D`) on GitHub, with no token, and the local checkouts that sit next to each other in the workspace.
