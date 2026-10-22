@@ -1,7 +1,7 @@
 # =============================================================================
-# EH3D Ecosystem - Documentation issue form
+# Electro Hobby 3D ecosystems (HYDRA-UMC, URTC, A.R.M.O.R., EH3D) - Documentation issue form
 # Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
-# GPL-3.0-or-later - see LICENSE.md
+# GPL-3.0 - see LICENSE.md
 # =============================================================================
 name: Documentation correction
 description: Report a missing, stale, unclear or broken public documentation item.
@@ -12,7 +12,7 @@ body:
     id: repository
     attributes:
       label: Repository and file
-      placeholder: EH3D-TESTER/docs/CANBUS.md
+      placeholder: URTC-TESTER/docs/CANBUS.md
     validations:
       required: true
   - type: textarea

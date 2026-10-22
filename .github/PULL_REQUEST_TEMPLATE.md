@@ -1,8 +1,8 @@
 <!--
 =============================================================================
-EH3D Ecosystem - Pull request template
+Electro Hobby 3D ecosystems (HYDRA-UMC, URTC, A.R.M.O.R., EH3D) - Pull request template
 Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
-GPL-3.0-or-later - see LICENSE.md
+GPL-3.0 - see LICENSE.md
 =============================================================================
 -->
 

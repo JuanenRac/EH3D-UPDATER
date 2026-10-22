@@ -21,4 +21,4 @@ How to report:
 1. **Email**: send a detailed report to `electrohobby3d@gmail.com`.
 2. **Response**: initial acknowledgment within 48 hours.
 
-We follow a coordinated disclosure policy. What the tool does and does not verify is described in its README and in the security baseline and threat model of EH3D-DOCS.
+We follow a coordinated disclosure policy. What the tool does and does not verify is described in its README.

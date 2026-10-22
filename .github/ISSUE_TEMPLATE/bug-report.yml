@@ -1,7 +1,7 @@
 # =============================================================================
-# EH3D Ecosystem - Software bug report form
+# Electro Hobby 3D ecosystems (HYDRA-UMC, URTC, A.R.M.O.R., EH3D) - Software bug report form
 # Copyright (C) 2026 JuanenRac (Electro Hobby 3D) <electrohobby3d@gmail.com>
-# GPL-3.0-or-later - see LICENSE.md
+# GPL-3.0 - see LICENSE.md
 # =============================================================================
 name: Software bug report
 description: Report a reproducible software, build, CI or integration defect.
@@ -12,8 +12,8 @@ body:
     id: repository
     attributes:
       label: Affected repository
-      description: Exact repository name, for example EH3D-FLASHER.
-      placeholder: EH3D-FLASHER
+      description: Exact repository name, for example HYDRA-UMC-SERVER, URTC-FLASHER, ARMOR-STUDIO or EH3D-COMMON.
+      placeholder: ARMOR-STUDIO
     validations:
       required: true
   - type: dropdown
