@@ -34,6 +34,23 @@
 | Pile technique | Python 3.10+ / PySide6 / Qt Quick |
 | Sur matériel réel | Sans objet : il tourne sur le PC de la personne qui l'utilise |
 
+## 🚦 État du projet
+
+Chaque ligne est une partie de ce dépôt et le feu dit où elle en est aujourd'hui. Elle est écrite d'après ce que le dépôt peut montrer (tests, compilations, exécutions), pas d'après ce qui est prévu.
+
+🟢 Fait et vérifié · 🟡 Fonctionne, avec des limites connues · 🟠 À moitié fait ou pas encore vérifié · 🔴 Pas fait ou ne fonctionne pas
+
+| Domaine | État | Ce que cela veut dire ici |
+|---|---|---|
+| Logiciel | 🟡 | Une ligne de commande et une fenêtre Qt Quick trouvent les dépôts EH3D par leurs manifestes, les comparent à GitHub et installent ou mettent à jour un par un, avec un clone de préparation et une sauvegarde de l'installation précédente. |
+| Tests | 🟢 | 317 tests réussissent, avec un faux GitHub et des dépôts locaux (sans réseau). |
+| Usage réel | 🟠 | Il n'a pas encore servi à un vrai travail et n'a jamais installé ni mis à jour un projet depuis le vrai GitHub ; il n'existe que quelques dépôts EH3D à installer. |
+| Interface | 🟡 | La fenêtre fonctionne en huit langues et son pont Python est couvert par des tests ; la ligne de commande n'a besoin que de la bibliothèque standard. |
+| Sécurité | 🟡 | Rien ne change sans confirmation ni sur une copie avec des modifications locales, les fusions ne forcent jamais, et un journal de preuves révèle les lignes modifiées ou réordonnées ; la politique des commits signés est facultative et il n'y a pas eu de revue indépendante. |
+| Intégration | 🟡 | ELECTRO-HOBBY-3D-UPDATER lui confie les projets EH3D ; cette délégation n'a pas été exécutée sur une vraie copie. |
+| Matériel réel | 🟢 | Sans objet : il tourne sur le PC de la personne qui l'utilise. |
+| Documentation | 🟢 | README en huit langues, la référence de la ligne de commande et le guide de la fenêtre. |
+
 ## 🎯 Vue d'ensemble
 
 * **Il trouve les projets par leurs manifestes :** tout dépôt public avec un `eh3d.project.json` de l'écosystème `EH3D` est un projet ; un nouveau dépôt apparaît donc en ayant un manifeste, et rien dans cet outil ne liste les projets.

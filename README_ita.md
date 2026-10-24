@@ -34,6 +34,23 @@
 | Stack tecnologico | Python 3.10+ / PySide6 / Qt Quick |
 | Su hardware reale | Non applicabile: gira sul PC di chi lo usa |
 
+## 🚦 Stato del progetto
+
+Ogni riga è una parte di questo repository e il semaforo dice a che punto è oggi. È scritta in base a ciò che il repository può mostrare (test, compilazioni, esecuzioni), non a ciò che è previsto.
+
+🟢 Fatto e verificato · 🟡 Funziona, con limiti noti · 🟠 Fatto a metà o non ancora verificato · 🔴 Non fatto o non funzionante
+
+| Area | Stato | Cosa significa qui |
+|---|---|---|
+| Software | 🟡 | Una riga di comando e una finestra Qt Quick trovano i repository EH3D dai loro manifesti, li confrontano con GitHub e installano o aggiornano uno alla volta, con un clone di prova e una copia dell'installazione precedente. |
+| Test | 🟢 | 317 test passano, con un GitHub simulato e repository locali (senza rete). |
+| Uso reale | 🟠 | Non è ancora stato usato per un lavoro reale e non ha mai installato né aggiornato un progetto dal vero GitHub; esistono pochi repository EH3D da installare. |
+| Interfaccia | 🟡 | La finestra funziona in otto lingue e il suo ponte Python è coperto da test; la riga di comando richiede solo la libreria standard. |
+| Sicurezza | 🟡 | Nulla cambia senza conferma né su una copia con modifiche locali, le fusioni non forzano mai e un registro delle prove rivela righe modificate o riordinate; la politica dei commit firmati è facoltativa e non c'è stata una revisione indipendente. |
+| Integrazione | 🟡 | ELECTRO-HOBBY-3D-UPDATER gli affida i progetti EH3D; questo passaggio non è stato eseguito su una copia reale. |
+| Hardware reale | 🟢 | Non applicabile: gira sul PC di chi lo usa. |
+| Documentazione | 🟢 | README in otto lingue, il riferimento della riga di comando e la guida alla finestra. |
+
 ## 🎯 Panoramica
 
 * **Trova i progetti tramite i loro manifest:** ogni repository pubblico con un `eh3d.project.json` dell'ecosistema `EH3D` è un progetto, quindi un nuovo repository compare avendo un manifest e nulla in questo strumento elenca i progetti.

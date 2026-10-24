@@ -34,6 +34,23 @@
 | Pila tecnológica | Python 3.10+ / PySide6 / Qt Quick |
 | En hardware real | No aplica: se ejecuta en el PC de quien lo usa |
 
+## 🚦 Estado del proyecto
+
+Cada línea es una parte de este repositorio y la luz dice hasta dónde llega hoy. Se escribe con lo que el repositorio puede demostrar (pruebas, compilaciones, ejecuciones), no con lo previsto.
+
+🟢 Hecho y verificado · 🟡 Funciona, con límites conocidos · 🟠 Hecho a medias o sin verificar · 🔴 Sin hacer o sin funcionar
+
+| Área | Estado | Qué significa aquí |
+|---|---|---|
+| Software | 🟡 | Una línea de órdenes y una ventana Qt Quick encuentran los repositorios de EH3D por sus manifiestos, los comparan con GitHub e instalan o actualizan de uno en uno, con un clon de prueba y una copia de la instalación anterior. |
+| Pruebas | 🟢 | Pasan 317 pruebas, con un GitHub simulado y repositorios locales (sin red). |
+| Uso real | 🟠 | Todavía no se ha usado para trabajo real y nunca ha instalado ni actualizado un proyecto desde el GitHub real; solo existen unos pocos repositorios de EH3D que instalar. |
+| Interfaz | 🟡 | La ventana funciona en ocho idiomas y su puente de Python está cubierto por pruebas; la línea de órdenes solo necesita la biblioteca estándar. |
+| Seguridad | 🟡 | Nada cambia sin confirmación ni sobre una copia con cambios locales, las fusiones nunca fuerzan y un registro de evidencias delata líneas editadas o reordenadas; la política de commits firmados es opcional y no ha habido revisión independiente. |
+| Integración | 🟡 | ELECTRO-HOBBY-3D-UPDATER le pasa los proyectos de EH3D; ese relevo no se ha ejecutado con una copia real. |
+| Hardware real | 🟢 | No aplica: se ejecuta en el PC de quien lo usa. |
+| Documentación | 🟢 | README en ocho idiomas, la referencia de la línea de órdenes y la guía de la ventana. |
+
 ## 🎯 Descripción general
 
 * **Encuentra los proyectos por sus manifiestos:** todo repositorio público con un `eh3d.project.json` del ecosistema `EH3D` es un proyecto, así que un repositorio nuevo aparece por tener un manifiesto y nada en esta herramienta enumera los proyectos.

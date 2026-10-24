@@ -34,6 +34,23 @@
 | Stack | Python 3.10+ / PySide6 / Qt Quick |
 | On real hardware | Not applicable: it runs on the PC of the person using it |
 
+## 🚦 Project status
+
+Each line is one part of this repository and the light says how far it is today. It is written from what the repository can show (tests, builds, runs), not from what is planned.
+
+🟢 Done and verified · 🟡 Works, with known limits · 🟠 Partly done or not verified yet · 🔴 Not done or not working
+
+| Area | State | What it means here |
+|---|---|---|
+| Software | 🟡 | A command line and a Qt Quick window find the EH3D repositories by their manifests, compare them with GitHub and install or update one at a time, with a staging clone and a backup of the previous installation. |
+| Tests | 🟢 | 317 tests pass, with a fake GitHub and local repositories (no network). |
+| Real use | 🟠 | It has not been used for real work yet and has never installed or updated a project from the real GitHub; only a few EH3D repositories exist to be installed. |
+| Interface | 🟡 | The window works in eight languages and its Python bridge is covered by tests; the command line needs only the standard library. |
+| Security | 🟡 | Nothing changes without a confirmation or over a checkout with local changes, merges never force, and an evidence log shows edited or reordered lines; the signed-commit policy is optional and there has been no independent review. |
+| Integration | 🟡 | ELECTRO-HOBBY-3D-UPDATER hands the EH3D projects over to it; that hand-over has not been run against a real checkout. |
+| Real hardware | 🟢 | Not applicable: it runs on the PC of the person using it. |
+| Documentation | 🟢 | README in eight languages, the command-line reference and the guide to the window. |
+
 ## 🎯 Overview
 
 * **It finds the projects by their manifests:** every public repository with an `eh3d.project.json` of ecosystem `EH3D` is a project, so a new repository appears by having a manifest and nothing in this tool lists the projects.

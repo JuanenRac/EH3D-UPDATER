@@ -34,6 +34,23 @@
 | Pilha tecnológica | Python 3.10+ / PySide6 / Qt Quick |
 | Em hardware real | Não aplicável: corre no PC de quem o usa |
 
+## 🚦 Estado do projeto
+
+Cada linha é uma parte deste repositório e a luz diz até onde chega hoje. É escrita com o que o repositório consegue demonstrar (testes, compilações, execuções), não com o que está previsto.
+
+🟢 Feito e verificado · 🟡 Funciona, com limites conhecidos · 🟠 Feito a meio ou ainda por verificar · 🔴 Por fazer ou a não funcionar
+
+| Área | Estado | O que significa aqui |
+|---|---|---|
+| Software | 🟡 | Uma linha de comandos e uma janela Qt Quick encontram os repositórios EH3D pelos seus manifestos, comparam-nos com o GitHub e instalam ou atualizam um de cada vez, com um clone de teste e uma cópia de segurança da instalação anterior. |
+| Testes | 🟢 | Passam 317 testes, com um GitHub simulado e repositórios locais (sem rede). |
+| Utilização real | 🟠 | Ainda não foi usado em trabalho real e nunca instalou nem atualizou um projeto a partir do GitHub verdadeiro; só existem poucos repositórios EH3D para instalar. |
+| Interface | 🟡 | A janela funciona em oito idiomas e a sua ponte Python está coberta por testes; a linha de comandos só precisa da biblioteca padrão. |
+| Segurança | 🟡 | Nada muda sem confirmação nem sobre uma cópia com alterações locais, as fusões nunca forçam e um registo de provas revela linhas editadas ou reordenadas; a política de commits assinados é opcional e não houve revisão independente. |
+| Integração | 🟡 | O ELECTRO-HOBBY-3D-UPDATER passa-lhe os projetos EH3D; essa passagem não foi executada sobre uma cópia real. |
+| Hardware real | 🟢 | Não se aplica: corre no PC de quem o usa. |
+| Documentação | 🟢 | README em oito idiomas, a referência da linha de comandos e o guia da janela. |
+
 ## 🎯 Visão geral
 
 * **Encontra os projetos pelos seus manifestos:** todo o repositório público com um `eh3d.project.json` do ecossistema `EH3D` é um projeto, por isso um repositório novo aparece por ter um manifesto e nada nesta ferramenta enumera os projetos.

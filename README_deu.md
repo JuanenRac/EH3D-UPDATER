@@ -34,6 +34,23 @@
 | Technologie-Stack | Python 3.10+ / PySide6 / Qt Quick |
 | Auf echter Hardware | Nicht zutreffend: läuft auf dem PC der Person, die ihn benutzt |
 
+## 🚦 Projektstatus
+
+Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heute ist. Sie beruht auf dem, was das Repository zeigen kann (Tests, Builds, Läufe), nicht auf dem, was geplant ist.
+
+🟢 Fertig und überprüft · 🟡 Funktioniert, mit bekannten Grenzen · 🟠 Teilweise fertig oder noch nicht überprüft · 🔴 Nicht gemacht oder funktioniert nicht
+
+| Bereich | Stand | Was das hier bedeutet |
+|---|---|---|
+| Software | 🟡 | Eine Kommandozeile und ein Qt-Quick-Fenster finden die EH3D-Repositorys über ihre Manifeste, vergleichen sie mit GitHub und installieren oder aktualisieren einzeln, mit einem Staging-Klon und einer Sicherung der vorherigen Installation. |
+| Tests | 🟢 | 317 Tests bestehen, mit einem simulierten GitHub und lokalen Repositorys (ohne Netzwerk). |
+| Echter Einsatz | 🟠 | Er wurde noch nicht für echte Arbeit benutzt und hat nie ein Projekt vom echten GitHub installiert oder aktualisiert; es gibt nur wenige EH3D-Repositorys zum Installieren. |
+| Oberfläche | 🟡 | Das Fenster arbeitet in acht Sprachen und seine Python-Brücke ist durch Tests abgedeckt; die Kommandozeile braucht nur die Standardbibliothek. |
+| Sicherheit | 🟡 | Nichts ändert sich ohne Bestätigung oder über einem Checkout mit lokalen Änderungen, Merges erzwingen nie etwas, und ein Nachweisprotokoll zeigt bearbeitete oder umgestellte Zeilen; die Richtlinie signierter Commits ist optional, eine unabhängige Prüfung gab es nicht. |
+| Integration | 🟡 | ELECTRO-HOBBY-3D-UPDATER übergibt ihm die EH3D-Projekte; diese Übergabe wurde nicht an einem echten Checkout ausgeführt. |
+| Echte Hardware | 🟢 | Nicht zutreffend: es läuft auf dem PC der Person, die es benutzt. |
+| Dokumentation | 🟢 | README in acht Sprachen, die Referenz der Kommandozeile und die Anleitung zum Fenster. |
+
 ## 🎯 Überblick
 
 * **Er findet die Projekte über ihre Manifeste:** jedes öffentliche Repository mit einer `eh3d.project.json` des Ökosystems `EH3D` ist ein Projekt; ein neues Repository erscheint also dadurch, dass es ein Manifest hat, und nichts in diesem Werkzeug listet die Projekte auf.
