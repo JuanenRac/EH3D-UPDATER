@@ -76,12 +76,23 @@ EH3D-UPDATER/
 │   ├── project_manifest.py the contract of eh3d.project.json
 │   ├── evidence.py         the log of every attempt
 │   ├── qt_gui.py, qml/     the Qt Quick window
+│   ├── registry.py         the runtime form of a repository's own manifest
+│   ├── version_parse.py    one way of reading a version, for the local files and for GitHub
+│   ├── commits.py          compares a checkout with its remote by commit, to see new commits that come without a version change
+│   ├── signature.py        the commit-signature policy: warn by default, require on request
+│   ├── messages.py         install and update messages as codes plus parameters, with their English text
+│   ├── settings.py         the choices the window remembers between launches
+│   ├── profiles.py         named station profiles: which projects a machine installs
+│   ├── notify.py           the desktop notification of the notify-only check
+│   ├── logs.py             rotation of the window log files so the folder does not grow without limit
+│   ├── gui.py              a windowed GUI
+│   ├── assets/             the icon of the program (.ico and .svg)
 │   └── i18n.py             the eight languages
 ├── docs/
 │   ├── CLI_REFERENCE.md    every command of the command line
 │   └── QML_DESKTOP_GUI.md  the window
 ├── tests/                  the tests (no network, no board)
-├── tools/ci_validate.py    the checks the CI runs
+├── tools/ci_validate.py, build_test.py, generate_app_icon.py  the checks the CI runs, the build check and the drawing of the window icon
 └── eh3d.project.json       the manifest of the project
 ```
 

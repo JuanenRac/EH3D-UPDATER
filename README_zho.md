@@ -76,12 +76,23 @@ EH3D-UPDATER/
 │   ├── project_manifest.py the contract of eh3d.project.json
 │   ├── evidence.py         the log of every attempt
 │   ├── qt_gui.py, qml/     the Qt Quick window
+│   ├── registry.py         仓库自带清单的运行时形式
+│   ├── version_parse.py    读取版本号的唯一方式,用于本地文件和 GitHub
+│   ├── commits.py          按提交比较检出副本与远程,发现没有版本变更的新提交
+│   ├── signature.py        提交签名策略: 默认警告,按需强制
+│   ├── messages.py         以代码加参数表示的安装与更新消息,附英文文本
+│   ├── settings.py         窗口在两次启动之间记住的选择
+│   ├── profiles.py         具名的工位配置: 一台机器安装哪些项目
+│   ├── notify.py           仅通知检查所用的桌面通知
+│   ├── logs.py             窗口日志文件的轮转,避免文件夹无限增长
+│   ├── gui.py              窗口式图形界面
+│   ├── assets/             程序图标 (.ico 和 .svg)
 │   └── i18n.py             the eight languages
 ├── docs/
 │   ├── CLI_REFERENCE.md    every command of the command line
 │   └── QML_DESKTOP_GUI.md  the window
 ├── tests/                  the tests (no network, no board)
-├── tools/ci_validate.py    the checks the CI runs
+├── tools/ci_validate.py, build_test.py, generate_app_icon.py  CI 运行的检查、构建检查以及窗口图标的绘制
 └── eh3d.project.json       the manifest of the project
 ```
 

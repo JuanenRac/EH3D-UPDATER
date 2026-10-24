@@ -76,12 +76,23 @@ EH3D-UPDATER/
 │   ├── project_manifest.py the contract of eh3d.project.json
 │   ├── evidence.py         the log of every attempt
 │   ├── qt_gui.py, qml/     the Qt Quick window
+│   ├── registry.py         a forma em execução do manifesto próprio de cada repositório
+│   ├── version_parse.py    uma única forma de ler uma versão, para os ficheiros locais e para o GitHub
+│   ├── commits.py          compara uma cópia com o seu remoto por commits, para ver commits novos sem mudança de versão
+│   ├── signature.py        a política de assinatura de commits: avisa por omissão, exige quando pedido
+│   ├── messages.py         mensagens de instalação e atualização como códigos mais parâmetros, com o seu texto em inglês
+│   ├── settings.py         as escolhas que a janela recorda entre arranques
+│   ├── profiles.py         perfis de posto com nome: que projetos uma máquina instala
+│   ├── notify.py           a notificação no ambiente de trabalho da verificação só-aviso
+│   ├── logs.py             rotação dos ficheiros de log da janela para que a pasta não cresça sem limite
+│   ├── gui.py              uma interface gráfica com janela
+│   ├── assets/             o ícone do programa (.ico e .svg)
 │   └── i18n.py             the eight languages
 ├── docs/
 │   ├── CLI_REFERENCE.md    every command of the command line
 │   └── QML_DESKTOP_GUI.md  the window
 ├── tests/                  the tests (no network, no board)
-├── tools/ci_validate.py    the checks the CI runs
+├── tools/ci_validate.py, build_test.py, generate_app_icon.py  as verificações que a CI corre, a verificação de compilação e o desenho do ícone da janela
 └── eh3d.project.json       the manifest of the project
 ```
 
