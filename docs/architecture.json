@@ -1,0 +1,161 @@
+{
+  "repo": "EH3D-UPDATER",
+  "ecosystem": "eh3d",
+  "tagline": "Finds, installs and updates the repositories of the suite on your PC, one at a time and only after a confirmation.",
+  "description": "EH3D-UPDATER is a Python tool with a Qt Quick window and a command line. It lists the public repositories of the owner on GitHub as candidates and accepts only those whose root eh3d.project.json validates and declares the ecosystem EH3D, so nothing lists the projects. It compares each local checkout with GitHub, and installs or updates one project at a time: the replacement is cloned, merged without force, built and checked in a staging clone, the previous installation is kept as a backup, and every attempt is written to a hash-chained evidence log. It is tested on a computer with a fake GitHub and local repositories; it has not been used against the real GitHub for real work.",
+  "columns": [
+    "WHO USES IT",
+    "THIS REPOSITORY",
+    "WHAT IT TALKS TO"
+  ],
+  "nodes": [
+    {
+      "id": "person",
+      "column": 0,
+      "level": "external",
+      "title": "A person",
+      "lines": [
+        "the Qt Quick window in eight",
+        "languages, or --cli on a machine",
+        "without a screen"
+      ]
+    },
+    {
+      "id": "dispatcher",
+      "column": 0,
+      "level": "external",
+      "title": "The general updater",
+      "lines": [
+        "ELECTRO-HOBBY-3D-UPDATER:",
+        "hands EH3D over; untried"
+      ]
+    },
+    {
+      "id": "discover",
+      "column": 1,
+      "level": "tested",
+      "title": "Discovery and versions",
+      "lines": [
+        "candidates from GitHub, a manifest",
+        "decides; local checkouts compared",
+        "by version and by commit"
+      ],
+      "code": [
+        "src/eh3d_updater/github_client.py::discover_remote_projects",
+        "src/eh3d_updater/project_manifest.py",
+        "src/eh3d_updater/commits.py"
+      ]
+    },
+    {
+      "id": "install",
+      "column": 1,
+      "level": "tested",
+      "title": "Install and update",
+      "lines": [
+        "staging clone, merge without force,",
+        "build check, backup, restore"
+      ],
+      "code": [
+        "src/eh3d_updater/install.py::DEFAULT_BACKUPS_TO_KEEP"
+      ]
+    },
+    {
+      "id": "evidence",
+      "column": 1,
+      "level": "tested",
+      "title": "Evidence and policy",
+      "lines": [
+        "hash-chained log of every attempt;",
+        "signed-commit policy, optional"
+      ],
+      "code": [
+        "src/eh3d_updater/evidence.py::verify_chain",
+        "src/eh3d_updater/signature.py::EH3D_UPDATER_REQUIRE_SIGNED"
+      ]
+    },
+    {
+      "id": "github",
+      "column": 2,
+      "level": "untested",
+      "title": "GitHub",
+      "lines": [
+        "repository list and raw manifests,",
+        "no token needed; never used for",
+        "real work yet"
+      ],
+      "code": [
+        "src/eh3d_updater/github_client.py::GITHUB_API_BASE"
+      ]
+    },
+    {
+      "id": "git",
+      "column": 2,
+      "level": "tested",
+      "title": "git and the build",
+      "lines": [
+        "its own validation script runs",
+        "before anything is replaced"
+      ]
+    },
+    {
+      "id": "workspace",
+      "column": 2,
+      "level": "tested",
+      "title": "Local workspace",
+      "lines": [
+        "the checkouts, the kept backups",
+        "and the evidence log"
+      ],
+      "code": [
+        "src/eh3d_updater/evidence.py::EVIDENCE_DIRECTORY"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "from": "person",
+      "to": "discover",
+      "label": "status",
+      "level": "tested"
+    },
+    {
+      "from": "dispatcher",
+      "to": "install",
+      "label": "hands over",
+      "level": "config"
+    },
+    {
+      "from": "discover",
+      "to": "install",
+      "level": "tested"
+    },
+    {
+      "from": "install",
+      "to": "evidence",
+      "level": "tested"
+    },
+    {
+      "from": "discover",
+      "to": "github",
+      "label": "HTTPS",
+      "level": "untested"
+    },
+    {
+      "from": "install",
+      "to": "git",
+      "level": "tested"
+    },
+    {
+      "from": "evidence",
+      "to": "workspace",
+      "level": "tested"
+    }
+  ],
+  "legend": {
+    "tested": "covered by tests on a computer",
+    "config": "hand-over not run for real",
+    "untested": "never used for real work",
+    "external": "a person or another repository"
+  },
+  "footer": "Tested with a fake GitHub and local repositories; not used for real work yet."
+}
