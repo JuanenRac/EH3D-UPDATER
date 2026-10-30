@@ -45,14 +45,14 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 | Bereich | Stand | Was das hier bedeutet |
 |---|---|---|
 | Software | 🟡 | Eine Kommandozeile und ein Qt-Quick-Fenster finden die EH3D-Repositories über ihre Manifeste, vergleichen sie mit GitHub und installieren oder aktualisieren eines nach dem anderen, mit einem Staging-Klon und einer Sicherung der vorherigen Installation. |
-| Tests | 🟢 | 322 Tests bestehen (`pytest`), mit einem falschen GitHub und lokalen Repositories (ohne Netz); ein weiterer wird übersprungen, wenn ein dafür nötiger Nachbar-Checkout fehlt. |
+| Tests | 🟡 | 322 Tests bestehen (`pytest`), mit einem falschen GitHub und lokalen Repositories (ohne Netz); ein weiterer wird übersprungen, wenn ein dafür nötiger Nachbar-Checkout fehlt. |
 | Erkennung | 🟡 | Öffentliche Repositories sind nur Kandidaten: Ein Projekt gehört zum Ökosystem, wenn sein `eh3d.project.json` im Wurzelverzeichnis gültig ist und `EH3D` sagt; gegen eine falsche Liste getestet, nicht gegen das echte GitHub. |
 | Echter Einsatz | 🟠 | Es wurde noch nicht für echte Arbeit verwendet und hat nie ein Projekt vom echten GitHub installiert oder aktualisiert; es gibt nur wenige EH3D-Repositories zum Installieren. |
 | Oberfläche | 🟡 | Das Fenster arbeitet in acht Sprachen, und seine Python-Brücke ist von Tests abgedeckt; die Kommandozeile braucht nur die Standardbibliothek. |
 | Sicherheit | 🟡 | Nichts ändert sich ohne Bestätigung oder über einem Checkout mit lokalen Änderungen, Zusammenführungen erzwingen nie, und ein Nachweisprotokoll zeigt bearbeitete oder umgeordnete Zeilen; die Richtlinie für signierte Commits ist optional, und es gab keine unabhängige Prüfung. |
 | Integration | 🟡 | ELECTRO-HOBBY-3D-UPDATER übergibt ihm die EH3D-Projekte; diese Übergabe wurde nicht an einem echten Checkout ausgeführt. |
-| Echte Hardware | 🟢 | Nicht zutreffend: Es läuft auf dem PC der Person, die es nutzt. |
-| Dokumentation | 🟢 | README in acht Sprachen, die Kommandozeilenreferenz und die Anleitung zum Fenster. |
+| Echte Hardware | 🟡 | Nicht zutreffend: Es läuft auf dem PC der Person, die es nutzt. |
+| Dokumentation | 🟡 | README in acht Sprachen, die Kommandozeilenreferenz und die Anleitung zum Fenster. |
 
 ## 🎯 Überblick
 

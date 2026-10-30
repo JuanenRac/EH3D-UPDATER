@@ -45,14 +45,14 @@ Cada linha é uma parte deste repositório e a luz diz até onde chega hoje. É 
 | Área | Estado | O que significa aqui |
 |---|---|---|
 | Software | 🟡 | Uma linha de comandos e uma janela Qt Quick encontram os repositórios EH3D pelos seus manifestos, comparam-nos com o GitHub e instalam ou atualizam um de cada vez, com um clone de preparação e uma cópia da instalação anterior. |
-| Testes | 🟢 | Passam 322 testes (`pytest`), com um GitHub simulado e repositórios locais (sem rede); outro é ignorado quando falta uma cópia vizinha de que precisa. |
+| Testes | 🟡 | Passam 322 testes (`pytest`), com um GitHub simulado e repositórios locais (sem rede); outro é ignorado quando falta uma cópia vizinha de que precisa. |
 | Descoberta | 🟡 | Os repositórios públicos são só candidatos: um projeto entra no ecossistema quando o seu `eh3d.project.json` da raiz valida e diz `EH3D`; testado contra uma listagem simulada, não executado contra o GitHub real. |
 | Uso real | 🟠 | Ainda não foi usado para trabalho real e nunca instalou nem atualizou um projeto a partir do GitHub real; só existem poucos repositórios EH3D para instalar. |
 | Interface | 🟡 | A janela funciona em oito idiomas e a sua ponte Python está coberta por testes; a linha de comandos só precisa da biblioteca padrão. |
 | Segurança | 🟡 | Nada muda sem confirmação nem sobre uma cópia com alterações locais, as fusões nunca forçam e um registo de evidências mostra as linhas editadas ou reordenadas; a política de commits assinados é opcional e não houve revisão independente. |
 | Integração | 🟡 | O ELECTRO-HOBBY-3D-UPDATER passa-lhe os projetos EH3D; essa passagem não foi executada contra uma cópia real. |
-| Hardware real | 🟢 | Não se aplica: corre no PC da pessoa que o usa. |
-| Documentação | 🟢 | README em oito idiomas, a referência da linha de comandos e o guia da janela. |
+| Hardware real | 🟡 | Não se aplica: corre no PC da pessoa que o usa. |
+| Documentação | 🟡 | README em oito idiomas, a referência da linha de comandos e o guia da janela. |
 
 ## 🎯 Visão geral
 

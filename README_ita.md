@@ -45,14 +45,14 @@ Ogni riga è una parte di questo repository e il semaforo dice a che punto è og
 | Area | Stato | Cosa significa qui |
 |---|---|---|
 | Software | 🟡 | Una riga di comando e una finestra Qt Quick trovano i repository EH3D tramite i loro manifesti, li confrontano con GitHub e installano o aggiornano un progetto alla volta, con un clone di staging e un backup dell'installazione precedente. |
-| Test | 🟢 | Passano 322 test (`pytest`), con un GitHub finto e repository locali (senza rete); un altro viene saltato quando manca una copia vicina di cui ha bisogno. |
+| Test | 🟡 | Passano 322 test (`pytest`), con un GitHub finto e repository locali (senza rete); un altro viene saltato quando manca una copia vicina di cui ha bisogno. |
 | Rilevamento | 🟡 | I repository pubblici sono solo candidati: un progetto entra nell'ecosistema quando il suo `eh3d.project.json` alla radice è valido e dice `EH3D`; provato contro un elenco finto, non eseguito contro il vero GitHub. |
 | Uso reale | 🟠 | Non è ancora stato usato per lavoro reale e non ha mai installato né aggiornato un progetto dal vero GitHub; esistono solo pochi repository EH3D da installare. |
 | Interfaccia | 🟡 | La finestra funziona in otto lingue e il suo ponte Python è coperto da test; la riga di comando richiede solo la libreria standard. |
 | Sicurezza | 🟡 | Nulla cambia senza conferma né sopra una copia con modifiche locali, le unioni non forzano mai e un registro di prove mostra le righe modificate o riordinate; la politica dei commit firmati è facoltativa e non c'è stata una revisione indipendente. |
 | Integrazione | 🟡 | ELECTRO-HOBBY-3D-UPDATER gli passa i progetti EH3D; questo passaggio non è stato eseguito su una copia reale. |
-| Hardware reale | 🟢 | Non applicabile: gira sul PC della persona che lo usa. |
-| Documentazione | 🟢 | README in otto lingue, il riferimento della riga di comando e la guida della finestra. |
+| Hardware reale | 🟡 | Non applicabile: gira sul PC della persona che lo usa. |
+| Documentazione | 🟡 | README in otto lingue, il riferimento della riga di comando e la guida della finestra. |
 
 ## 🎯 Panoramica
 

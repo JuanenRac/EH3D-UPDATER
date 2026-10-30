@@ -45,14 +45,14 @@ Cada línea es una parte de este repositorio y la luz dice hasta dónde llega ho
 | Área | Estado | Qué significa aquí |
 |---|---|---|
 | Software | 🟡 | Una línea de comandos y una ventana Qt Quick encuentran los repositorios EH3D por sus manifiestos, los comparan con GitHub e instalan o actualizan de uno en uno, con un clon de preparación y una copia de la instalación anterior. |
-| Pruebas | 🟢 | Pasan 322 pruebas (`pytest`), con un GitHub simulado y repositorios locales (sin red); otra se omite cuando falta una copia hermana que necesita. |
+| Pruebas | 🟡 | Pasan 322 pruebas (`pytest`), con un GitHub simulado y repositorios locales (sin red); otra se omite cuando falta una copia hermana que necesita. |
 | Descubrimiento | 🟡 | Los repositorios públicos son solo candidatos: un proyecto entra en el ecosistema cuando su `eh3d.project.json` de la raíz valida y dice `EH3D`; probado con un listado simulado, no ejecutado contra el GitHub real. |
 | Uso real | 🟠 | Todavía no se ha usado para trabajo real y nunca ha instalado ni actualizado un proyecto desde el GitHub real; solo existen unos pocos repositorios EH3D para instalar. |
 | Interfaz | 🟡 | La ventana funciona en ocho idiomas y su puente de Python está cubierto por pruebas; la línea de comandos solo necesita la biblioteca estándar. |
 | Seguridad | 🟡 | Nada cambia sin una confirmación ni sobre una copia con cambios locales, las fusiones nunca fuerzan y un registro de evidencias muestra las líneas editadas o reordenadas; la política de commits firmados es opcional y no ha habido revisión independiente. |
 | Integración | 🟡 | ELECTRO-HOBBY-3D-UPDATER le pasa los proyectos EH3D; ese traspaso no se ha ejecutado contra una copia real. |
-| Hardware real | 🟢 | No aplica: se ejecuta en el PC de la persona que lo usa. |
-| Documentación | 🟢 | README en ocho idiomas, la referencia de la línea de comandos y la guía de la ventana. |
+| Hardware real | 🟡 | No aplica: se ejecuta en el PC de la persona que lo usa. |
+| Documentación | 🟡 | README en ocho idiomas, la referencia de la línea de comandos y la guía de la ventana. |
 
 ## 🎯 Resumen
 

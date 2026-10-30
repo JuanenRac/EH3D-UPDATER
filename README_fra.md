@@ -45,14 +45,14 @@ Chaque ligne est une partie de ce dépôt et le feu dit où elle en est aujourd'
 | Domaine | État | Ce que cela veut dire ici |
 |---|---|---|
 | Logiciel | 🟡 | Une ligne de commande et une fenêtre Qt Quick trouvent les dépôts EH3D par leurs manifestes, les comparent à GitHub et installent ou mettent à jour un projet à la fois, avec un clone de préparation et une sauvegarde de l'installation précédente. |
-| Tests | 🟢 | 322 tests réussissent (`pytest`), avec un faux GitHub et des dépôts locaux (sans réseau) ; un autre est ignoré quand une copie voisine dont il a besoin manque. |
+| Tests | 🟡 | 322 tests réussissent (`pytest`), avec un faux GitHub et des dépôts locaux (sans réseau) ; un autre est ignoré quand une copie voisine dont il a besoin manque. |
 | Découverte | 🟡 | Les dépôts publics ne sont que des candidats : un projet entre dans l'écosystème quand son `eh3d.project.json` à la racine est valide et dit `EH3D` ; testé contre une fausse liste, pas contre le vrai GitHub. |
 | Usage réel | 🟠 | Il n'a pas encore servi à un travail réel et n'a jamais installé ni mis à jour un projet depuis le vrai GitHub ; seuls quelques dépôts EH3D existent à installer. |
 | Interface | 🟡 | La fenêtre fonctionne en huit langues et son pont Python est couvert par des tests ; la ligne de commande n'a besoin que de la bibliothèque standard. |
 | Sécurité | 🟡 | Rien ne change sans confirmation ni sur une copie ayant des modifications locales, les fusions ne forcent jamais et un journal de preuves montre les lignes modifiées ou réordonnées ; la politique de commits signés est facultative et il n'y a pas eu de revue indépendante. |
 | Intégration | 🟡 | ELECTRO-HOBBY-3D-UPDATER lui passe les projets EH3D ; ce passage n'a pas été exécuté sur une vraie copie. |
-| Matériel réel | 🟢 | Sans objet : il tourne sur le PC de la personne qui l'utilise. |
-| Documentation | 🟢 | README en huit langues, la référence de la ligne de commande et le guide de la fenêtre. |
+| Matériel réel | 🟡 | Sans objet : il tourne sur le PC de la personne qui l'utilise. |
+| Documentation | 🟡 | README en huit langues, la référence de la ligne de commande et le guide de la fenêtre. |
 
 ## 🎯 Présentation
 
