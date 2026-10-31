@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A test that does not depend on the machine:** the check of the update journal without the SDK sets its own state instead of relying on a sibling checkout being absent, so the 334 tests give the same result on any computer.
+
 ## [0.0.2] - The universal README, the live panel of the scripts and the layout checks of the repository
 
 - **README in the universal layout, in eight languages:** the README has the same sections in the same order as the other repositories of the family (status, overview, architecture, features, security, interfaces, configuration, quick start, testing, structure, roadmap and known limits), with figures taken from the code and from the tests that were run. The Architecture and Repository Structure pictures are drawn from `docs/architecture.json` and `docs/structure.json` by `tools/make_architecture.py` and `tools/make_structure.py`, and the CI checks that they match.

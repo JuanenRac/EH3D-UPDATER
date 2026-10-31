@@ -18,7 +18,7 @@
 
 ---
 
-**Vérification d'honnêteté - ce qui tourne aujourd'hui :** une ligne de commande et une fenêtre Qt Quick qui trouvent les dépôts EH3D par leurs manifestes `eh3d.project.json`, comparent chaque copie locale à GitHub et installent ou mettent à jour un projet à la fois après une confirmation. La mise à jour est clonée, fusionnée sans forcer, puis construite et vérifiée d'abord dans un clone de préparation, et l'installation précédente est gardée en sauvegarde. C'est l'outil de mise à jour des autres écosystèmes de la famille avec les noms d'EH3D, avec 322 tests qui tournent sur un ordinateur avec un faux GitHub et des dépôts locaux. Il n'a pas encore servi à un travail réel et n'a jamais installé ni mis à jour un projet depuis le vrai GitHub.
+**Vérification d'honnêteté - ce qui tourne aujourd'hui :** une ligne de commande et une fenêtre Qt Quick qui trouvent les dépôts EH3D par leurs manifestes `eh3d.project.json`, comparent chaque copie locale à GitHub et installent ou mettent à jour un projet à la fois après une confirmation. La mise à jour est clonée, fusionnée sans forcer, puis construite et vérifiée d'abord dans un clone de préparation, et l'installation précédente est gardée en sauvegarde. C'est l'outil de mise à jour des autres écosystèmes de la famille avec les noms d'EH3D, avec 334 tests qui tournent sur un ordinateur avec un faux GitHub et des dépôts locaux. Il n'a pas encore servi à un travail réel et n'a jamais installé ni mis à jour un projet depuis le vrai GitHub.
 
 ---
 
@@ -30,7 +30,7 @@
 |---|---|
 | Version | `0.0.2` |
 | Maturité | Échafaudage |
-| Tests | 322 |
+| Tests | 334 |
 | Pile technique | Python 3.10+ / PySide6 / Qt Quick |
 | Sur du matériel réel | Sans objet : il tourne sur le PC de la personne qui l'utilise |
 
@@ -45,7 +45,7 @@ Chaque ligne est une partie de ce dépôt et le feu dit où elle en est aujourd'
 | Domaine | État | Ce que cela veut dire ici |
 |---|---|---|
 | Logiciel | 🟡 | Une ligne de commande et une fenêtre Qt Quick trouvent les dépôts EH3D par leurs manifestes, les comparent à GitHub et installent ou mettent à jour un projet à la fois, avec un clone de préparation et une sauvegarde de l'installation précédente. |
-| Tests | 🟡 | 322 tests réussissent (`pytest`), avec un faux GitHub et des dépôts locaux (sans réseau) ; un autre est ignoré quand une copie voisine dont il a besoin manque. |
+| Tests | 🟡 | 334 tests réussissent (`pytest`), avec un faux GitHub et des dépôts locaux (sans réseau) ; un autre est ignoré quand une copie voisine dont il a besoin manque. |
 | Découverte | 🟡 | Les dépôts publics ne sont que des candidats : un projet entre dans l'écosystème quand son `eh3d.project.json` à la racine est valide et dit `EH3D` ; testé contre une fausse liste, pas contre le vrai GitHub. |
 | Usage réel | 🟠 | Il n'a pas encore servi à un travail réel et n'a jamais installé ni mis à jour un projet depuis le vrai GitHub ; seuls quelques dépôts EH3D existent à installer. |
 | Interface | 🟡 | La fenêtre fonctionne en huit langues et son pont Python est couvert par des tests ; la ligne de commande n'a besoin que de la bibliothèque standard. |
@@ -144,7 +144,7 @@ Il faut Python 3.10 ou plus récent ; la fenêtre demande aussi PySide6 (`pip in
 
 ## 🧪 Tests
 
-La suite compte 322 tests qui réussissent (`pytest tests`), et un autre qui est ignoré quand une copie voisine dont il a besoin n'est pas à côté de celle-ci. Ils tournent avec un faux GitHub et des dépôts locaux, sans réseau, et couvrent le contrat du manifeste, la découverte, la comparaison des versions et des commits, l'installation et la mise à jour avec le clone de préparation et les refus (modifications locales, branche divergente, version inférieure, manifeste invalide, construction qui échoue), les sauvegardes et la restauration, la chaîne de preuves, la politique de signature, les réglages et profils, les messages et les huit langues de la fenêtre, et le pont Python de la fenêtre (hors écran). Un test vérifie aussi que l'arborescence de chaque README liste chaque entrée versionnée de premier niveau. La CI les exécute sous Linux et sous Windows, plus `python tools/ci_validate.py` et un contrôle de syntaxe de chaque fichier Python.
+La suite compte 334 tests qui réussissent (`pytest tests`), et un autre qui est ignoré quand une copie voisine dont il a besoin n'est pas à côté de celle-ci. Ils tournent avec un faux GitHub et des dépôts locaux, sans réseau, et couvrent le contrat du manifeste, la découverte, la comparaison des versions et des commits, l'installation et la mise à jour avec le clone de préparation et les refus (modifications locales, branche divergente, version inférieure, manifeste invalide, construction qui échoue), les sauvegardes et la restauration, la chaîne de preuves, la politique de signature, les réglages et profils, les messages et les huit langues de la fenêtre, et le pont Python de la fenêtre (hors écran). Un test vérifie aussi que l'arborescence de chaque README liste chaque entrée versionnée de premier niveau. La CI les exécute sous Linux et sous Windows, plus `python tools/ci_validate.py` et un contrôle de syntaxe de chaque fichier Python.
 
 ## 🏗️ Compilation et publication
 

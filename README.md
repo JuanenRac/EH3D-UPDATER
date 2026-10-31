@@ -18,7 +18,7 @@
 
 ---
 
-**Honesty check - what actually runs today:** a command line and a Qt Quick window that find the EH3D repositories through their `eh3d.project.json` manifests, compare each local checkout with GitHub and install or update one at a time after a confirmation. The update is cloned, merged without force and built and checked in a staging clone first, and the previous installation is kept as a backup. It is the updater of the other ecosystems of the family with the names of EH3D, with 322 tests that run on a computer with a fake GitHub and local repositories. It has not been used for real work yet and has never installed or updated a project from the real GitHub.
+**Honesty check - what actually runs today:** a command line and a Qt Quick window that find the EH3D repositories through their `eh3d.project.json` manifests, compare each local checkout with GitHub and install or update one at a time after a confirmation. The update is cloned, merged without force and built and checked in a staging clone first, and the previous installation is kept as a backup. It is the updater of the other ecosystems of the family with the names of EH3D, with 334 tests that run on a computer with a fake GitHub and local repositories. It has not been used for real work yet and has never installed or updated a project from the real GitHub.
 
 ---
 
@@ -30,7 +30,7 @@
 |---|---|
 | Version | `0.0.2` |
 | Maturity | Scaffolding |
-| Tests | 322 |
+| Tests | 334 |
 | Stack | Python 3.10+ / PySide6 / Qt Quick |
 | On real hardware | Not applicable: it runs on the PC of the person using it |
 
@@ -45,7 +45,7 @@ Each line is one part of this repository and the light says how far it is today.
 | Area | State | What it means here |
 |---|---|---|
 | Software | 🟡 | A command line and a Qt Quick window find the EH3D repositories by their manifests, compare them with GitHub and install or update one at a time, with a staging clone and a backup of the previous installation. |
-| Tests | 🟡 | 322 tests pass (`pytest`), with a fake GitHub and local repositories (no network); one more is skipped when a sibling checkout it needs is missing. |
+| Tests | 🟡 | 334 tests pass (`pytest`), with a fake GitHub and local repositories (no network); one more is skipped when a sibling checkout it needs is missing. |
 | Discovery | 🟡 | Public repositories are only candidates: a project joins the ecosystem when its root `eh3d.project.json` validates and says `EH3D`; tested against a fake listing, not run against the real GitHub. |
 | Real use | 🟠 | It has not been used for real work yet and has never installed or updated a project from the real GitHub; only a few EH3D repositories exist to be installed. |
 | Interface | 🟡 | The window works in eight languages and its Python bridge is covered by tests; the command line needs only the standard library. |
@@ -144,7 +144,7 @@ You need Python 3.10 or newer; the window also needs PySide6 (`pip install ".[gu
 
 ## 🧪 Testing
 
-The suite has 322 tests that pass (`pytest tests`), and one more that is skipped when a sibling checkout it needs is not next to this one. They run with a fake GitHub and local repositories, with no network, and cover the manifest contract, the discovery, the version and commit comparison, install and update with the staging clone and the refusals (local changes, a diverged branch, a lower version, an invalid manifest, a failing build), backups and restore, the evidence chain, the signature policy, the settings and profiles, the messages and the eight languages of the window, and the Python bridge of the window (offscreen). A test also checks that the file tree of every README lists each versioned first-level entry. The CI runs them on Linux and on Windows, plus `python tools/ci_validate.py` and a syntax check of every Python file.
+The suite has 334 tests that pass (`pytest tests`), and one more that is skipped when a sibling checkout it needs is not next to this one. They run with a fake GitHub and local repositories, with no network, and cover the manifest contract, the discovery, the version and commit comparison, install and update with the staging clone and the refusals (local changes, a diverged branch, a lower version, an invalid manifest, a failing build), backups and restore, the evidence chain, the signature policy, the settings and profiles, the messages and the eight languages of the window, and the Python bridge of the window (offscreen). A test also checks that the file tree of every README lists each versioned first-level entry. The CI runs them on Linux and on Windows, plus `python tools/ci_validate.py` and a syntax check of every Python file.
 
 ## 🏗️ Build & Release
 

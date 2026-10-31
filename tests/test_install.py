@@ -585,12 +585,13 @@ def test_refuses_a_remote_manifest_version_lower_than_the_installed_version(tmp_
 # an optional dependency - see install.py's own header comment).
 # ---------------------------------------------------------------------------
 
-def test_recover_interrupted_promotions_is_a_real_noop_without_the_sdk_installed():
-    # The default state for this whole test file: hydra-umc-sdk is not on
-    # sys.path, so install.py's own top-level try/except left
-    # _HAS_DURABLE_JOURNAL False - the honest, documented fallback for a
-    # standalone checkout, not a crash or a hidden dependency error.
-    assert install._HAS_DURABLE_JOURNAL is False
+def test_recover_interrupted_promotions_is_a_real_noop_without_the_sdk_installed(monkeypatch):
+    # The state of a standalone checkout: hydra-umc-sdk is not on sys.path, so
+    # install.py's own top-level try/except leaves _HAS_DURABLE_JOURNAL False -
+    # the honest, documented fallback, not a crash or a hidden dependency error.
+    # The flag is set here so the result does not depend on a sibling checkout
+    # that happens to be importable on the machine that runs the tests.
+    monkeypatch.setattr(install, "_HAS_DURABLE_JOURNAL", False)
     assert install.recover_interrupted_promotions(Path("/does/not/matter")) == []
 
 
