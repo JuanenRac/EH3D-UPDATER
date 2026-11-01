@@ -64,6 +64,7 @@ Cada línea es una parte de este repositorio y la luz dice hasta dónde llega ho
 * **Perfiles de estación:** un perfil con nombre lista los proyectos con los que trabaja una máquina, y la ventana y los comandos lo siguen.
 * **Una ventana en ocho idiomas y una línea de comandos** (`--cli`) que solo necesita la biblioteca estándar, así que también funciona en una máquina sin pantalla.
 * **Primero los hermanos:** un manifiesto de esquema 1.1 puede listar en `depends_on` los repositorios que su `Cargo.toml` alcanza por ruta; `install` instala antes los que faltan, en orden de dependencia, y un hermano que no existe o un ciclo es un error que se detiene antes de clonar nada del propio proyecto.
+* **Para PC de desarrollo, por git:** esta herramienta clona y actualiza repositorios con git en los ordenadores de quienes desarrollan la suite; la CM5 del taller no se actualiza con ella sino **por releases** (`deploy/eh3d-update.py` de EH3D-SERVER descarga la release de GitHub a `/opt`).
 
 ## 🧩 Papel en EH3D
 

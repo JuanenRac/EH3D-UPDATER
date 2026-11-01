@@ -64,6 +64,7 @@ Chaque ligne est une partie de ce dépôt et le feu dit où elle en est aujourd'
 * **Profils de poste :** un profil nommé liste les projets avec lesquels une machine travaille, et la fenêtre et les commandes le suivent.
 * **Une fenêtre en huit langues et une ligne de commande** (`--cli`) qui n'a besoin que de la bibliothèque standard, donc elle marche aussi sur une machine sans écran.
 * **D'abord les frères :** un manifeste de schéma 1.1 peut lister dans `depends_on` les dépôts que son `Cargo.toml` atteint par chemin ; `install` installe d'abord ceux qui manquent, dans l'ordre des dépendances, et un frère absent ou un cycle est une erreur qui arrête avant de cloner quoi que ce soit du projet lui-même.
+* **Pour les PC de développement, par git :** cet outil clone et met à jour des dépôts avec git sur les ordinateurs de ceux qui développent la suite ; la CM5 de l'atelier ne se met pas à jour avec lui mais **par releases** (`deploy/eh3d-update.py` d'EH3D-SERVER télécharge la release de GitHub dans `/opt`).
 
 ## 🧩 Rôle dans EH3D
 

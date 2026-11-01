@@ -64,6 +64,7 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 * **Stationsprofile:** Ein benanntes Profil listet die Projekte auf, mit denen ein Rechner arbeitet, und das Fenster und die Befehle folgen ihm.
 * **Ein Fenster in acht Sprachen und eine Kommandozeile** (`--cli`), die nur die Standardbibliothek braucht und daher auch auf einem Rechner ohne Bildschirm läuft.
 * **Erst die Geschwister:** Ein Manifest des Schemas 1.1 kann in `depends_on` die Repositories auflisten, die seine `Cargo.toml` per Pfad erreicht; `install` installiert die fehlenden zuerst, in Abhängigkeitsreihenfolge, und ein fehlendes Geschwister oder ein Zyklus ist ein Fehler, der stoppt, bevor etwas vom Projekt selbst geklont wird.
+* **Für Entwicklungs-PCs, per Git:** Dieses Werkzeug klont und aktualisiert Repositories per Git auf den Rechnern derer, die die Suite entwickeln; die CM5 der Werkstatt wird nicht damit aktualisiert, sondern **per Releases** (`deploy/eh3d-update.py` von EH3D-SERVER lädt das Release von GitHub nach `/opt`).
 
 ## 🧩 Rolle in EH3D
 

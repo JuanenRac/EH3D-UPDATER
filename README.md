@@ -64,6 +64,7 @@ Each line is one part of this repository and the light says how far it is today.
 * **Station profiles:** a named profile lists the projects a machine works with, and the window and the commands follow it.
 * **A window in eight languages and a command line** (`--cli`) that needs only the standard library, so it also works on a machine without a screen.
 * **Siblings first:** a schema 1.1 manifest can list the repositories its `Cargo.toml` reaches by path in `depends_on`; `install` installs the missing ones first, in dependency order, and a missing sibling or a cycle is an error that stops before anything is cloned for the project itself.
+* **For development PCs, by git:** this tool clones and updates repositories with git on the computers of the people who develop the suite; the CM5 of the workshop is not updated with it but **by releases** (`deploy/eh3d-update.py` of EH3D-SERVER downloads the release of GitHub into `/opt`).
 
 ## 🧩 Role in EH3D
 

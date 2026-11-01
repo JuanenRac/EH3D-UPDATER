@@ -64,6 +64,7 @@ Cada linha é uma parte deste repositório e a luz diz até onde chega hoje. É 
 * **Perfis de posto:** um perfil com nome lista os projetos com que uma máquina trabalha, e a janela e os comandos seguem-no.
 * **Uma janela em oito idiomas e uma linha de comandos** (`--cli`) que só precisa da biblioteca padrão, por isso também funciona numa máquina sem ecrã.
 * **Primeiro os irmãos:** um manifesto de esquema 1.1 pode listar em `depends_on` os repositórios que o seu `Cargo.toml` alcança por caminho; `install` instala primeiro os que faltam, por ordem de dependência, e um irmão inexistente ou um ciclo é um erro que pára antes de clonar o que quer que seja do próprio projeto.
+* **Para PC de desenvolvimento, por git:** esta ferramenta clona e atualiza repositórios com git nos computadores de quem desenvolve a suite; a CM5 da oficina não se atualiza com ela mas **por releases** (`deploy/eh3d-update.py` do EH3D-SERVER descarrega a release do GitHub para `/opt`).
 
 ## 🧩 Papel no EH3D
 
