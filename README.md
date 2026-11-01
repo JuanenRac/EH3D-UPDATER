@@ -63,6 +63,7 @@ Each line is one part of this repository and the light says how far it is today.
 * **An evidence log and an optional signed-commit policy:** every attempt is written to a log that can be checked later for edited, removed or reordered lines.
 * **Station profiles:** a named profile lists the projects a machine works with, and the window and the commands follow it.
 * **A window in eight languages and a command line** (`--cli`) that needs only the standard library, so it also works on a machine without a screen.
+* **Siblings first:** a schema 1.1 manifest can list the repositories its `Cargo.toml` reaches by path in `depends_on`; `install` installs the missing ones first, in dependency order, and a missing sibling or a cycle is an error that stops before anything is cloned for the project itself.
 
 ## 🧩 Role in EH3D
 

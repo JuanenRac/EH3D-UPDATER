@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **`depends_on` (schema 1.1):** a manifest lists the sibling repositories its Cargo.toml reaches by path; `install` installs the missing ones first, in dependency order (a missing sibling or a cycle is an error). The CI of the repositories checks the list against their Cargo.toml.
+
 - **The manifests of the suite are accepted:** `hardware_bound` (true or false), the roles `node` and `docs`, and the `mcu` target in a 1.0 manifest are valid, and a test reads every manifest of the repositories next to this one.
 - **A repository without `build-test` is checked with its `test` script** (which never changes a version), so the programs of the suite can be installed and updated with the build check on.
 - **A new installation whose check fails is removed** instead of staying as installed, and a version pattern with a single group that holds the whole `MAJOR.MINOR.PATCH` is read.

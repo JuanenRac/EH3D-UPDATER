@@ -46,6 +46,8 @@ class ProjectEntry:
     default_branch: str = GITHUB_BRANCH
     #: Independently versioned components declared by a schema 1.1 manifest (empty otherwise).
     components: tuple[ManifestComponent, ...] = ()
+    #: The sibling repositories that have to be installed before this one (schema 1.1).
+    depends_on: tuple[str, ...] = ()
 
 
 def entry_from_manifest(manifest: ProjectManifest) -> ProjectEntry:
@@ -67,6 +69,7 @@ def entry_from_manifest(manifest: ProjectManifest) -> ProjectEntry:
         service_health_path=manifest.service_health_path,
         service_systemd_unit=manifest.service_systemd_unit,
         components=manifest.components,
+        depends_on=manifest.depends_on,
     )
 
 

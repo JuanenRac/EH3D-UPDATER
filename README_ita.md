@@ -63,6 +63,7 @@ Ogni riga è una parte di questo repository e il semaforo dice a che punto è og
 * **Un registro di prove e una politica facoltativa di commit firmati:** ogni tentativo viene scritto in un registro che si può verificare poi per righe modificate, rimosse o riordinate.
 * **Profili di postazione:** un profilo con nome elenca i progetti con cui lavora una macchina, e la finestra e i comandi lo seguono.
 * **Una finestra in otto lingue e una riga di comando** (`--cli`) che richiede solo la libreria standard, quindi funziona anche su una macchina senza schermo.
+* **Prima i fratelli:** un manifesto di schema 1.1 può elencare in `depends_on` i repository che il suo `Cargo.toml` raggiunge per percorso; `install` installa prima quelli mancanti, in ordine di dipendenza, e un fratello inesistente o un ciclo è un errore che si ferma prima di clonare qualcosa del progetto stesso.
 
 ## 🧩 Ruolo in EH3D
 

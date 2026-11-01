@@ -92,6 +92,8 @@ class ProjectManifest:
     evidence: str | None = None
     #: Optional: true when the project needs the real hardware to be exercised; None when the manifest does not say.
     hardware_bound: bool | None = None
+    #: Schema 1.1: the sibling repositories this one needs next to it (the ones its Cargo.toml reaches with a path), installed first.
+    depends_on: tuple[str, ...] = ()
 
 
 def _require_string(data: dict[str, Any], field: str) -> str:
@@ -124,7 +126,7 @@ def parse_manifest(text: str, *, expected_name: str | None = None) -> ProjectMan
     # isn't self-evident from the enum alone (e.g. "dev-server" is not
     # the same physical role as "cm5") - optional because most
     # deployment_target values need no such note.
-    optional_fields = {"service", "deployment_target_note", "components", "evidence", "hardware_bound"}
+    optional_fields = {"service", "deployment_target_note", "components", "evidence", "hardware_bound", "depends_on"}
     unknown = sorted(set(data) - expected_fields - optional_fields)
     missing = sorted(expected_fields - set(data))
     if missing:
@@ -139,6 +141,8 @@ def parse_manifest(text: str, *, expected_name: str | None = None) -> ProjectMan
         )
     if "components" in data and schema_version == SCHEMA_VERSION:
         raise ManifestValidationError(f"components needs schema_version {SCHEMA_VERSION_COMPONENTS!r}")
+    if "depends_on" in data and schema_version == SCHEMA_VERSION:
+        raise ManifestValidationError(f"depends_on needs schema_version {SCHEMA_VERSION_COMPONENTS!r}")
 
     ecosystem = _require_string(data, "ecosystem")
     if ecosystem != ECOSYSTEM_ID:
@@ -218,6 +222,8 @@ def parse_manifest(text: str, *, expected_name: str | None = None) -> ProjectMan
     if hardware_bound is not None and not isinstance(hardware_bound, bool):
         raise ManifestValidationError("hardware_bound must be true or false when present")
 
+    depends_on = _parse_depends_on(data.get("depends_on"), name)
+
     service_port, service_health_path, service_systemd_unit = _parse_service(data.get("service"))
 
     return ProjectManifest(
@@ -242,7 +248,24 @@ def parse_manifest(text: str, *, expected_name: str | None = None) -> ProjectMan
         components=_parse_components(data.get("components")),
         evidence=evidence,
         hardware_bound=hardware_bound,
+        depends_on=depends_on,
     )
+
+
+def _parse_depends_on(raw: Any, own_name: str) -> tuple[str, ...]:
+    """Validate the optional schema 1.1 ``depends_on`` list: unique repository names, none of them the project itself."""
+    if raw is None:
+        return ()
+    if (
+        not isinstance(raw, list)
+        or not raw
+        or any(not isinstance(item, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", item) for item in raw)
+        or len(set(raw)) != len(raw)
+    ):
+        raise ManifestValidationError("depends_on must be a non-empty array of unique repository names when present")
+    if own_name in raw:
+        raise ManifestValidationError("depends_on cannot name the project itself")
+    return tuple(raw)
 
 
 def _parse_components(raw: Any) -> tuple[ManifestComponent, ...]:

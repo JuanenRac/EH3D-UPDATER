@@ -63,6 +63,7 @@ Cada linha é uma parte deste repositório e a luz diz até onde chega hoje. É 
 * **Um registo de evidências e uma política opcional de commits assinados:** cada tentativa é escrita num registo que depois se pode verificar à procura de linhas editadas, removidas ou reordenadas.
 * **Perfis de posto:** um perfil com nome lista os projetos com que uma máquina trabalha, e a janela e os comandos seguem-no.
 * **Uma janela em oito idiomas e uma linha de comandos** (`--cli`) que só precisa da biblioteca padrão, por isso também funciona numa máquina sem ecrã.
+* **Primeiro os irmãos:** um manifesto de esquema 1.1 pode listar em `depends_on` os repositórios que o seu `Cargo.toml` alcança por caminho; `install` instala primeiro os que faltam, por ordem de dependência, e um irmão inexistente ou um ciclo é um erro que pára antes de clonar o que quer que seja do próprio projeto.
 
 ## 🧩 Papel no EH3D
 

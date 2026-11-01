@@ -63,6 +63,7 @@ Cada línea es una parte de este repositorio y la luz dice hasta dónde llega ho
 * **Un registro de evidencias y una política opcional de commits firmados:** cada intento se escribe en un registro que luego se puede comprobar en busca de líneas editadas, borradas o reordenadas.
 * **Perfiles de estación:** un perfil con nombre lista los proyectos con los que trabaja una máquina, y la ventana y los comandos lo siguen.
 * **Una ventana en ocho idiomas y una línea de comandos** (`--cli`) que solo necesita la biblioteca estándar, así que también funciona en una máquina sin pantalla.
+* **Primero los hermanos:** un manifiesto de esquema 1.1 puede listar en `depends_on` los repositorios que su `Cargo.toml` alcanza por ruta; `install` instala antes los que faltan, en orden de dependencia, y un hermano que no existe o un ciclo es un error que se detiene antes de clonar nada del propio proyecto.
 
 ## 🧩 Papel en EH3D
 

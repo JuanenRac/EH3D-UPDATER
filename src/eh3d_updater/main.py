@@ -35,6 +35,7 @@ import sys
 from pathlib import Path
 
 from . import __version__, commits, profiles, settings
+from .dependencies import DependencyError, install_order
 from .detect import LocalStatus, discover_workspace
 from .evidence import export_evidence, verify_chain
 from .github_client import RemoteStatus, discover_remote_projects, fetch_all
@@ -402,7 +403,27 @@ def _install_or_update(args: argparse.Namespace, *, expect_installed: bool) -> i
         print(f"Note: {entry.note}")
     print(f"{'Updating' if expect_installed else 'Installing'} {entry.name} into {workspace_root} ...")
 
-    results = install_or_update(entry, workspace_root, build=not args.no_build)
+    results = []
+    if entry.depends_on:
+        # the siblings the project needs are installed first (only the ones that are missing: an installed one is left as it is)
+        known = {e.name: e for e in local_by_name.values()}
+        try:
+            known.update({status.entry.name: status.entry for status in discover_remote_projects().projects})
+            order = install_order(entry.name, {n: e.depends_on for n, e in known.items()})
+        except (RuntimeError, DependencyError) as exc:
+            print(f"Cannot work out what {entry.name} needs: {exc}", file=sys.stderr)
+            return 1
+        for needed in order[:-1]:
+            if (workspace_root / needed).is_dir():
+                continue
+            print(f"Installing {needed}, which {entry.name} needs ...")
+            step = install_or_update(known[needed], workspace_root, build=not args.no_build)
+            results.extend(step)
+            if not all(r.ok for r in step):
+                for r in results:
+                    print(("OK  " if r.ok else "FAIL ") + r.message)
+                return 1
+    results.extend(install_or_update(entry, workspace_root, build=not args.no_build))
     ok = all(r.ok for r in results)
     for r in results:
         print(("OK  " if r.ok else "FAIL ") + r.message)
