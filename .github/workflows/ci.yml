@@ -9,6 +9,9 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+  schedule:
+    # once a week, to notice a change in another repository of the suite
+    - cron: "17 5 * * 1"
 
 permissions:
   contents: read
@@ -16,6 +19,7 @@ permissions:
 jobs:
   baseline:
     name: Validate project baseline
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -52,6 +56,7 @@ jobs:
           PYTHONPATH=src python -m pytest tests -q
   windows:
     name: Tests on Windows
+    if: github.event_name != 'schedule'
     runs-on: windows-latest
     steps:
       - name: Check out repository
@@ -66,3 +71,27 @@ jobs:
         run: |
           python -m pip install ".[dev,gui]"
           python -m pytest tests -q
+  suite-contract:
+    name: Manifests of the suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Read the manifest of every repository of the suite with the parser of the Updater
+        env:
+          # the token of the run raises the limit of the GitHub API from 60 to 1000 requests an hour
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python -m pip install .
+          mkdir -p "$RUNNER_TEMP/empty-workspace"
+          python -m eh3d_updater.main --cli status --json --workspace "$RUNNER_TEMP/empty-workspace" > status.json 2> warnings.txt || { cat warnings.txt; exit 1; }
+          cat warnings.txt
+          if grep -E "invalid manifest|version unknown" warnings.txt > problems.txt; then
+            { echo "### Manifests the Updater cannot read"; echo; sed 's/^/- /' problems.txt; } >> "$GITHUB_STEP_SUMMARY"
+            echo "A repository has a manifest that the Updater rejects (listed above)."
+            exit 1
+          fi

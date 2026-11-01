@@ -85,6 +85,7 @@ Comment les parties de ce dépôt s'articulent : qui l'utilise, ce qu'il contien
 * **Aperçu avant la mise à jour :** `update --preview` montre le commit candidat, son auteur, l'état de sa signature et les fichiers de build et d'outils qu'il change, puis s'arrête.
 * **Notifier seulement :** `check` liste ce qui pourrait être mis à jour, ne change rien et sort avec 10 quand quelque chose peut l'être (une notification de bureau est facultative).
 * **Sauvegardes limitées :** l'installation précédente est gardée sous `<nom>.backup-<8 chiffres hex>` ; les 2 plus récentes sont conservées par défaut et `clean-backups` élague le reste.
+* **Les manifestes de toute la suite sont vérifiés chaque semaine :** un travail de la CI (à chaque push et une fois par semaine) lit le manifeste de chaque dépôt avec l'analyseur de cet outil et échoue, en les listant, quand l'un est rejeté ou n'a pas de version lisible ; un changement de schéma dans un dépôt se voit en quelques jours.
 * **Poli avec le réseau :** les requêtes sont retentées avec attente, un `Retry-After` court est attendu, la liste des dépôts est mise en cache avec `If-None-Match` (un `304` ne coûte aucun quota) et un GitHub injoignable replie sur l'état local avec un avertissement.
 
 ## 🔒 Sécurité et protection

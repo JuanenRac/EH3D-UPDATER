@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The manifests of the whole suite are checked every week:** a CI job (on every push and once a week) reads the manifest of every repository with the parser of this tool and fails, listing them, when one is rejected or has no readable version.
 - The README says what this tool is for: the computers of the people who develop the suite, by git. The CM5 of the workshop is updated by releases (`deploy/eh3d-update.py` of EH3D-SERVER).
 
 - **`depends_on` (schema 1.1):** a manifest lists the sibling repositories its Cargo.toml reaches by path; `install` installs the missing ones first, in dependency order (a missing sibling or a cycle is an error). The CI of the repositories checks the list against their Cargo.toml.

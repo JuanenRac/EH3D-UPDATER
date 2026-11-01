@@ -85,6 +85,7 @@ Wie die Teile dieses Repositorys zusammenpassen: wer es nutzt, was es enthält u
 * **Vorschau vor dem Update:** `update --preview` zeigt den Kandidaten-Commit, seinen Autor, seinen Signaturzustand und die Build- und Werkzeugdateien, die er ändert, und hört dann auf.
 * **Nur benachrichtigen:** `check` listet auf, was aktualisiert werden könnte, ändert nichts und endet mit 10, wenn etwas möglich ist (eine Desktop-Benachrichtigung ist optional).
 * **Sicherungen mit Grenze:** Die vorherige Installation bleibt als `<Name>.backup-<8 Hex-Ziffern>` erhalten; standardmäßig bleiben die neuesten 2, und `clean-backups` räumt den Rest auf.
+* **Die Manifeste der ganzen Suite werden jede Woche geprüft:** Ein CI-Job (bei jedem Push und einmal pro Woche) liest das Manifest jedes Repositorys mit dem Parser dieses Werkzeugs und schlägt fehl, wenn eines abgelehnt wird oder keine lesbare Version hat, und listet sie auf; eine Schemaänderung in einem Repository fällt innerhalb von Tagen auf.
 * **Rücksichtsvoll zum Netz:** Anfragen werden mit Wartezeit wiederholt, ein kurzes `Retry-After` wird abgewartet, die Repository-Liste wird mit `If-None-Match` zwischengespeichert (ein `304` kostet kein Kontingent), und ein nicht erreichbares GitHub fällt mit einer Warnung auf den lokalen Stand zurück.
 
 ## 🔒 Sicherheit und Schutz

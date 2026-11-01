@@ -85,6 +85,7 @@ How the parts of this repository fit together: who uses it, what it holds and wh
 * **Preview before updating:** `update --preview` shows the candidate commit, its author, its signature state and the build and tool files it changes, then stops.
 * **Notify only:** `check` lists what could be updated, changes nothing and exits with 10 when something can (a desktop notification is optional).
 * **Backups with a limit:** the previous installation is kept as `<name>.backup-<8 hex digits>`; the newest 2 are kept by default and `clean-backups` prunes the rest.
+* **The manifests of the whole suite are checked every week:** a job of the CI (on every push and once a week) reads the manifest of every repository with the parser of this tool and fails, listing them, when one is rejected or has no readable version; a change of schema in one repository shows up in days.
 * **Kind to the network:** requests retry with backoff, a short `Retry-After` is waited out, the repository listing is cached with `If-None-Match` (a `304` costs no quota) and an unreachable GitHub falls back to the local state with a warning.
 
 ## 🔒 Security & Safety

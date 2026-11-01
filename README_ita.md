@@ -85,6 +85,7 @@ Come si incastrano le parti di questo repository: chi lo usa, che cosa contiene 
 * **Anteprima prima dell'aggiornamento:** `update --preview` mostra il commit candidato, il suo autore, lo stato della sua firma e i file di build e strumenti che cambia, poi si ferma.
 * **Solo notifica:** `check` elenca ciò che si potrebbe aggiornare, non cambia nulla ed esce con 10 quando c'è qualcosa (una notifica desktop è facoltativa).
 * **Backup con limite:** l'installazione precedente è conservata come `<nome>.backup-<8 cifre esadecimali>`; per impostazione predefinita si tengono le 2 più recenti e `clean-backups` pota il resto.
+* **I manifesti di tutta la suite sono controllati ogni settimana:** un job della CI (a ogni push e una volta a settimana) legge il manifesto di ogni repository con il parser di questo strumento e fallisce, elencandoli, quando uno viene rifiutato o non ha una versione leggibile; un cambio di schema in un repository si nota in pochi giorni.
 * **Gentile con la rete:** le richieste vengono ritentate con attesa, un `Retry-After` breve viene atteso, l'elenco dei repository è messo in cache con `If-None-Match` (un `304` non costa quota) e un GitHub irraggiungibile ripiega sullo stato locale con un avviso.
 
 ## 🔒 Sicurezza e protezione
