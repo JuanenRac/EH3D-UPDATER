@@ -110,3 +110,28 @@ def test_the_flag_is_what_turns_the_acceptance_on(monkeypatch, tmp_path) -> None
     monkeypatch.setattr(main_module, "discover_remote_projects", lambda *a, **k: RemoteDiscovery(projects=(), errors=()))
     main_module._install_or_update(args, expect_installed=False)
     assert install.accepts_unavailable_validation()
+
+
+def test_a_folder_with_a_manifest_that_is_rejected_is_said_and_counted(monkeypatch, capsys, tmp_path) -> None:
+    """A program on the disk whose manifest the parser rejects must not vanish from the table without a word: it is said on stderr, given in the JSON and counted."""
+    entry = ProjectEntry(name="EH3D-OK", stack="python", version_file="pyproject.toml", pattern="", maturity="established", role="library")
+    local_discovery = LocalDiscovery(
+        projects=(LocalStatus(entry=entry, path=tmp_path / "EH3D-OK", installed=True, version=Version(0, 0, 2)),),
+        errors=("EH3D-BAD: invalid manifest: unknown field 'colour'", f"workspace does not exist: {tmp_path / 'gone'}"),
+    )
+    monkeypatch.setattr(main_module, "discover_workspace", lambda root: local_discovery)
+    args = build_parser().parse_args(["status", "--offline", "--json", "--workspace", str(tmp_path)])
+    assert main_module.cmd_status(args) == 0
+    captured = capsys.readouterr()
+    assert "IGNORED EH3D-BAD: invalid manifest: unknown field 'colour'" in captured.err
+    assert json.loads(captured.out)["ignored"] == [{"folder": "EH3D-BAD", "reason": "invalid manifest: unknown field 'colour'"}]
+    # the table says how many
+    args = build_parser().parse_args(["status", "--offline", "--workspace", str(tmp_path)])
+    assert main_module.cmd_status(args) == 0
+    assert ", 1 ignored (invalid manifest)" in capsys.readouterr().out
+    # and a clean workspace has none
+    clean = LocalDiscovery(projects=local_discovery.projects, errors=())
+    monkeypatch.setattr(main_module, "discover_workspace", lambda root: clean)
+    args = build_parser().parse_args(["status", "--offline", "--json", "--workspace", str(tmp_path)])
+    main_module.cmd_status(args)
+    assert json.loads(capsys.readouterr().out)["ignored"] == []

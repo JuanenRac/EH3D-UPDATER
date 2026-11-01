@@ -119,6 +119,23 @@ def _state_label(local: LocalStatus, remote: RemoteStatus | None, commit: str | 
     return "up to date"
 
 
+def _ignored(discovery) -> list[dict[str, str]]:
+    """The folders of the workspace that were left out and why, from the errors of the discovery (`<folder>: invalid manifest: <reason>`). The error that says the workspace itself is missing is not a folder."""
+    out: list[dict[str, str]] = []
+    for error in discovery.errors:
+        if error.startswith("workspace does not exist"):
+            continue
+        folder, _, reason = error.partition(": ")
+        out.append({"folder": folder, "reason": reason or error})
+    return out
+
+
+def _say_ignored(ignored: list[dict[str, str]]) -> None:
+    """One line on stderr for each folder that is left out, so that a program that is on the disk does not vanish without a word."""
+    for item in ignored:
+        print(f"IGNORED {item['folder']}: {item['reason']}", file=sys.stderr)
+
+
 def cmd_status(args: argparse.Namespace) -> int:
     workspace_root = Path(args.workspace).resolve() if args.workspace else default_workspace_root()
     # Real bug fixed here, found while adding --json: this line (and the
@@ -131,6 +148,8 @@ def cmd_status(args: argparse.Namespace) -> int:
     if not args.json:
         print(f"Workspace root: {workspace_root}")
     local_discovery = discover_workspace(workspace_root)
+    ignored = _ignored(local_discovery)
+    _say_ignored(ignored)
     local_by_name = {status.entry.name: status for status in local_discovery.projects}
 
     remotes: dict[str, RemoteStatus] = {}
@@ -176,6 +195,7 @@ def cmd_status(args: argparse.Namespace) -> int:
         payload = {
             "workspace_root": str(workspace_root),
             "offline": bool(args.offline),
+            "ignored": ignored,
             "projects": [
                 {
                     "name": ls.entry.name,
@@ -236,6 +256,8 @@ def cmd_status(args: argparse.Namespace) -> int:
     summary = f"{installed_count}/{len(locals_)} installed, {outdated} outdated"
     if new_commits:
         summary += f", {new_commits} with new commits at the same version"
+    if ignored:
+        summary += f", {len(ignored)} ignored (invalid manifest)"
     print(summary + (" (GitHub not checked)" if args.offline else ""))
     if outdated or new_commits:
         print("Run `eh3d-updater update <project>` to update one by hand - never automatic, see this tool's own README.")
@@ -257,6 +279,7 @@ def cmd_check(args: argparse.Namespace) -> int:
     on the code; with --notify it also shows a desktop notification."""
     workspace_root = Path(args.workspace).resolve() if args.workspace else default_workspace_root()
     local_discovery = discover_workspace(workspace_root)
+    _say_ignored(_ignored(local_discovery))
     installed = [status for status in local_discovery.projects if status.installed]
     try:
         profile = profiles.load_profile(getattr(args, "profile", None))

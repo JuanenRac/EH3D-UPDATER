@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A program that is on the disk but is left out says so:** `status` and `check` print `IGNORED <folder>: <reason>` on the error output for each folder whose manifest is rejected, `status --json` gives them as `ignored` (`folder`, `reason`) and the summary line counts them, so a program no longer disappears from the table without a word.
+
 ## [0.0.3] - Weekly manifest checks, dependencies between repositories and a safer installation
 
 - **The manifests of the whole suite are checked every week:** a CI job (on every push and once a week) reads the manifest of every repository with the parser of this tool and fails, listing them, when one is rejected or has no readable version.
