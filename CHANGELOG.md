@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.0.3] - Weekly manifest checks, dependencies between repositories and a safer installation
+
 - **The manifests of the whole suite are checked every week:** a CI job (on every push and once a week) reads the manifest of every repository with the parser of this tool and fails, listing them, when one is rejected or has no readable version.
 - The README says what this tool is for: the computers of the people who develop the suite, by git. The CM5 of the workshop is updated by releases (`deploy/eh3d-update.py` of EH3D-SERVER).
 
