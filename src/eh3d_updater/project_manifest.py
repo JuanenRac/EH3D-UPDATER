@@ -26,11 +26,12 @@ SCHEMA_VERSION_COMPONENTS = "1.1"
 SUPPORTED_SCHEMA_VERSIONS = frozenset({SCHEMA_VERSION, SCHEMA_VERSION_COMPONENTS})
 ECOSYSTEM_ID = "EH3D"
 VERSION_RE = re.compile(r"^\d+\.\d+\.\d+(?:\.\d+)?$")
-VALID_ROLES = frozenset({"api", "ui", "cli", "firmware", "library", "service", "tool"})
+#: ``node`` is a firmware board of the EH3D suite and ``docs`` the documentation hub; both are projects the updater lists.
+VALID_ROLES = frozenset({"api", "ui", "cli", "firmware", "library", "service", "tool", "node", "docs"})
 VALID_MATURITY = frozenset({"scaffolding", "functional", "established", "production"})
-VALID_DEPLOYMENT_TARGETS = frozenset({"cm5", "user-pc", "mobile", "wearable", "dev-server"})
-#: Targets that only a schema 1.1 manifest may use.
-VALID_DEPLOYMENT_TARGETS_1_1 = VALID_DEPLOYMENT_TARGETS | {"mcu"}
+VALID_DEPLOYMENT_TARGETS = frozenset({"cm5", "user-pc", "mobile", "wearable", "dev-server", "mcu"})
+#: Kept for the callers that name it: schema 1.1 accepts the same targets (``mcu`` is accepted in 1.0 too, as the boards of the suite declare it).
+VALID_DEPLOYMENT_TARGETS_1_1 = VALID_DEPLOYMENT_TARGETS
 VALID_COMPONENT_KINDS = frozenset({"app", "bootloader"})
 #: What backs the maturity of a project (optional field ``evidence``): host tests only, a simulator, a bench with the real board, or the field.
 VALID_EVIDENCE = ("host-test", "simulator", "bench", "field")
@@ -89,6 +90,8 @@ class ProjectManifest:
     components: tuple[ManifestComponent, ...] = ()
     #: Optional: what backs the maturity (host-test, simulator, bench or field); None when the manifest does not say.
     evidence: str | None = None
+    #: Optional: true when the project needs the real hardware to be exercised; None when the manifest does not say.
+    hardware_bound: bool | None = None
 
 
 def _require_string(data: dict[str, Any], field: str) -> str:
@@ -121,7 +124,7 @@ def parse_manifest(text: str, *, expected_name: str | None = None) -> ProjectMan
     # isn't self-evident from the enum alone (e.g. "dev-server" is not
     # the same physical role as "cm5") - optional because most
     # deployment_target values need no such note.
-    optional_fields = {"service", "deployment_target_note", "components", "evidence"}
+    optional_fields = {"service", "deployment_target_note", "components", "evidence", "hardware_bound"}
     unknown = sorted(set(data) - expected_fields - optional_fields)
     missing = sorted(expected_fields - set(data))
     if missing:
@@ -211,6 +214,10 @@ def parse_manifest(text: str, *, expected_name: str | None = None) -> ProjectMan
     if evidence is not None and evidence not in VALID_EVIDENCE:
         raise ManifestValidationError("evidence must be one of " + ", ".join(VALID_EVIDENCE) + f", got {evidence!r}")
 
+    hardware_bound = data.get("hardware_bound")
+    if hardware_bound is not None and not isinstance(hardware_bound, bool):
+        raise ManifestValidationError("hardware_bound must be true or false when present")
+
     service_port, service_health_path, service_systemd_unit = _parse_service(data.get("service"))
 
     return ProjectManifest(
@@ -234,6 +241,7 @@ def parse_manifest(text: str, *, expected_name: str | None = None) -> ProjectMan
         service_systemd_unit=service_systemd_unit,
         components=_parse_components(data.get("components")),
         evidence=evidence,
+        hardware_bound=hardware_bound,
     )
 
 

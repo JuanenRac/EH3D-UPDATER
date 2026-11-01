@@ -117,6 +117,9 @@ def recover_interrupted_promotions(workspace_root: Path) -> list[str]:
 # override in registry.py for something this mechanical.
 BUILD_TEST_SCRIPT_POSIX = "build-test.sh"
 BUILD_TEST_SCRIPT_WINDOWS = "build-test.bat"
+# A repository without a build-test script is checked with its test script (it does not change versions).
+FALLBACK_TEST_SCRIPT_POSIX = "test.sh"
+FALLBACK_TEST_SCRIPT_WINDOWS = "test.bat"
 
 # The GUI consumes these events to show the same real work that the CLI does.
 # A callback is deliberately optional: command-line users retain normal child
@@ -705,10 +708,17 @@ def clone_or_pull(
 
 
 def find_build_test_script(path: Path) -> Path | None:
+    """The script that checks a checkout: its ``build-test`` script, or else the ``test`` script that every repository of the suite has."""
     import os
-    name = BUILD_TEST_SCRIPT_WINDOWS if os.name == "nt" else BUILD_TEST_SCRIPT_POSIX
-    candidate = path / name
-    return candidate if candidate.is_file() else None
+    windows = os.name == "nt"
+    for name in (
+        BUILD_TEST_SCRIPT_WINDOWS if windows else BUILD_TEST_SCRIPT_POSIX,
+        FALLBACK_TEST_SCRIPT_WINDOWS if windows else FALLBACK_TEST_SCRIPT_POSIX,
+    ):
+        candidate = path / name
+        if candidate.is_file():
+            return candidate
+    return None
 
 
 def run_build_script(
@@ -914,7 +924,11 @@ def _install_or_update_locked(
             _checkpoint(progress, "build", "cp_build_unavailable_accepted")
             built = InstallResult(True, built.message, built.output)
         results.append(built)
-        restore_tracked_changes(workspace_root / entry.name, progress=progress)
+        if not built.ok:
+            # a new installation whose build failed is not left behind as "installed": the checkout was made by this run, so it goes
+            _rmtree_best_effort(workspace_root / entry.name)
+        else:
+            restore_tracked_changes(workspace_root / entry.name, progress=progress)
     elif results[0].ok and build:
         _checkpoint(progress, "build", "cp_build_already")
     elif results[0].ok:

@@ -4,6 +4,10 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The manifests of the suite are accepted:** `hardware_bound` (true or false), the roles `node` and `docs`, and the `mcu` target in a 1.0 manifest are valid, and a test reads every manifest of the repositories next to this one.
+- **A repository without `build-test` is checked with its `test` script** (which never changes a version), so the programs of the suite can be installed and updated with the build check on.
+- **A new installation whose check fails is removed** instead of staying as installed, and a version pattern with a single group that holds the whole `MAJOR.MINOR.PATCH` is read.
+
 - **A test that does not depend on the machine:** the check of the update journal without the SDK sets its own state instead of relying on a sibling checkout being absent, so the 334 tests give the same result on any computer.
 
 ## [0.0.2] - The universal README, the live panel of the scripts and the layout checks of the repository

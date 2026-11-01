@@ -78,6 +78,12 @@ def parse_version(text: str, pattern) -> Version | None:
         return Version(parts["major"], parts["minor"], parts["patch"])
 
     match = re.search(pattern, text, re.MULTILINE)
+    if match and len(match.groups()) == 1:
+        # one group that holds the whole dotted version, as the manifests of the suite write it: (\d+\.\d+\.\d+)
+        try:
+            return Version.from_string(match.group(1))
+        except ValueError:
+            return None
     if not match or len(match.groups()) < 3:
         return None
     if len(match.groups()) >= 4 and match.group(4) is not None:

@@ -99,6 +99,15 @@ def test_a_fresh_install_is_left_clean_after_its_build_test(tmp_path, monkeypatc
     assert git("status", "--porcelain", "--untracked-files=no", cwd=remote.workspace / NAME) == ""
 
 
+def test_a_fresh_install_whose_build_fails_is_not_left_installed(tmp_path, monkeypatch):
+    remote = make_remote(tmp_path, "1.0.0", clone=False)
+    remote.push("1.0.1", "a build-test that fails", _write_build_test(remote.seed, "exit 3", "exit /b 3"))
+    monkeypatch.setattr(install, "github_repo_url", lambda _entry: str(remote.bare))
+    results = install.install_or_update(entry(), remote.workspace)
+    assert not all(r.ok for r in results)
+    assert not (remote.workspace / NAME).exists(), "the failed installation must not stay"
+
+
 def test_every_language_words_the_new_messages():
     from eh3d_updater import i18n
 

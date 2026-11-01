@@ -224,15 +224,14 @@ def test_parses_a_v1_1_manifest_with_components_and_the_mcu_target():
     assert manifest.components[1].source_prefix == "BOOTLOADER_VERSION"
 
 
-def test_a_v1_0_manifest_cannot_use_components_or_the_mcu_target():
+def test_a_v1_0_manifest_cannot_use_components_but_may_be_an_mcu_board():
     data = _v11_manifest()
     data["schema_version"] = "1.0"
     with pytest.raises(ManifestValidationError, match="components needs schema_version"):
         parse_manifest(json.dumps(data))
     data = valid_manifest()
     data["deployment_target"] = "mcu"
-    with pytest.raises(ManifestValidationError, match="unsupported deployment_target"):
-        parse_manifest(json.dumps(data))
+    assert parse_manifest(json.dumps(data)).deployment_target == "mcu"
 
 
 @pytest.mark.parametrize("change, message", [
