@@ -34,7 +34,7 @@ VALID_DEPLOYMENT_TARGETS = frozenset({"cm5", "user-pc", "mobile", "wearable", "d
 VALID_DEPLOYMENT_TARGETS_1_1 = VALID_DEPLOYMENT_TARGETS
 VALID_COMPONENT_KINDS = frozenset({"app", "bootloader"})
 #: What backs the maturity of a project (optional field ``evidence``): host tests only, a simulator, a bench with the real board, or the field.
-VALID_EVIDENCE = ("host-test", "simulator", "bench", "field")
+VALID_EVIDENCE = ("none", "host-test", "simulator", "bench", "field")
 
 
 class ManifestValidationError(ValueError):
@@ -88,7 +88,7 @@ class ProjectManifest:
     service_systemd_unit: str | None = None
     #: Schema 1.1: the independently versioned components (empty for a 1.0 manifest or a project without any).
     components: tuple[ManifestComponent, ...] = ()
-    #: Optional: what backs the maturity (host-test, simulator, bench or field); None when the manifest does not say.
+    #: Optional: what backs the maturity (none, host-test, simulator, bench or field); None when the manifest does not say.
     evidence: str | None = None
     #: Optional: true when the project needs the real hardware to be exercised; None when the manifest does not say.
     hardware_bound: bool | None = None

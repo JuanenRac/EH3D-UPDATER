@@ -259,7 +259,7 @@ def test_rejects_an_unknown_schema_version():
 def test_accepts_the_optional_evidence_field_the_eh3d_manifests_declare():
     manifest = valid_manifest()
     assert parse_manifest(json.dumps(manifest), expected_name="HYDRA-UMC-EXAMPLE").evidence is None
-    for level in ("host-test", "simulator", "bench", "field"):
+    for level in ("none", "host-test", "simulator", "bench", "field"):
         manifest["evidence"] = level
         assert parse_manifest(json.dumps(manifest), expected_name="HYDRA-UMC-EXAMPLE").evidence == level
 
