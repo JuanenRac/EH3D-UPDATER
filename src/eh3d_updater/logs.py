@@ -134,3 +134,9 @@ def log_result(path: Path | None, code: int) -> None:
             handle.write(f"{time.strftime('%Y-%m-%d %H:%M:%S')} INFO exit code {code}\n")
     except OSError:
         pass
+
+
+def announce_log(path: Path | None, *, failed: bool) -> None:
+    """After a failed run, tells where its log is (on the error stream, after the log was closed, so the line is not inside the log itself)."""
+    if failed and path is not None:
+        print(f"Full log: {path}", file=sys.stderr)

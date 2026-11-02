@@ -575,9 +575,16 @@ def main() -> int:
     if getattr(args, "no_log", False):
         return args.func(args)
     log_file = Path(args.log_file) if getattr(args, "log_file", None) else None
-    with logs.cli_log(sys.argv[1:], version=__version__, file=log_file) as log_path:
-        code = args.func(args)
+    log_path = None
+    try:
+        with logs.cli_log(sys.argv[1:], version=__version__, file=log_file) as log_path:
+            code = args.func(args)
+    except Exception:
+        # an unexpected error is in the log with its traceback; say where the log is before it reaches the terminal
+        logs.announce_log(log_path, failed=True)
+        raise
     logs.log_result(log_path, code)
+    logs.announce_log(log_path, failed=code not in (0, EXIT_UPDATES_AVAILABLE))
     return code
 
 

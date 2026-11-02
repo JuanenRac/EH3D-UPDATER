@@ -340,6 +340,8 @@ any unhandled exception, and the exit code. The newest twenty are kept.
 and `EH3D_UPDATER_LOG_DIR` moves the folder. A log that cannot be written is
 skipped; the command still runs.
 
+When a run ends with a code other than 0 or 10, or with an unexpected error, the last line on the error output is `Full log: <path>`; an unexpected error also leaves its traceback in the log.
+
 ## Exit codes
 
 `status` exits `0` (even when projects are outdated — that's informational,
