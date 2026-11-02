@@ -11,7 +11,7 @@ illustrative of the shape, with made-up project names and versions.
 
 ```
 $ eh3d-updater --cli -h
-usage: eh3d-updater --cli [-h] [--version]
+usage: eh3d-updater --cli [-h] [--version] [--log-file FILE] [--no-log]
                           {status,install,update,check,clean-backups,restore-backup,evidence} ...
 
 Detects, installs, and manually updates the EH3D ecosystem's own repositories
@@ -35,6 +35,10 @@ positional arguments:
 options:
   -h, --help            show this help message and exit
   --version             show program's version number and exit
+  --log-file FILE       Write the log of this run to FILE (default: a new
+                        cli_<time>.log in ~/.eh3d_updater/logs, as the window
+                        does).
+  --no-log              Do not write a log file for this run.
 ```
 
 ```
@@ -94,12 +98,13 @@ DEMO-PROJECT-A  functional   service   python      1.2.3     -         installed
 1/1 installed, 0 outdated (GitHub not checked)
 ```
 
-### `install <PROJECT-NAME> [--workspace PATH] [--no-build] [--profile NAME]`
+### `install <PROJECT-NAME> [--workspace PATH] [--no-build] [--profile NAME] [--preview]`
 
 ```
 $ eh3d-updater --cli install -h
 usage: eh3d-updater --cli install [-h] [--workspace WORKSPACE] [--no-build]
-                                  [--profile PROFILE]
+                                  [--profile PROFILE] [--preview]
+                                  [--accept-unavailable-validation]
                                   project
 
 positional arguments:
@@ -113,12 +118,29 @@ options:
   --no-build            Clone only - skip running the project's own build
                         script.
   --profile PROFILE     Refuse a project outside this station profile.
+  --preview             Show what the installation would do (what is cloned
+                        from where, what is installed first, the build check)
+                        and change nothing.
 ```
 
 `git clone`s the named project into `--workspace`, then runs its own
 `build-test.sh`/`.bat` unless `--no-build` is given. A project name that
 doesn't expose a valid manifest on GitHub is a real, reported failure —
-never a silent no-op:
+never a silent no-op. With `--preview` nothing is cloned or changed: it prints
+the clone it would make, the missing siblings it would install first, whether
+unsigned commits are refused and whether the build check would run, and exits `0`:
+
+```
+$ eh3d-updater --cli install EH3D-EXAMPLE --preview
+Preview of the installation of EH3D-EXAMPLE into /work (nothing is changed):
+  - clone https://github.com/JuanenRac/EH3D-EXAMPLE into /work/EH3D-EXAMPLE (through a hidden staging folder, moved into place when the clone is accepted)
+  - commit signatures: not required, an unsigned commit is installed with a warning
+  - the manifest of the clone must be valid and name this project
+  - run the build check of the project (its build-test script, or else its test script); if it fails the new folder is removed
+Nothing was changed. Run the same command without --preview to install.
+```
+
+A project name that doesn't expose a valid manifest on GitHub fails the same way:
 
 ```
 $ eh3d-updater --cli install NOT-A-REAL-PROJECT
@@ -308,12 +330,22 @@ whether the window's batch actions are allowed. `--profile NAME` (or the
 and the window follows the same profile. An undefined profile name is an error,
 never "no restriction".
 
+## Log file
+
+Every `--cli` run is also written to `~/.eh3d_updater/logs/cli_<time>_<pid>.log`
+(the folder of the window's `gui_*.log` files): the command, every line it
+prints on the standard output (as INFO) and on the error output (as WARNING),
+any unhandled exception, and the exit code. The newest twenty are kept.
+`--log-file FILE` (before the command) names the file, `--no-log` writes none,
+and `EH3D_UPDATER_LOG_DIR` moves the folder. A log that cannot be written is
+skipped; the command still runs.
+
 ## Exit codes
 
 `status` exits `0` (even when projects are outdated — that's informational,
 not a failure), or `1` for an undefined profile. `install`/`update` exit `1` on
 any real failure (unknown project, failed clone/pull, failed build script) and
-`0` on success; `update --preview` exits `0` when it could describe the
+`0` on success; `install --preview` and `update --preview` exit `0` when they could describe the
 candidate. `check` exits `0` when nothing can be updated and `10` when
 something can. `clean-backups` exits `1` when another instance holds the
 workspace; `restore-backup` exits `1` when it could not restore; `evidence`

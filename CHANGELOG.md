@@ -4,6 +4,9 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **`install --preview`:** shows what an installation would do (what is cloned from where, the siblings that are installed first, the signature policy and the build check) and changes nothing, like `update --preview`.
+- **A log file for the command line:** every `--cli` run writes `cli_<time>.log` in the folder of the window's logs (command, every printed line, exit code); `--log-file FILE` chooses the file, `--no-log` writes none, `EH3D_UPDATER_LOG_DIR` moves the folder, and the oldest command-line logs are removed beyond twenty.
+
 - **A program that is on the disk but is left out says so:** `status` and `check` print `IGNORED <folder>: <reason>` on the error output for each folder whose manifest is rejected, `status --json` gives them as `ignored` (`folder`, `reason`) and the summary line counts them, so a program no longer disappears from the table without a word.
 
 ## [0.0.3] - Weekly manifest checks, dependencies between repositories and a safer installation

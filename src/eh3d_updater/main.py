@@ -34,7 +34,7 @@ import os
 import sys
 from pathlib import Path
 
-from . import __version__, commits, profiles, settings
+from . import __version__, commits, logs, profiles, settings
 from .dependencies import DependencyError, install_order
 from .detect import LocalStatus, discover_workspace
 from .evidence import export_evidence, verify_chain
@@ -44,6 +44,7 @@ from .install import (
     clean_workspace,
     install_or_update,
     list_backups,
+    plan_install,
     preview_update,
     restore_backup,
 )
@@ -424,9 +425,11 @@ def _install_or_update(args: argparse.Namespace, *, expect_installed: bool) -> i
 
     if entry.note:
         print(f"Note: {entry.note}")
-    print(f"{'Updating' if expect_installed else 'Installing'} {entry.name} into {workspace_root} ...")
+    if expect_installed or not getattr(args, "preview", False):
+        print(f"{'Updating' if expect_installed else 'Installing'} {entry.name} into {workspace_root} ...")
 
     results = []
+    missing_needed: list = []
     if entry.depends_on:
         # the siblings the project needs are installed first (only the ones that are missing: an installed one is left as it is)
         known = {e.name: e for e in local_by_name.values()}
@@ -436,16 +439,21 @@ def _install_or_update(args: argparse.Namespace, *, expect_installed: bool) -> i
         except (RuntimeError, DependencyError) as exc:
             print(f"Cannot work out what {entry.name} needs: {exc}", file=sys.stderr)
             return 1
-        for needed in order[:-1]:
-            if (workspace_root / needed).is_dir():
-                continue
-            print(f"Installing {needed}, which {entry.name} needs ...")
-            step = install_or_update(known[needed], workspace_root, build=not args.no_build)
-            results.extend(step)
-            if not all(r.ok for r in step):
-                for r in results:
-                    print(("OK  " if r.ok else "FAIL ") + r.message)
-                return 1
+        missing_needed = [known[needed] for needed in order[:-1] if not (workspace_root / needed).is_dir()]
+
+    if not expect_installed and getattr(args, "preview", False):
+        for line in plan_install(entry, workspace_root, missing_needed, build=not args.no_build):
+            print(line)
+        return 0
+
+    for needed in missing_needed:
+        print(f"Installing {needed.name}, which {entry.name} needs ...")
+        step = install_or_update(needed, workspace_root, build=not args.no_build)
+        results.extend(step)
+        if not all(r.ok for r in step):
+            for r in results:
+                print(("OK  " if r.ok else "FAIL ") + r.message)
+            return 1
     results.extend(install_or_update(entry, workspace_root, build=not args.no_build))
     ok = all(r.ok for r in results)
     for r in results:
@@ -459,6 +467,8 @@ def build_parser() -> argparse.ArgumentParser:
         description="Detects, installs, and manually updates the EH3D ecosystem's own repositories on this machine.",
     )
     parser.add_argument("--version", action="version", version=f"eh3d-updater {__version__}")
+    parser.add_argument("--log-file", metavar="FILE", help="Write the log of this run to FILE (default: a new cli_<time>.log in ~/.eh3d_updater/logs, as the window does).")
+    parser.add_argument("--no-log", action="store_true", help="Do not write a log file for this run.")
     subparsers = parser.add_subparsers(dest="command")
 
     status_p = subparsers.add_parser("status", help="Show what's installed, its version, and the latest GitHub version of every project.")
@@ -474,6 +484,10 @@ def build_parser() -> argparse.ArgumentParser:
     install_p.add_argument("--workspace", help="Workspace root (default: this tool's own parent directory).")
     install_p.add_argument("--no-build", action="store_true", help="Clone only - skip running the project's own build script.")
     install_p.add_argument("--profile", help="Refuse a project outside this station profile.")
+    install_p.add_argument(
+        "--preview", action="store_true",
+        help="Show what the installation would do (what is cloned from where, what is installed first, the build check) and change nothing.",
+    )
     install_p.add_argument(
         "--accept-unavailable-validation", action="store_true",
         help="Go on when the project's build check says it cannot validate here (a missing tool). Without this flag such an install is refused.",
@@ -558,7 +572,13 @@ def main() -> int:
     if not getattr(args, "command", None):
         parser.print_help()
         return 0
-    return args.func(args)
+    if getattr(args, "no_log", False):
+        return args.func(args)
+    log_file = Path(args.log_file) if getattr(args, "log_file", None) else None
+    with logs.cli_log(sys.argv[1:], version=__version__, file=log_file) as log_path:
+        code = args.func(args)
+    logs.log_result(log_path, code)
+    return code
 
 
 if __name__ == "__main__":

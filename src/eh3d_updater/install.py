@@ -1126,6 +1126,23 @@ def _restore_backup_locked(name: str, workspace_root: Path, backup: str | None) 
 _BUILD_PATHSPECS = ("build-test.*", "build*.sh", "build*.bat", "tools", "scripts")
 
 
+def plan_install(entry: ProjectEntry, workspace_root: Path, missing_needed: list[ProjectEntry], *, build: bool = True) -> list[str]:
+    """The lines that describe what installing `entry` would do. It reads nothing from the network and changes nothing."""
+    policy = current_policy()
+    lines = [f"Preview of the installation of {entry.name} into {workspace_root} (nothing is changed):"]
+    for needed in missing_needed:
+        lines.append(f"  - first install {needed.name}, which {entry.name} needs: clone {github_repo_url(needed)} into {workspace_root / needed.name}")
+    lines.append(f"  - clone {github_repo_url(entry)} into {workspace_root / entry.name} (through a hidden staging folder, moved into place when the clone is accepted)")
+    lines.append(f"  - commit signatures: {'required, an unsigned commit is refused' if policy.required else 'not required, an unsigned commit is installed with a warning'}")
+    lines.append("  - the manifest of the clone must be valid and name this project")
+    if build:
+        lines.append("  - run the build check of the project (its build-test script, or else its test script); if it fails the new folder is removed")
+    else:
+        lines.append("  - the build check is skipped (--no-build)")
+    lines.append("Nothing was changed. Run the same command without --preview to install.")
+    return lines
+
+
 @dataclass
 class UpdatePreview:
     commit: str

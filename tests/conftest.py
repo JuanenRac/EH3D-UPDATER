@@ -20,6 +20,7 @@ def _signature_policy_off(monkeypatch, tmp_path_factory):
     monkeypatch.delenv("EH3D_UPDATER_ALLOWED_SIGNERS", raising=False)
     empty = tmp_path_factory.mktemp("gitconfig") / "config"
     empty.write_text("", encoding="utf-8")
+    monkeypatch.setenv("EH3D_UPDATER_LOG_DIR", str(tmp_path_factory.mktemp("logs")))
     monkeypatch.setenv("GIT_CONFIG_GLOBAL", str(empty))
     monkeypatch.setenv("GIT_CONFIG_NOSYSTEM", "1")
     # Preferences and the cached repository listing live in the home folder:
