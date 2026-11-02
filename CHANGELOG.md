@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A failed command names its log:** a `--cli` run that ends with a code other than 0 or 10, or with an unexpected error, finishes with `Full log: <path>` on the error output; the traceback of an unexpected error is in the log.
+- **Tested on the oldest and the newest Python it promises:** the CI runs the tests without the window on Python 3.10 and 3.13, and `tools/test_python_minimum.py` reads every source with the grammar of the oldest version named in `pyproject.toml`.
 - **The maturity is functional:** the manifest, the badge and the table of the eight README files say it, since it is used and tried with real files; the evidence stays as host tests.
 ## [0.0.4] - The folders that are left out are told, an install can be previewed, the command line keeps a log and a manifest may name its binary
 
