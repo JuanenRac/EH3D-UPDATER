@@ -272,3 +272,27 @@ def test_rejects_an_evidence_level_that_does_not_exist():
     manifest["evidence"] = ["bench"]
     with pytest.raises(ManifestValidationError):
         parse_manifest(json.dumps(manifest), expected_name="HYDRA-UMC-EXAMPLE")
+
+
+def test_accepts_the_optional_binary_field_and_keeps_it():
+    manifest = valid_manifest()
+    assert parse_manifest(json.dumps(manifest), expected_name="HYDRA-UMC-EXAMPLE").binary is None
+    for name in ("eh3d-server", "drillpro.exe", "Tool_2"):
+        manifest["binary"] = name
+        assert parse_manifest(json.dumps(manifest), expected_name="HYDRA-UMC-EXAMPLE").binary == name
+
+
+def test_rejects_a_binary_that_is_not_a_plain_file_name():
+    manifest = valid_manifest()
+    for bad in ("", "bin/server", "..\\x","-rf", " a", 3, ["a"]):
+        manifest["binary"] = bad
+        with pytest.raises(ManifestValidationError, match="binary must be a file name"):
+            parse_manifest(json.dumps(manifest), expected_name="HYDRA-UMC-EXAMPLE")
+
+
+def test_the_binary_field_works_in_both_schema_versions():
+    for schema in ("1.0", "1.1"):
+        manifest = valid_manifest()
+        manifest["schema_version"] = schema
+        manifest["binary"] = "eh3d-tool"
+        assert parse_manifest(json.dumps(manifest), expected_name="HYDRA-UMC-EXAMPLE").binary == "eh3d-tool"

@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The optional `binary` field of the manifest:** the file name of the executable a repository builds (letters, digits, dot, dash and underscore, no folder) is accepted by the parser in schema 1.0 and 1.1 and kept in `ProjectManifest.binary`; any other value is rejected.
 - **`install --preview`:** shows what an installation would do (what is cloned from where, the siblings that are installed first, the signature policy and the build check) and changes nothing, like `update --preview`.
 - **A log file for the command line:** every `--cli` run writes `cli_<time>.log` in the folder of the window's logs (command, every printed line, exit code); `--log-file FILE` chooses the file, `--no-log` writes none, `EH3D_UPDATER_LOG_DIR` moves the folder, and the oldest command-line logs are removed beyond twenty.
 

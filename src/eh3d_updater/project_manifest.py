@@ -94,6 +94,11 @@ class ProjectManifest:
     hardware_bound: bool | None = None
     #: Schema 1.1: the sibling repositories this one needs next to it (the ones its Cargo.toml reaches with a path), installed first.
     depends_on: tuple[str, ...] = ()
+    #: Optional: the file name of the executable the project builds (no folder, no extension rules); None when the manifest does not say.
+    binary: str | None = None
+
+
+BINARY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
 
 
 def _require_string(data: dict[str, Any], field: str) -> str:
@@ -126,7 +131,7 @@ def parse_manifest(text: str, *, expected_name: str | None = None) -> ProjectMan
     # isn't self-evident from the enum alone (e.g. "dev-server" is not
     # the same physical role as "cm5") - optional because most
     # deployment_target values need no such note.
-    optional_fields = {"service", "deployment_target_note", "components", "evidence", "hardware_bound", "depends_on"}
+    optional_fields = {"service", "deployment_target_note", "components", "evidence", "hardware_bound", "depends_on", "binary"}
     unknown = sorted(set(data) - expected_fields - optional_fields)
     missing = sorted(expected_fields - set(data))
     if missing:
@@ -224,6 +229,10 @@ def parse_manifest(text: str, *, expected_name: str | None = None) -> ProjectMan
 
     depends_on = _parse_depends_on(data.get("depends_on"), name)
 
+    binary = data.get("binary")
+    if binary is not None and (not isinstance(binary, str) or not BINARY_RE.fullmatch(binary)):
+        raise ManifestValidationError("binary must be a file name (letters, digits, dot, dash and underscore; no folder) when present")
+
     service_port, service_health_path, service_systemd_unit = _parse_service(data.get("service"))
 
     return ProjectManifest(
@@ -249,6 +258,7 @@ def parse_manifest(text: str, *, expected_name: str | None = None) -> ProjectMan
         evidence=evidence,
         hardware_bound=hardware_bound,
         depends_on=depends_on,
+        binary=binary,
     )
 
 
