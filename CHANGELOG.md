@@ -4,6 +4,7 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The maturity is functional:** the manifest, the badge and the table of the eight README files say it, since it is used and tried with real files; the evidence stays as host tests.
 ## [0.0.4] - The folders that are left out are told, an install can be previewed, the command line keeps a log and a manifest may name its binary
 
 - **The optional `binary` field of the manifest:** the file name of the executable a repository builds (letters, digits, dot, dash and underscore, no folder) is accepted by the parser in schema 1.0 and 1.1 and kept in `ProjectManifest.binary`; any other value is rejected.

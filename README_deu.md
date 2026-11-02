@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Stack-Python%203.10%2B-3776AB.svg" alt="Python">
   <img src="https://img.shields.io/badge/Languages-8-00E5FF.svg" alt="Languages">
   <img src="https://img.shields.io/badge/Version-0.0.4-0f6cbd.svg" alt="Version">
-  <img src="https://img.shields.io/badge/Maturity-scaffolding-FFB020.svg" alt="Maturity">
+  <img src="https://img.shields.io/badge/Maturity-functional-4CAF50.svg" alt="Maturity">
 </p>
 
 ---
@@ -29,7 +29,7 @@
 | | |
 |---|---|
 | Version | `0.0.4` |
-| Reifegrad | Gerüst |
+| Reifegrad | Funktionsfähig |
 | Tests | 334 |
 | Technologie-Stack | Python 3.10+ / PySide6 / Qt Quick |
 | Auf echter Hardware | Nicht zutreffend: Es läuft auf dem PC der Person, die es nutzt |

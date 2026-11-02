@@ -12,7 +12,7 @@
     "GitHub raw content"
   ],
   "deployment_target": "user-pc",
-  "maturity": "scaffolding",
+  "maturity": "functional",
   "evidence": "host-test",
   "hardware_bound": false,
   "family": "Ecosystem Operations",
