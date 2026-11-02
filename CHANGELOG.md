@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.0.5] - Full log on failures, oldest Python tested and evidence none accepted
+
 - **A manifest that says `evidence: none` is accepted:** a project with no code yet declares that nothing has been shown to work, and the manifest parser takes that level as the shared status tool and the dashboard do, instead of refusing the repository. With a test.
 - **A failed command names its log:** a `--cli` run that ends with a code other than 0 or 10, or with an unexpected error, finishes with `Full log: <path>` on the error output; the traceback of an unexpected error is in the log.
 - **Tested on the oldest and the newest Python it promises:** the CI runs the tests without the window on Python 3.10 and 3.13, and `tools/test_python_minimum.py` reads every source with the grammar of the oldest version named in `pyproject.toml`.
