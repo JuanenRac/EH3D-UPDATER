@@ -4,6 +4,10 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **Monthly dependency updates:** Dependabot opens one grouped pull request a month for the GitHub Actions and the Python dependencies.
+- **A line for every change:** a pull request that changes code must add a line under `[Unreleased]` of this file (`tools/changelog_pr_check.py`; the label `no-changelog` skips it).
+- **Shared checks updated:** the validator of the suite checks the text of the banner against the manifest and reads the files that git tracks.
+
 ## [0.0.5] - Full log on failures, oldest Python tested and evidence none accepted
 
 - **A manifest that says `evidence: none` is accepted:** a project with no code yet declares that nothing has been shown to work, and the manifest parser takes that level as the shared status tool and the dashboard do, instead of refusing the repository. With a test.
