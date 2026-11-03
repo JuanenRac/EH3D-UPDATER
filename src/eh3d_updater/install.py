@@ -31,9 +31,10 @@ from contextlib import contextmanager
 from shutil import copy2, copytree, rmtree
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Iterator
+from typing import Callable, Iterator, Mapping
 from uuid import uuid4
 
+from .dependencies import DependencyError, install_order
 from .evidence import installed_state, record_attempt
 from .messages import coded
 from .project_manifest import ManifestValidationError, ProjectManifest, parse_manifest
@@ -204,6 +205,12 @@ def _checkpoint(progress: ProgressCallback | None, phase: str, code: str, **para
         progress(phase, coded(code, **params))
 
 
+def _warn_if_policy_invalid(progress: ProgressCallback | None, policy) -> None:   # noqa: ANN001 - SignaturePolicy
+    """A signature setting the updater does not recognise is treated as "require"; the steps say which value it was."""
+    if policy.invalid:
+        _checkpoint(progress, "validation", "cp_policy_invalid", setting=policy.invalid)
+
+
 def _warn_if_unsigned(progress: ProgressCallback | None, repo: Path, revision: str, policy) -> None:   # noqa: ANN001 - SignaturePolicy
     """In the default (warn) mode an unsigned revision is installed, and the steps of the window and of the command line say that it is not signed."""
     if policy.required:
@@ -319,6 +326,17 @@ def _tracked_dirty_paths(path: Path) -> list[str]:
     return paths
 
 
+def _skip_build_folders(_directory: str, names: list[str]) -> list[str]:
+    """copytree `ignore`: build and cache folders nested inside a carried folder are regenerated, never copied."""
+    return [name for name in names if name in _NEVER_CARRIED_OVER_DIR_NAMES]
+
+
+def _copy_without_replacing(source: str, destination: str) -> None:
+    """copytree `copy_function`: a file that already exists in the staging clone (the candidate versions it) is not overwritten; links are copied as links."""
+    if not Path(destination).exists() and not Path(destination).is_symlink():
+        copy2(source, destination, follow_symlinks=False)
+
+
 def _carry_over_local_data(old_path: Path, staging_path: Path, *, progress: ProgressCallback | None = None) -> None:
     """Copies every real untracked/ignored file or directory from
     `old_path` into `staging_path` before the candidate is built or
@@ -348,9 +366,11 @@ def _carry_over_local_data(old_path: Path, staging_path: Path, *, progress: Prog
         destination = staging_path / rel_path
         destination.parent.mkdir(parents=True, exist_ok=True)
         if source.is_dir():
-            copytree(source, destination, dirs_exist_ok=True, symlinks=True)
+            copytree(source, destination, dirs_exist_ok=True, symlinks=True, ignore=_skip_build_folders, copy_function=_copy_without_replacing)
+        elif destination.exists() or destination.is_symlink():
+            continue  # the candidate versions a file of this name: what it ships stays, the local copy remains in the backup
         else:
-            copy2(source, destination)
+            copy2(source, destination, follow_symlinks=False)
         carried += 1
     if carried:
         _checkpoint(progress, "validation", "cp_carried", count=carried)
@@ -444,6 +464,7 @@ def clone_or_pull(
             _rmtree_best_effort(staging_path)
             return InstallResult(False, coded("clone_failed", code=result.returncode), _command_output(result))
         policy = current_policy()
+        _warn_if_policy_invalid(progress, policy)
         refused = verify_revision(staging_path, "HEAD", policy)
         if refused:
             _rmtree_best_effort(staging_path)
@@ -507,6 +528,7 @@ def clone_or_pull(
     if not candidate_sha:
         return InstallResult(False, coded("unresolved", path=str(path)))
     policy = current_policy()
+    _warn_if_policy_invalid(progress, policy)
     refused = verify_revision(path, candidate_sha, policy)
     if refused:
         return InstallResult(False, coded("remote_refused_signature", reason=refused))
@@ -588,13 +610,14 @@ def clone_or_pull(
     # before promotion) so a build-test script that reads this project's
     # own real local files during verification sees the same real data
     # the promoted checkout will actually run against.
-    _carry_over_local_data(path, staging_path, progress=progress)
-
     _checkpoint(progress, "validation", "cp_merge_staging")
     result = _run(["git", "merge", "--ff-only", candidate_sha], cwd=staging_path, capture_output=progress is not None)
     if result.returncode != 0:
         _rmtree_best_effort(staging_path)
         return InstallResult(False, coded("staging_merge_failed", code=result.returncode, path=str(path)), _command_output(result))
+
+    # the merge comes first: a local untracked file that the new version starts to version would otherwise stop `git merge` for good
+    _carry_over_local_data(path, staging_path, progress=progress)
 
     _checkpoint(progress, "build", "cp_build_isolated")
     build_result = _run_build_script_at(staging_path, progress=progress)
@@ -847,6 +870,33 @@ def is_running_checkout(path: Path) -> bool:
         return False
 
 
+def install_with_dependencies(
+    entry: ProjectEntry,
+    workspace_root: Path,
+    known: "Mapping[str, ProjectEntry]",
+    *,
+    build: bool = True,
+    progress: ProgressCallback | None = None,
+) -> list[InstallResult]:
+    """`install_or_update` for a project that may need sibling repositories (`depends_on`): the ones that are missing are installed first, in dependency order, and the
+    run stops at the first failure. `known` holds every project the updater knows (installed or listed on GitHub). Used by the command line and by both windows."""
+    needed: list[ProjectEntry] = []
+    if entry.depends_on:
+        try:
+            order = install_order(entry.name, {name: item.depends_on for name, item in known.items()})
+        except DependencyError as exc:
+            return [InstallResult(False, f"Cannot work out what {entry.name} needs: {exc}")]
+        needed = [known[name] for name in order[:-1] if not (workspace_root / name).is_dir()]
+    results: list[InstallResult] = []
+    for sibling in needed:
+        step = install_or_update(sibling, workspace_root, build=build, progress=progress)
+        results.extend(step)
+        if not all(item.ok for item in step):
+            return results
+    results.extend(install_or_update(entry, workspace_root, build=build, progress=progress))
+    return results
+
+
 def install_or_update(
     entry: ProjectEntry,
     workspace_root: Path,
@@ -1086,7 +1136,7 @@ def _restore_backup_locked(name: str, workspace_root: Path, backup: str | None) 
     manifest_file = chosen / "eh3d.project.json"
     try:
         restored = parse_manifest(manifest_file.read_text(encoding="utf-8"), expected_name=name)
-    except (OSError, ManifestValidationError) as exc:
+    except (OSError, ValueError, ManifestValidationError) as exc:
         return InstallResult(False, f"{chosen.name} is not a usable installation of {name}: {exc}")
     before = installed_state(path)
     set_aside: Path | None = None
@@ -1134,6 +1184,8 @@ def plan_install(entry: ProjectEntry, workspace_root: Path, missing_needed: list
         lines.append(f"  - first install {needed.name}, which {entry.name} needs: clone {github_repo_url(needed)} into {workspace_root / needed.name}")
     lines.append(f"  - clone {github_repo_url(entry)} into {workspace_root / entry.name} (through a hidden staging folder, moved into place when the clone is accepted)")
     lines.append(f"  - commit signatures: {'required, an unsigned commit is refused' if policy.required else 'not required, an unsigned commit is installed with a warning'}")
+    if policy.invalid:
+        lines.append(f"  - WARNING: the signature setting {policy.invalid} is not recognised and is treated as require")
     lines.append("  - the manifest of the clone must be valid and name this project")
     if build:
         lines.append("  - run the build check of the project (its build-test script, or else its test script); if it fails the new folder is removed")

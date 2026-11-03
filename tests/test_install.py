@@ -407,6 +407,41 @@ def test_update_carries_over_real_local_data_never_tracked_by_git(tmp_path: Path
     assert not (local / "node_modules").exists(), "a build-artifact-like directory must never be carried over"
 
 
+def test_update_succeeds_when_the_new_version_starts_to_version_a_local_untracked_file(tmp_path: Path):
+    remote = tmp_path / "remote.git"
+    git("init", "--bare", str(remote), cwd=tmp_path)
+    seed = tmp_path / "seed"
+    git("clone", str(remote), str(seed), cwd=tmp_path)
+    git("config", "user.email", "contract@example.invalid", cwd=seed)
+    git("config", "user.name", "Contract", cwd=seed)
+    write_manifest(seed, "1.0.0")
+    write_build_script(seed, ok=True)
+    git("add", "-A", cwd=seed)
+    git("commit", "-m", "base", cwd=seed)
+    git("push", "origin", "HEAD", cwd=seed)
+    local = tmp_path / entry().name
+    git("clone", str(remote), str(local), cwd=tmp_path)
+    (local / "settings.txt").write_text("local copy\n", encoding="utf-8")
+    (local / "data").mkdir()
+    (local / "data" / "a.json").write_text("local", encoding="utf-8")
+    (local / "data" / "node_modules").mkdir()
+    (local / "data" / "node_modules" / "x.js").write_text("x", encoding="utf-8")
+    write_manifest(seed, "1.1.0")
+    (seed / "settings.txt").write_text("shipped\n", encoding="utf-8")
+    (seed / "data").mkdir()
+    (seed / "data" / "a.json").write_text("shipped", encoding="utf-8")
+    git("add", "-A", cwd=seed)
+    git("commit", "-m", "versions the file", cwd=seed)
+    git("push", "origin", "HEAD", cwd=seed)
+
+    result = clone_or_pull(entry(), tmp_path)
+
+    assert result.ok, result.message
+    assert (local / "settings.txt").read_text(encoding="utf-8") == "shipped\n"
+    assert (local / "data" / "a.json").read_text(encoding="utf-8") == "shipped"
+    assert not (local / "data" / "node_modules").exists()
+
+
 def test_update_refuses_when_a_real_tracked_file_has_an_uncommitted_edit(tmp_path: Path):
     # (P1, a real
     # gap this module's own docstring did not actually close once 

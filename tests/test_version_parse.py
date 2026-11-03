@@ -60,3 +60,25 @@ def test_the_manifest_version_pattern_accepts_both_shapes():
     assert VERSION_RE.fullmatch("0.8.0.0")
     assert not VERSION_RE.fullmatch("0.8")
     assert not VERSION_RE.fullmatch("0.8.0.0.0")
+
+
+def test_a_wrong_pattern_or_a_non_numeric_group_gives_none_not_a_crash():
+    from eh3d_updater.version_parse import parse_version
+
+    assert parse_version("version 1.2.3", "(unclosed") is None
+    assert parse_version("version a.b.c", r"(\w)\.(\w)\.(\w)") is None
+    assert parse_version("x", {"major": "(x)", "minor": "(x)", "patch": "(x)"}) is None
+
+
+def test_a_manifest_with_an_invalid_pattern_is_refused_when_it_is_read():
+    import json
+
+    import pytest
+
+    from eh3d_updater.project_manifest import ManifestValidationError, parse_manifest
+    from repo_helpers import manifest_text
+
+    data = json.loads(manifest_text("1.0.0"))
+    data["native_version"]["pattern"] = "(unclosed"
+    with pytest.raises(ManifestValidationError, match="regular expression"):
+        parse_manifest(json.dumps(data))

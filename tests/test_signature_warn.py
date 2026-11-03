@@ -91,3 +91,56 @@ def test_an_unsigned_update_goes_ahead_with_the_warning(tmp_path: Path, monkeypa
     result = clone_or_pull(entry(), tmp_path, verify_build=False, progress=lambda phase, text: steps.append(text))
     assert result.ok, result.message
     assert [step for step in steps if getattr(step, "code", "") == "cp_unsigned_warning"]
+
+
+import pytest
+
+
+@pytest.mark.parametrize("value", ["required", "on", "true", "True", "enforce", "", " REQUIRE-ish "])
+def test_an_unrecognised_policy_value_in_the_settings_fails_closed_and_is_named(monkeypatch, tmp_path: Path, value):
+    monkeypatch.delenv("EH3D_UPDATER_REQUIRE_SIGNED", raising=False)
+    path = tmp_path / "settings.json"
+    monkeypatch.setattr(settings, "SETTINGS_PATH", path)
+    for key in ("signature_policy", "require_signed_commits"):
+        path.write_text(json.dumps({key: value}), encoding="utf-8")
+        policy = current_policy()
+        assert policy.required is True and policy.invalid and key in policy.invalid and repr(value) in policy.invalid
+
+
+@pytest.mark.parametrize("value", ["on", "required", "enforce", "maybe"])
+def test_an_unrecognised_environment_value_fails_closed_and_is_named(monkeypatch, value):
+    monkeypatch.setenv("EH3D_UPDATER_REQUIRE_SIGNED", value)
+    policy = current_policy()
+    assert policy.required is True and value in (policy.invalid or "")
+
+
+def test_recognised_values_raise_no_warning(monkeypatch, tmp_path: Path):
+    path = tmp_path / "settings.json"
+    monkeypatch.setattr(settings, "SETTINGS_PATH", path)
+    for text in ('{"signature_policy": "Require"}', '{"signature_policy": "warn"}', '{"require_signed_commits": false}', "{}"):
+        monkeypatch.delenv("EH3D_UPDATER_REQUIRE_SIGNED", raising=False)
+        path.write_text(text, encoding="utf-8")
+        assert current_policy().invalid is None
+    for env in ("1", "yes", "0", "no"):
+        monkeypatch.setenv("EH3D_UPDATER_REQUIRE_SIGNED", env)
+        assert current_policy().invalid is None
+
+
+def test_a_misspelt_policy_refuses_an_unsigned_install_and_warns_first(tmp_path: Path, monkeypatch):
+    remote = _remote_with_one_commit(tmp_path, signing_key=None)
+    monkeypatch.setattr(install, "github_repo_url", lambda _entry: str(remote))
+    monkeypatch.setenv("EH3D_UPDATER_REQUIRE_SIGNED", "on")
+    workspace = tmp_path / "ws"
+    workspace.mkdir()
+    steps: list[object] = []
+    result = clone_or_pull(entry(), workspace, verify_build=False, progress=lambda phase, text: steps.append(text))
+    assert not result.ok and "signature policy" in str(result.message)
+    warnings = [step for step in steps if getattr(step, "code", "") == "cp_policy_invalid"]
+    assert len(warnings) == 1 and "EH3D_UPDATER_REQUIRE_SIGNED='on'" in str(warnings[0])
+    assert list(workspace.iterdir()) == []
+
+
+def test_the_policy_warning_exists_in_every_language():
+    for code, _label in i18n.LANGUAGES:
+        text = i18n.t(code, "inst_cp_policy_invalid", setting="signature_policy='on'")
+        assert "signature_policy='on'" in text and "{" not in text and "require" in text, code

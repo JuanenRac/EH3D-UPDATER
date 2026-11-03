@@ -41,7 +41,7 @@ def load_settings() -> dict[str, Any]:
     try:
         raw = SETTINGS_PATH.read_text(encoding="utf-8")
         data = json.loads(raw)
-    except (OSError, json.JSONDecodeError):
+    except (OSError, ValueError):  # ValueError covers bad JSON and bytes that are not UTF-8
         return {}
     return data if isinstance(data, dict) else {}
 
@@ -97,7 +97,7 @@ def get_saved_lang() -> str | None:
         raw = _LEGACY_LANG_PATH.read_text(encoding="utf-8")
         data = json.loads(raw)
         legacy_lang = data.get("lang") if isinstance(data, dict) else None
-    except (OSError, json.JSONDecodeError, AttributeError):
+    except (OSError, ValueError, AttributeError):
         return None
     return legacy_lang if isinstance(legacy_lang, str) and legacy_lang else None
 

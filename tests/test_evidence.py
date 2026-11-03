@@ -68,3 +68,27 @@ def test_install_or_update_leaves_evidence_of_a_failed_attempt(tmp_path: Path, m
     (line,) = read_attempts(tmp_path)
     assert line["project"] == "HYDRA-UMC-DEMO" and line["ok"] is False
     assert "clone refused" in line["message"]
+
+
+def _file(tmp_path: Path) -> Path:
+    return tmp_path / EVIDENCE_DIRECTORY / "evidence.jsonl"
+
+
+def test_a_damaged_last_line_never_stops_the_recording(tmp_path: Path) -> None:
+    from eh3d_updater.evidence import verify_chain
+
+    record_attempt(tmp_path, project="p", before={}, after={}, ok=True, message="one")
+    for tail in (b"[]\n", b"5\n", b"null\n", b"\xe9 not utf-8\n"):
+        with _file(tmp_path).open("ab") as stream:
+            stream.write(tail)
+        assert record_attempt(tmp_path, project="p", before={}, after={}, ok=True, message="again") is not None
+        assert isinstance(verify_chain(tmp_path), list)
+    assert any("not a JSON object" in problem for problem in verify_chain(tmp_path))
+    assert all(isinstance(entry, dict) for entry in read_attempts(tmp_path))
+
+
+def test_installed_state_tolerates_a_manifest_that_is_not_an_object_or_not_utf8(tmp_path: Path) -> None:
+    (tmp_path / "eh3d.project.json").write_text("[1]", encoding="utf-8")
+    assert installed_state(tmp_path)["version"] is None
+    (tmp_path / "eh3d.project.json").write_bytes(b'{"version": "\xe9"}')
+    assert installed_state(tmp_path)["version"] is None

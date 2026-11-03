@@ -176,3 +176,48 @@ def test_the_restore_button_needs_an_installed_project_with_a_kept_installation(
     assert bridge.canRestore is True
     bridge._locals = [_local(installed=False)]
     assert bridge.canRestore is False
+
+
+def _wait_until_not_busy(bridge, seconds: float = 10.0) -> None:
+    import time
+
+    from PySide6.QtCore import QCoreApplication
+
+    end = time.time() + seconds
+    while bridge._busy and time.time() < end:
+        QCoreApplication.processEvents()
+        time.sleep(0.02)
+
+
+def test_a_preview_whose_worker_fails_unexpectedly_does_not_leave_the_window_busy(bridge, monkeypatch):
+    def broken(entry_, root):
+        raise FileNotFoundError("git")
+
+    monkeypatch.setattr(qt_gui, "preview_update", broken)
+    bridge._locals = [_local()]
+    bridge._selected = NAME
+    bridge.previewSelected()
+    _wait_until_not_busy(bridge)
+    assert bridge._busy is False
+
+
+def test_a_restore_whose_worker_fails_unexpectedly_does_not_leave_the_window_busy(bridge, monkeypatch):
+    def broken(root, name=None):
+        raise ValueError("unreadable")
+
+    monkeypatch.setattr(qt_gui, "list_backups", broken)
+    bridge._locals = [_local()]
+    bridge._selected = NAME
+    bridge.restoreSelected()
+    _wait_until_not_busy(bridge)
+    assert bridge._busy is False
+
+
+def test_a_refresh_whose_worker_fails_unexpectedly_does_not_leave_the_window_busy(bridge, monkeypatch):
+    def broken(entries):
+        raise OSError("disk")
+
+    monkeypatch.setattr(qt_gui, "fetch_all", broken)
+    bridge.refresh(False)
+    _wait_until_not_busy(bridge)
+    assert bridge._busy is False

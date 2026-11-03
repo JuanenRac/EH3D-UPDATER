@@ -315,7 +315,7 @@ an edited, removed or reordered line is detected. `evidence` verifies the chain
 
 `~/.eh3d_updater_settings.json` (written atomically) holds the remembered
 choices: `lang`, `workspace_root`, `backups_to_keep` (default 2),
-`signature_policy` (`warn`, the default: an unsigned revision is installed and the steps say so; `require`: it is refused; the older `require_signed_commits: true` means `require`) / `allowed_signers_file`, and station profiles:
+`signature_policy` (`warn`, the default: an unsigned revision is installed and the steps say so; `require`: it is refused; the older `require_signed_commits: true` means `require`; a value that is not recognised, such as `"required"` or `"on"`, is treated as `require` and the steps warn about it) / `allowed_signers_file`, and station profiles:
 
 ```json
 {

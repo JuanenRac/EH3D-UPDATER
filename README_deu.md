@@ -124,7 +124,7 @@ Zum Start muss nichts konfiguriert werden. Die gemerkten Entscheidungen liegen i
 | `lang` | die Systemsprache | en, es, de, fr, it, ja, zh, pt | die Sprache des Fensters |
 | `profile` / `--profile` | keines (alle Projekte) | ein definierter Profilname; ein nicht definierter ist ein Fehler | beschränkt `status`, `check`, `install` und `update` auf die Projekte eines Stationsprofils |
 | `backups_to_keep` / `clean-backups --keep` | 2 | eine ganze Zahl ab 0 | wie viele vorherige Installationen je Projekt bleiben |
-| `require_signed_commits`, `allowed_signers_file` / `EH3D_UPDATER_REQUIRE_SIGNED=1`, `EH3D_UPDATER_ALLOWED_SIGNERS` | aus | an oder aus | Commits abweisen, die kein erlaubter Unterzeichner signiert hat |
+| `require_signed_commits`, `allowed_signers_file` / `EH3D_UPDATER_REQUIRE_SIGNED=1`, `EH3D_UPDATER_ALLOWED_SIGNERS` | aus | an oder aus | Commits abweisen, die kein erlaubter Unterzeichner signiert hat; ein nicht erkannter Wert gilt als an, mit Warnung |
 | `validation_unavailable` / `EH3D_UPDATER_ACCEPT_UNAVAILABLE_VALIDATION=1` | abweisen | abweisen oder akzeptieren | was zu tun ist, wenn die Prüfung eines Projekts wegen eines fehlenden Werkzeugs nicht laufen kann |
 | `GITHUB_TOKEN` | keines | ein GitHub-Token | hebt nur das Anfragelimit der Liste an; nie erforderlich |
 | `--no-build` (install, update) | aus | an oder aus | nur klonen oder holen, ohne die Build-Prüfung des Projekts (ein einfacher Fast-Forward) |

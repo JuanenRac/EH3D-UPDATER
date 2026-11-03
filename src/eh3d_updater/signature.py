@@ -23,6 +23,9 @@ Require signatures in `~/.eh3d_updater_settings.json`:
      "require_signed_commits": true,
      "allowed_signers_file": "/home/me/.config/eh3d/allowed_signers"}
 
+A value that is not recognised (`"required"`, `"on"`, a text instead of
+`true`) is treated as `require` and the install warns about it.
+
 or with the environment variable `EH3D_UPDATER_REQUIRE_SIGNED=1` (and
 `EH3D_UPDATER_ALLOWED_SIGNERS=<file>`). `allowed_signers_file` is the
 OpenSSH allowed-signers file used for SSH-signed commits; GPG-signed
@@ -42,6 +45,8 @@ from .settings import load_settings
 class SignaturePolicy:
     required: bool = False
     allowed_signers_file: str | None = None
+    #: "setting=value" of a policy value that is not recognised; the policy then fails closed (`required` is True) and the install says so
+    invalid: str | None = None
 
     @property
     def mode(self) -> str:
@@ -49,20 +54,43 @@ class SignaturePolicy:
         return "require" if self.required else "warn"
 
 
+_ENV_ON = {"1", "true", "yes"}
+_ENV_OFF = {"0", "false", "no"}
+
+
 def current_policy() -> SignaturePolicy:
     """The policy in force: the environment variables win over the saved
     settings, so a CI job or a one-off run can require signatures without
-    touching the user's settings file."""
+    touching the user's settings file.
+
+    A value that is not recognised ("required", "on", a text where a boolean
+    belongs...) never switches the protection off: the policy fails closed
+    (signatures required) and `invalid` names the setting so the install warns."""
     settings = load_settings()
-    env_required = os.environ.get("EH3D_UPDATER_REQUIRE_SIGNED", "").strip().lower()
-    if env_required in {"1", "true", "yes"}:
+    invalid: str | None = None
+    env_raw = os.environ.get("EH3D_UPDATER_REQUIRE_SIGNED", "")
+    env_required = env_raw.strip().lower()
+    if env_required in _ENV_ON:
         required = True
-    elif env_required in {"0", "false", "no"}:
+    elif env_required in _ENV_OFF:
         required = False
+    elif env_required:
+        required, invalid = True, f"EH3D_UPDATER_REQUIRE_SIGNED={env_raw.strip()!r}"
     else:
-        required = settings.get("signature_policy") == "require" or settings.get("require_signed_commits") is True
+        required = False
+        mode = settings.get("signature_policy")
+        if mode is not None:
+            if isinstance(mode, str) and mode.strip().lower() in ("require", "warn"):
+                required = mode.strip().lower() == "require"
+            else:
+                required, invalid = True, f"signature_policy={mode!r}"
+        flag = settings.get("require_signed_commits")
+        if flag is True:
+            required = True
+        elif flag is not None and flag is not False:
+            required, invalid = True, invalid or f"require_signed_commits={flag!r}"
     signers = os.environ.get("EH3D_UPDATER_ALLOWED_SIGNERS") or settings.get("allowed_signers_file")
-    return SignaturePolicy(required, signers if isinstance(signers, str) and signers else None)
+    return SignaturePolicy(required, signers if isinstance(signers, str) and signers else None, invalid)
 
 
 def unsigned_reason(repo: Path, revision: str, policy: SignaturePolicy) -> str | None:

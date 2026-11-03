@@ -40,13 +40,14 @@ def _last_hash(path: Path) -> str:
     """The hash the next line must chain to: the last line's own hash, or for
     a file written before lines were chained, the hash of that raw line."""
     try:
-        lines = [l for l in path.read_text(encoding="utf-8").splitlines() if l.strip()]
+        lines = [l for l in path.read_text(encoding="utf-8", errors="replace").splitlines() if l.strip()]
     except OSError:
         return ""
     if not lines:
         return ""
     try:
-        recorded = json.loads(lines[-1]).get("hash")
+        last = json.loads(lines[-1])
+        recorded = last.get("hash") if isinstance(last, dict) else None
     except ValueError:
         recorded = None
     return recorded if isinstance(recorded, str) and recorded else hashlib.sha256(lines[-1].encode("utf-8")).hexdigest()
@@ -57,7 +58,8 @@ def installed_state(project_path: Path) -> dict[str, str | None]:
     version = commit = None
     manifest = project_path / "eh3d.project.json"
     try:
-        version = json.loads(manifest.read_text(encoding="utf-8")).get("version")
+        document = json.loads(manifest.read_text(encoding="utf-8"))
+        version = document.get("version") if isinstance(document, dict) else None
     except (OSError, ValueError):
         pass
     try:
@@ -111,7 +113,7 @@ def record_attempt(
         with path.open("a", encoding="utf-8") as stream:
             stream.write(json.dumps(line, sort_keys=True) + "\n")
         return path
-    except OSError as error:
+    except (OSError, ValueError) as error:
         # The attempt is still reported to the person; only the evidence file could not be written, and that is said instead of passing unnoticed.
         logging.getLogger(__name__).warning("the evidence of the attempt on %s could not be written: %s", project, error)
         return None
@@ -120,9 +122,10 @@ def record_attempt(
 def read_attempts(workspace_root: Path) -> list[dict[str, Any]]:
     path = workspace_root / EVIDENCE_DIRECTORY / EVIDENCE_FILE
     try:
-        return [json.loads(l) for l in path.read_text(encoding="utf-8").splitlines() if l.strip()]
+        entries = [json.loads(l) for l in path.read_text(encoding="utf-8", errors="replace").splitlines() if l.strip()]
     except (OSError, ValueError):
         return []
+    return [entry for entry in entries if isinstance(entry, dict)]
 
 
 def verify_chain(workspace_root: Path) -> list[str]:
@@ -132,7 +135,7 @@ def verify_chain(workspace_root: Path) -> list[str]:
     one before it and match its own content."""
     path = workspace_root / EVIDENCE_DIRECTORY / EVIDENCE_FILE
     try:
-        raw_lines = [l for l in path.read_text(encoding="utf-8").splitlines() if l.strip()]
+        raw_lines = [l for l in path.read_text(encoding="utf-8", errors="replace").splitlines() if l.strip()]
     except OSError:
         return []
     problems: list[str] = []
@@ -143,6 +146,10 @@ def verify_chain(workspace_root: Path) -> list[str]:
             line = json.loads(raw)
         except ValueError:
             problems.append(f"line {number}: not valid JSON")
+            previous = hashlib.sha256(raw.encode("utf-8")).hexdigest()
+            continue
+        if not isinstance(line, dict):
+            problems.append(f"line {number}: not a JSON object")
             previous = hashlib.sha256(raw.encode("utf-8")).hexdigest()
             continue
         recorded = line.get("hash")

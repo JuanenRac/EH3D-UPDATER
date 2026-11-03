@@ -3,6 +3,12 @@
 All notable changes to this project are documented here.
 
 ## [Unreleased]
+- **A mistyped signature policy fails closed:** a value that is not recognised (`"required"`, `"on"`, a text instead of `true`, an unknown `EH3D_UPDATER_REQUIRE_SIGNED`) is treated as `require` and the install warns, in the eight languages, naming the value.
+- **The windows install the sibling repositories a project needs:** a project with `depends_on` gets its missing siblings first, in order, from both windows and from "install all missing", as the command line already did.
+- **A local file the new version starts to track no longer blocks the update:** the staging merge runs before the local data is carried over, the shipped file wins, and nested build folders and links are no longer copied.
+- **A damaged evidence log never breaks an update:** a last line that is not an object or a byte that is not UTF-8 is tolerated when recording and reported by the chain check.
+- **The windows leave the busy state when a background task fails:** the GitHub check, the preview and the restore report the error instead of freezing the window.
+- **Files in a legacy codepage and bad version patterns are handled:** settings, manifests and the restore check tolerate non-UTF-8 bytes, a manifest with an invalid version regex is refused, and a pattern that cannot be applied reads as an unknown version.
 - **The workflows are hardened:** every action is pinned by its commit with its version in a comment, and the checkouts keep no credentials.
 
 ## [0.0.6] - CI hardening and monthly dependency updates

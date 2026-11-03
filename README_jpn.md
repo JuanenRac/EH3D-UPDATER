@@ -124,7 +124,7 @@ EH3D-UPDATER は、スイートを入手して最新に保つための手段で�
 | `lang` | システムの言語 | en、es、de、fr、it、ja、zh、pt | ウィンドウの言語 |
 | `profile` / `--profile` | なし（すべてのプロジェクト） | 定義済みのプロファイル名。未定義はエラー | `status`、`check`、`install`、`update` をステーション プロファイルのプロジェクトに限定 |
 | `backups_to_keep` / `clean-backups --keep` | 2 | 0 以上の整数 | プロジェクトごとに保持する以前のインストールの数 |
-| `require_signed_commits`、`allowed_signers_file` / `EH3D_UPDATER_REQUIRE_SIGNED=1`、`EH3D_UPDATER_ALLOWED_SIGNERS` | オフ | オンまたはオフ | 許可された署名者が署名していないコミットを拒否 |
+| `require_signed_commits`、`allowed_signers_file` / `EH3D_UPDATER_REQUIRE_SIGNED=1`、`EH3D_UPDATER_ALLOWED_SIGNERS` | オフ | オンまたはオフ | 許可された署名者が署名していないコミットを拒否。認識できない値はオン扱いとなり、警告が出ます |
 | `validation_unavailable` / `EH3D_UPDATER_ACCEPT_UNAVAILABLE_VALIDATION=1` | 拒否 | 拒否または受け入れ | ツール不足でプロジェクトの検証を実行できないときの動作 |
 | `GITHUB_TOKEN` | なし | GitHub トークン | 一覧のレート制限を上げるだけで、必須ではありません |
 | `--no-build`（install、update） | オフ | オンまたはオフ | プロジェクト自身のビルド検証なしで、クローンまたは取得のみ（単純な fast-forward） |

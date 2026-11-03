@@ -124,7 +124,7 @@ No hay que configurar nada para empezar. Las elecciones que se recuerdan viven e
 | `lang` | el idioma del sistema | en, es, de, fr, it, ja, zh, pt | el idioma de la ventana |
 | `profile` / `--profile` | ninguno (todos los proyectos) | un nombre de perfil definido; uno no definido es un error | restringe `status`, `check`, `install` y `update` a los proyectos de un perfil de estación |
 | `backups_to_keep` / `clean-backups --keep` | 2 | un número entero de 0 o más | cuántas instalaciones anteriores se conservan por proyecto |
-| `require_signed_commits`, `allowed_signers_file` / `EH3D_UPDATER_REQUIRE_SIGNED=1`, `EH3D_UPDATER_ALLOWED_SIGNERS` | desactivado | activado o desactivado | rechazar commits que no firme un firmante permitido |
+| `require_signed_commits`, `allowed_signers_file` / `EH3D_UPDATER_REQUIRE_SIGNED=1`, `EH3D_UPDATER_ALLOWED_SIGNERS` | desactivado | activado o desactivado | rechazar commits que no firme un firmante permitido; un valor que no se reconoce cuenta como activado, con un aviso |
 | `validation_unavailable` / `EH3D_UPDATER_ACCEPT_UNAVAILABLE_VALIDATION=1` | rechazar | rechazar o aceptar | qué hacer cuando la validación de un proyecto no puede ejecutarse porque falta una herramienta |
 | `GITHUB_TOKEN` | ninguno | un token de GitHub | solo sube el límite de peticiones del listado; nunca es obligatorio |
 | `--no-build` (install, update) | desactivado | activado o desactivado | solo clonar o traer, sin la comprobación de construcción del proyecto (un avance rápido simple) |

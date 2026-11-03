@@ -124,7 +124,7 @@ Non c'è nulla da configurare per iniziare. Le scelte ricordate stanno in `~/.eh
 | `lang` | la lingua del sistema | en, es, de, fr, it, ja, zh, pt | la lingua della finestra |
 | `profile` / `--profile` | nessuno (tutti i progetti) | un nome di profilo definito; uno non definito è un errore | limita `status`, `check`, `install` e `update` ai progetti di un profilo di postazione |
 | `backups_to_keep` / `clean-backups --keep` | 2 | un numero intero da 0 in su | quante installazioni precedenti si conservano per progetto |
-| `require_signed_commits`, `allowed_signers_file` / `EH3D_UPDATER_REQUIRE_SIGNED=1`, `EH3D_UPDATER_ALLOWED_SIGNERS` | disattivato | attivato o disattivato | rifiutare i commit non firmati da un firmatario consentito |
+| `require_signed_commits`, `allowed_signers_file` / `EH3D_UPDATER_REQUIRE_SIGNED=1`, `EH3D_UPDATER_ALLOWED_SIGNERS` | disattivato | attivato o disattivato | rifiutare i commit non firmati da un firmatario consentito; un valore non riconosciuto vale come attivato, con un avviso |
 | `validation_unavailable` / `EH3D_UPDATER_ACCEPT_UNAVAILABLE_VALIDATION=1` | rifiutare | rifiutare o accettare | cosa fare quando la validazione di un progetto non può girare perché manca uno strumento |
 | `GITHUB_TOKEN` | nessuno | un token GitHub | alza solo il limite di richieste dell'elenco; mai obbligatorio |
 | `--no-build` (install, update) | disattivato | attivato o disattivato | solo clonare o scaricare, senza il controllo di build del progetto (un semplice fast-forward) |

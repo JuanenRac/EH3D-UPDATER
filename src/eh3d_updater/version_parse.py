@@ -57,6 +57,14 @@ class Version:
 
 
 def parse_version(text: str, pattern) -> Version | None:
+    """The version the pattern of a manifest finds in `text`, or None when the pattern is wrong, does not match or finds no number (it never raises)."""
+    try:
+        return _parse_version(text, pattern)
+    except (re.error, ValueError, IndexError, TypeError, KeyError):
+        return None
+
+
+def _parse_version(text: str, pattern) -> Version | None:
     """Extract a Version using a manifest-declared pattern: one 3-group
     regex, or a dict of 3
     separate 1-group regexes keyed major/minor/patch). Returns None rather

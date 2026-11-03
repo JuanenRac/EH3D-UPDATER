@@ -33,7 +33,7 @@ from . import __version__, i18n, profiles, settings
 from .commits import NEW_COMMITS, commit_states
 from .detect import LocalStatus, discover_workspace
 from .github_client import RemoteStatus, discover_remote_projects, fetch_all
-from .install import InstallError, install_or_update, is_running_checkout, list_backups, preview_update, restore_backup
+from .install import InstallError, install_with_dependencies, is_running_checkout, list_backups, preview_update, restore_backup
 from .logs import prune_logs
 from .messages import localize
 from .registry import GITHUB_OWNER
@@ -423,7 +423,7 @@ class UpdaterBridge(QObject):
         self.statusChanged.emit()
         self._append_activity(self.text("log_github_check"))
 
-        def worker() -> None:
+        def collect() -> None:
             try:
                 discovery = discover_remote_projects()
                 remotes = {status.entry.name: status for status in discovery.projects}
@@ -448,6 +448,12 @@ class UpdaterBridge(QObject):
             }
             self._commits = commit_states(same_version)
             self._remoteResult.emit(combined, remotes, errors)
+
+        def worker() -> None:
+            try:
+                collect()
+            except Exception as exc:  # noqa: BLE001 - whatever fails, the window must leave "busy"
+                self._remoteResult.emit(list(self._locals), {}, (self._t("inst_remote_unavailable", error=str(exc)),))
 
         threading.Thread(target=worker, daemon=True, name="eh3d-updater-github").start()
 
@@ -476,10 +482,16 @@ class UpdaterBridge(QObject):
 
             self._actionResult.emit(
                 selected.entry.name,
-                install_or_update(selected.entry, self._workspace_root, build=not skip_build, progress=report),
+                install_with_dependencies(selected.entry, self._workspace_root, self._known_entries(), build=not skip_build, progress=report),
             )
 
         threading.Thread(target=worker, daemon=True, name="eh3d-updater-action").start()
+
+    def _known_entries(self) -> dict:
+        """Every project the window knows (local scan and GitHub listing), by name: what `depends_on` is resolved against."""
+        known = {item.entry.name: item.entry for item in self._locals}
+        known.update({name: status.entry for name, status in self._remotes.items()})
+        return known
 
     def preview_lines(self, selected: LocalStatus) -> list[str]:
         """What updating the project would bring, as activity lines in the window's language.
@@ -517,7 +529,10 @@ class UpdaterBridge(QObject):
         self._append_activity(self._t("log_preview_started", name=selected.entry.name))
 
         def worker() -> None:
-            lines = self.preview_lines(selected)
+            try:
+                lines = self.preview_lines(selected)
+            except Exception as exc:  # noqa: BLE001 - e.g. git missing from PATH: the window must leave "busy"
+                lines = [self._t("log_preview_failed", name=selected.entry.name, reason=str(exc))]
             self._logLines.emit(lines)
 
         threading.Thread(target=worker, daemon=True, name="eh3d-updater-preview").start()
@@ -545,7 +560,11 @@ class UpdaterBridge(QObject):
         self._append_activity(self._t("log_restore_started", name=selected.entry.name))
 
         def worker() -> None:
-            self._restoreDone.emit(selected.entry.name, self.restore_result(selected))
+            try:
+                lines = self.restore_result(selected)
+            except Exception as exc:  # noqa: BLE001 - the window must leave "busy" whatever fails
+                lines = [self._t("log_restore_finished", name=selected.entry.name, message=str(exc))]
+            self._restoreDone.emit(selected.entry.name, lines)
 
         threading.Thread(target=worker, daemon=True, name="eh3d-updater-restore").start()
 
@@ -598,6 +617,8 @@ class UpdaterBridge(QObject):
         self._set_busy(True, self._t("status_batch_progress", verb=verb, total=len(targets)))
         self._append_activity(self._t("log_batch_started", verb=verb, total=len(targets)))
 
+        known = self._known_entries()
+
         def worker() -> None:
             outcome: list[object] = []
             for index, selected in enumerate(targets, start=1):
@@ -606,10 +627,13 @@ class UpdaterBridge(QObject):
                 def report(phase: str, detail: object, *, position: int = index, total: int = len(targets), name: str = selected.entry.name) -> None:
                     self._operationCheckpoint.emit(phase, detail, f"[{position}/{total}] {name}: ")
 
+                if action == "install" and (self._workspace_root / selected.entry.name).is_dir():
+                    continue  # a project installed earlier in this batch as the dependency of another one
                 outcome.extend(
-                    install_or_update(
+                    install_with_dependencies(
                         selected.entry,
                         self._workspace_root,
+                        known,
                         build=not skip_build,
                         progress=report,
                     )

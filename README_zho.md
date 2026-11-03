@@ -124,7 +124,7 @@ EH3D-UPDATER 是获取套件并保持最新的途径。位于四个生态系统�
 | `lang` | 系统语言 | en、es、de、fr、it、ja、zh、pt | 窗口的语言 |
 | `profile` / `--profile` | 无（所有项目） | 已定义的配置名称；未定义的名称是错误 | 把 `status`、`check`、`install` 和 `update` 限制在某个工位配置的项目内 |
 | `backups_to_keep` / `clean-backups --keep` | 2 | 0 或更大的整数 | 每个项目保留多少个之前的安装 |
-| `require_signed_commits`、`allowed_signers_file` / `EH3D_UPDATER_REQUIRE_SIGNED=1`、`EH3D_UPDATER_ALLOWED_SIGNERS` | 关 | 开或关 | 拒绝未由允许的签名者签名的提交 |
+| `require_signed_commits`、`allowed_signers_file` / `EH3D_UPDATER_REQUIRE_SIGNED=1`、`EH3D_UPDATER_ALLOWED_SIGNERS` | 关 | 开或关 | 拒绝未由允许的签名者签名的提交；无法识别的值按开处理，并给出警告 |
 | `validation_unavailable` / `EH3D_UPDATER_ACCEPT_UNAVAILABLE_VALIDATION=1` | 拒绝 | 拒绝或接受 | 项目的验证因缺少工具而无法运行时怎么办 |
 | `GITHUB_TOKEN` | 无 | GitHub 令牌 | 只会提高列表的速率限制；从不是必需的 |
 | `--no-build`（install、update） | 关 | 开或关 | 只克隆或拉取，不运行项目自己的构建检查（简单的快进） |

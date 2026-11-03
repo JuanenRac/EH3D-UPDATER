@@ -51,7 +51,7 @@ from tkinter import filedialog, messagebox, ttk
 from . import __version__, i18n, settings
 from .detect import LocalStatus, discover_workspace
 from .github_client import RemoteStatus, discover_remote_projects, fetch_all
-from .install import install_or_update
+from .install import install_with_dependencies
 from .messages import localize
 from .registry import GITHUB_OWNER
 
@@ -751,9 +751,11 @@ class UpdaterGUI:
         self._set_busy(True, self.t("status_action_progress", verb=verb, name=ls.entry.name))
         self._append_log(self.t("log_action_started", verb=verb, name=ls.entry.name))
         build = not self.no_build_var.get()
+        known = {item.entry.name: item.entry for item in self.locals_}
+        known.update({name: status.entry for name, status in self.remotes.items()})
 
         def worker():
-            results = install_or_update(ls.entry, self.workspace_root, build=build)
+            results = install_with_dependencies(ls.entry, self.workspace_root, known, build=build)
             self._work_queue.put(("install_done", (ls.entry.name, results)))
 
         threading.Thread(target=worker, daemon=True).start()

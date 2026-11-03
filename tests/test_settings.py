@@ -107,3 +107,8 @@ def test_workspace_root_and_lang_persist_independently_side_by_side(isolated_set
     settings.save_workspace_root(real_dir)
     assert settings.get_saved_lang() == "de"
     assert settings.get_saved_workspace_root() == real_dir
+
+
+def test_settings_in_a_legacy_codepage_are_ignored_not_a_crash(isolated_settings):
+    settings.SETTINGS_PATH.write_bytes('{"lang": "é"}'.encode("cp1252"))
+    assert settings.load_settings() == {}

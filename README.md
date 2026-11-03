@@ -124,7 +124,7 @@ Nothing has to be configured to start. The choices that are remembered live in `
 | `lang` | the system language | en, es, de, fr, it, ja, zh, pt | the language of the window |
 | `profile` / `--profile` | none (all projects) | a defined profile name; an undefined one is an error | restricts `status`, `check`, `install` and `update` to the projects of a station profile |
 | `backups_to_keep` / `clean-backups --keep` | 2 | a whole number of 0 or more | how many previous installations are kept per project |
-| `require_signed_commits`, `allowed_signers_file` / `EH3D_UPDATER_REQUIRE_SIGNED=1`, `EH3D_UPDATER_ALLOWED_SIGNERS` | off | on or off | refuse commits that are not signed by an allowed signer |
+| `require_signed_commits`, `allowed_signers_file` / `EH3D_UPDATER_REQUIRE_SIGNED=1`, `EH3D_UPDATER_ALLOWED_SIGNERS` | off | on or off | refuse commits that are not signed by an allowed signer; a value it does not recognise counts as on, with a warning |
 | `validation_unavailable` / `EH3D_UPDATER_ACCEPT_UNAVAILABLE_VALIDATION=1` | refuse | refuse or accept | what to do when a project's validation cannot run because a tool is missing |
 | `GITHUB_TOKEN` | none | a GitHub token | only raises the rate limit of the listing; never required |
 | `--no-build` (install, update) | off | on or off | clone or pull only, without the project's own build check (a plain fast-forward) |
