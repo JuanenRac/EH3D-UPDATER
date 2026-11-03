@@ -3,6 +3,8 @@
 All notable changes to this project are documented here.
 
 ## [Unreleased]
+
+## [0.0.7] - Closed signature policy, dependencies from the windows and a harder evidence log
 - **A mistyped signature policy fails closed:** a value that is not recognised (`"required"`, `"on"`, a text instead of `true`, an unknown `EH3D_UPDATER_REQUIRE_SIGNED`) is treated as `require` and the install warns, in the eight languages, naming the value.
 - **The windows install the sibling repositories a project needs:** a project with `depends_on` gets its missing siblings first, in order, from both windows and from "install all missing", as the command line already did.
 - **A local file the new version starts to track no longer blocks the update:** the staging merge runs before the local data is carried over, the shipped file wins, and nested build folders and links are no longer copied.

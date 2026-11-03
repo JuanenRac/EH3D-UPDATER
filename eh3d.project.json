@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "ecosystem": "EH3D",
   "name": "EH3D-UPDATER",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "role": "tool",
   "stack": "python",
   "technologies": [
@@ -22,5 +22,5 @@
     "pattern": "^version\\s*=\\s*\"(\\d+)\\.(\\d+)\\.(\\d+)\""
   },
   "build": "python -m pytest tests -q; python -I tools/ci_validate.py",
-  "notes": "Scaffolding v0.0.6: the updater of the EH3D ecosystem, with the design of the updaters of the other ecosystems. It finds the EH3D repositories through their eh3d.project.json manifests, compares each local checkout with GitHub and installs or updates one at a time after a confirmation: the replacement is built and checked in a staging clone first and the previous installation is kept as a backup. Tested on a computer with a fake GitHub and local repositories; it has not been used for real work yet."
+  "notes": "Scaffolding v0.0.7: the updater of the EH3D ecosystem, with the design of the updaters of the other ecosystems. It finds the EH3D repositories through their eh3d.project.json manifests, compares each local checkout with GitHub and installs or updates one at a time after a confirmation: the replacement is built and checked in a staging clone first and the previous installation is kept as a backup. Tested on a computer with a fake GitHub and local repositories; it has not been used for real work yet."
 }
