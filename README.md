@@ -97,7 +97,7 @@ How the parts of this repository fit together: who uses it, what it holds and wh
 | Losing local work | a checkout with local changes or a diverged branch is never replaced: the update fails loudly |
 | A repository that pretends to be part of the suite | a repository joins only when its root manifest validates and declares `EH3D`; a candidate with a lower version than the installed one is refused |
 | A commit of unknown origin | optional policy: with `EH3D_UPDATER_REQUIRE_SIGNED=1` (or the setting) and an allowed-signers file a commit must be signed; by default an unsigned one is installed with a warning, and `update --preview` shows the signature state first |
-| Tampering with the record of what happened | every install or update attempt is one line of an evidence log that carries the hash of the line before it; `evidence` verifies the chain and exits 1 when a line was edited, removed or reordered Limit: the chain has no key and no outside anchor, so removing the last lines (or recalculating the whole chain) is not detected. |
+| Tampering with the record of what happened | every install or update attempt is one line of an evidence log that carries the hash of the line before it; `evidence` verifies the chain and exits 1 when a line was edited, removed or reordered Limit: the chain has no key and no outside anchor, so removing the last lines (or recalculating the whole chain) is not detected. The chain detects accidents, not attacks: it is a record against mistakes, not a defence against someone who edits the files on purpose. |
 | Leaking secrets | the evidence log carries no secrets; GitHub is read with no token (an optional `GITHUB_TOKEN` only raises the rate limit); the tool never prints it |
 | A validation script that cannot run here | an install that cannot be validated because a tool is missing is refused unless you accept it (the setting `validation_unavailable` or `EH3D_UPDATER_ACCEPT_UNAVAILABLE_VALIDATION=1`) |
 | Two copies at once | an instance that finds another one working on the workspace refuses to clean or restore backups |
@@ -123,8 +123,11 @@ Nothing has to be configured to start. The choices that are remembered live in `
 | `workspace_root` / `--workspace` | the parent folder of the tool | a folder | where the checkouts, the backups and the evidence log live |
 | `lang` | the system language | en, es, de, fr, it, ja, zh, pt | the language of the window |
 | `profile` / `--profile` | none (all projects) | a defined profile name; an undefined one is an error | restricts `status`, `check`, `install` and `update` to the projects of a station profile |
-| `backups_to_keep` / `clean-backups --keep` | 2 | a whole number of 0 or more | how many previous installations are kept per project |
+| `backups_to_keep` / `clean-backups --keep` | 2 | a whole number of 0 or more | how many previous installations are kept per project; an update always keeps at least 1 |
 | `require_signed_commits`, `allowed_signers_file` / `EH3D_UPDATER_REQUIRE_SIGNED=1`, `EH3D_UPDATER_ALLOWED_SIGNERS` | off | on or off | refuse commits that are not signed by an allowed signer; a value it does not recognise counts as on, with a warning |
+| `signature_expected_fingerprint` / `EH3D_UPDATER_EXPECTED_FINGERPRINT` | none (any trusted key) | a key fingerprint | with the signed-commit policy on, the signing key must have this fingerprint; a good signature is accepted only when git trusts the key (status G) |
+| `signature_accept_unknown_trust` | off | on or off | also accept a good signature by a key whose trust is unknown (status U) |
+| `allow_foreign_origin` | off | on or off | update a checkout whose `origin` is not the official repository of the project (refused by default) |
 | `validation_unavailable` / `EH3D_UPDATER_ACCEPT_UNAVAILABLE_VALIDATION=1` | refuse | refuse or accept | what to do when a project's validation cannot run because a tool is missing |
 | `GITHUB_TOKEN` | none | a GitHub token | only raises the rate limit of the listing; never required |
 | `--no-build` (install, update) | off | on or off | clone or pull only, without the project's own build check (a plain fast-forward) |

@@ -3,6 +3,10 @@
 All notable changes to this project are documented here.
 
 ## [Unreleased]
+- **A signature must be trusted, and may be bound to one key:** a good signature by a key whose trust is unknown is refused unless `signature_accept_unknown_trust` is set, and `signature_expected_fingerprint` (or `EH3D_UPDATER_EXPECTED_FINGERPRINT`) requires the signing key to be a given one.
+- **A checkout of another repository is not updated:** when the `origin` of a checkout is not the official repository of the project the update and the preview refuse with a clear message (`allow_foreign_origin` overrides it).
+- **A failed health check undoes the update by itself:** the previous installation is put back, the failed one is kept as `<name>.failed-xxxxxxxx`, and an update always keeps at least one previous installation whatever `backups_to_keep` says.
+- **The evidence log is described as what it is:** it detects accidents, not attacks, in the README in eight languages and in the command reference.
 - **Brand:** Add the application icon and the logos of the program.
 - **Shared checks updated:** the validator also compares the badge and the Version row of the README with the manifest, fails when one of its checks cannot run, and the CHANGELOG step of the workflow reads the base branch from the environment.
 - **Answers from GitHub have a size limit:** an answer bigger than 8 MB is refused instead of filling the memory.

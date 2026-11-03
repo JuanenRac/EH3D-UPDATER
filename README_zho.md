@@ -97,7 +97,7 @@ EH3D-UPDATER 是获取套件并保持最新的途径。位于四个生态系统�
 | 丢失本地工作 | 有本地修改的检出或分叉的分支绝不会被替换：更新会明确失败 |
 | 冒充套件一部分的仓库 | 只有根目录清单通过校验并声明 `EH3D` 的仓库才会加入；版本低于已安装版本的候选会被拒绝 |
 | 来源不明的提交 | 可选策略：设置 `EH3D_UPDATER_REQUIRE_SIGNED=1`（或相应设置）并提供允许签名者文件后，提交必须已签名；默认情况下未签名的提交会带警告安装，`update --preview` 会先显示签名状态 |
-| 篡改发生过什么的记录 | 每次安装或更新尝试都是证据日志的一行，带有前一行的哈希；`evidence` 会验证这条链，当有行被编辑、删除或重排时以 1 退出 限制：该链没有密钥，也没有外部锚点，因此删除末尾几行（或重新计算整条链）不会被发现。 |
+| 篡改发生过什么的记录 | 每次安装或更新尝试都是证据日志的一行，带有前一行的哈希；`evidence` 会验证这条链，当有行被编辑、删除或重排时以 1 退出 限制：该链没有密钥，也没有外部锚点，因此删除末尾几行（或重新计算整条链）不会被发现。 该链检测的是意外，而不是攻击：它是防范错误的记录，不能防御有意编辑文件的人。 |
 | 泄露机密 | 证据日志不含机密；读取 GitHub 不需要令牌（可选的 `GITHUB_TOKEN` 只会提高速率限制），工具从不打印它 |
 | 在这里无法运行的验证脚本 | 因缺少工具而无法验证的安装会被拒绝，除非你接受（设置 `validation_unavailable` 或 `EH3D_UPDATER_ACCEPT_UNAVAILABLE_VALIDATION=1`） |
 | 同时有两个实例 | 发现另一个实例正在工作区中运行的实例，会拒绝清理或恢复备份 |
@@ -123,8 +123,11 @@ EH3D-UPDATER 是获取套件并保持最新的途径。位于四个生态系统�
 | `workspace_root` / `--workspace` | 工具所在的上级文件夹 | 一个文件夹 | 检出、备份和证据日志所在的位置 |
 | `lang` | 系统语言 | en、es、de、fr、it、ja、zh、pt | 窗口的语言 |
 | `profile` / `--profile` | 无（所有项目） | 已定义的配置名称；未定义的名称是错误 | 把 `status`、`check`、`install` 和 `update` 限制在某个工位配置的项目内 |
-| `backups_to_keep` / `clean-backups --keep` | 2 | 0 或更大的整数 | 每个项目保留多少个之前的安装 |
+| `backups_to_keep` / `clean-backups --keep` | 2 | 0 或更大的整数 | 每个项目保留多少个之前的安装；更新后始终至少保留 1 个 |
 | `require_signed_commits`、`allowed_signers_file` / `EH3D_UPDATER_REQUIRE_SIGNED=1`、`EH3D_UPDATER_ALLOWED_SIGNERS` | 关 | 开或关 | 拒绝未由允许的签名者签名的提交；无法识别的值按开处理，并给出警告 |
+| `signature_expected_fingerprint` / `EH3D_UPDATER_EXPECTED_FINGERPRINT` | 无（任何受信任的密钥） | 密钥指纹 | 开启签名提交策略时，签名密钥必须是此指纹；只有当 git 信任该密钥（状态 G）时才接受有效签名 |
+| `signature_accept_unknown_trust` | 关 | 开或关 | 也接受信任状态未知的密钥所作的有效签名（状态 U） |
+| `allow_foreign_origin` | 关 | 开或关 | 更新 `origin` 不是项目官方仓库的检出（默认拒绝） |
 | `validation_unavailable` / `EH3D_UPDATER_ACCEPT_UNAVAILABLE_VALIDATION=1` | 拒绝 | 拒绝或接受 | 项目的验证因缺少工具而无法运行时怎么办 |
 | `GITHUB_TOKEN` | 无 | GitHub 令牌 | 只会提高列表的速率限制；从不是必需的 |
 | `--no-build`（install、update） | 关 | 开或关 | 只克隆或拉取，不运行项目自己的构建检查（简单的快进） |

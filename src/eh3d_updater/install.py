@@ -205,6 +205,39 @@ def _checkpoint(progress: ProgressCallback | None, phase: str, code: str, **para
         progress(phase, coded(code, **params))
 
 
+def _normalized_remote(url: str) -> str:
+    """A remote URL in one comparable shape: `git@github.com:owner/repo.git`, `ssh://git@github.com/owner/repo/` and `https://github.com/owner/repo` are the same repository."""
+    text = url.strip()
+    if text.startswith("git@") and ":" in text and "://" not in text:
+        text = "https://" + text[4:].replace(":", "/", 1)
+    if "://" in text:
+        scheme, rest = text.split("://", 1)
+        rest = rest.split("@", 1)[-1] if "@" in rest.split("/", 1)[0] else rest
+        text = ("https" if scheme in ("ssh", "git", "http", "https") else scheme) + "://" + rest
+    text = text.rstrip("/")
+    if text.lower().endswith(".git"):
+        text = text[:-4]
+    return text.lower()
+
+
+def _foreign_origin(path: Path, entry: ProjectEntry):   # noqa: ANN202 - CodedText | None
+    """None when the `origin` of the checkout is the official repository of the project, otherwise the refusal: an update fetches from `origin` and then builds and runs
+    what it brings, so a checkout whose `origin` is a fork or any other address is not updated. The setting `allow_foreign_origin` (default false) switches the check off."""
+    from .settings import load_settings
+
+    if load_settings().get("allow_foreign_origin") is True:
+        return None
+    try:
+        result = subprocess.run(["git", "remote", "get-url", "origin"], cwd=str(path), check=False, capture_output=True, text=True, timeout=60)
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    actual = result.stdout.strip() if result.returncode == 0 else ""
+    official = github_repo_url(entry)
+    if actual and _normalized_remote(actual) != _normalized_remote(official):
+        return coded("foreign_origin", path=str(path), origin=actual, official=official)
+    return None
+
+
 def _warn_if_policy_invalid(progress: ProgressCallback | None, policy) -> None:   # noqa: ANN001 - SignaturePolicy
     """A signature setting the updater does not recognise is treated as "require"; the steps say which value it was."""
     if policy.invalid:
@@ -507,6 +540,10 @@ def clone_or_pull(
         preview = ", ".join(dirty[:5]) + (f" (+{len(dirty) - 5} more)" if len(dirty) > 5 else "")
         return InstallResult(False, coded("dirty", path=str(path), preview=preview))
 
+    foreign = _foreign_origin(path, entry)
+    if foreign is not None:
+        return InstallResult(False, foreign)
+
     # Fetch first and inspect FETCH_HEAD before changing the operator's
     # working tree. This prevents a malformed or older remote manifest from
     # becoming an installed downgrade merely because Git can fast-forward it.
@@ -710,9 +747,25 @@ def clone_or_pull(
     if journal and health_check_url:
         healthy, reason = _check_service_health(health_check_url)
         if not healthy:
+            failed_kept = workspace_root / f"{entry.name}.failed-{uuid4().hex[:8]}"
+            try:
+                # the new version does not answer: put the previous installation back by itself and keep the failed one beside it to be looked at
+                path.rename(failed_kept)
+                try:
+                    backup_path.rename(path)
+                except OSError:
+                    failed_kept.rename(path)
+                    raise
+            except OSError:
+                return InstallResult(
+                    False,
+                    coded("health_failed", path=str(path), version=candidate.version, commit=sha_label, url=health_check_url, reason=str(reason)),
+                    build_result.output,
+                )
+            journal.complete(promotion_id)
             return InstallResult(
                 False,
-                coded("health_failed", path=str(path), version=candidate.version, commit=sha_label, url=health_check_url, reason=str(reason)),
+                coded("health_rolled_back", path=str(path), version=candidate.version, commit=sha_label, url=health_check_url, reason=str(reason), failed=str(failed_kept)),
                 build_result.output,
             )
         journal.complete(promotion_id)
@@ -993,7 +1046,7 @@ def _install_or_update_locked(
     )
     if was_existing_checkout and all(r.ok for r in results):
         try:
-            prune_backups(workspace_root, backups_to_keep(), name=entry.name)
+            prune_backups(workspace_root, max(backups_to_keep(), 1), name=entry.name)  # the previous installation always survives an update
         except OSError:
             pass  # retention is housekeeping; it never turns a good update into a failure
     return results
@@ -1220,6 +1273,9 @@ def preview_update(entry: ProjectEntry, workspace_root: Path) -> UpdatePreview:
             installed = _manifest_from_revision(path, "HEAD", entry)
         except ManifestValidationError as exc:
             raise InstallError(coded("installed_manifest_invalid", reason=str(exc))) from exc
+        foreign = _foreign_origin(path, entry)
+        if foreign is not None:
+            raise InstallError(foreign)
         fetched = _run(["git", "fetch", "--quiet", "origin", "HEAD"], cwd=path, capture_output=True)
         if fetched.returncode != 0:
             raise InstallError(coded("fetch_failed", code=fetched.returncode))

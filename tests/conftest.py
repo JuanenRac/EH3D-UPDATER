@@ -18,6 +18,7 @@ from eh3d_updater import github_client, settings
 def _signature_policy_off(monkeypatch, tmp_path_factory):
     monkeypatch.setenv("EH3D_UPDATER_REQUIRE_SIGNED", "0")
     monkeypatch.delenv("EH3D_UPDATER_ALLOWED_SIGNERS", raising=False)
+    monkeypatch.delenv("EH3D_UPDATER_EXPECTED_FINGERPRINT", raising=False)
     empty = tmp_path_factory.mktemp("gitconfig") / "config"
     empty.write_text("", encoding="utf-8")
     monkeypatch.setenv("EH3D_UPDATER_LOG_DIR", str(tmp_path_factory.mktemp("logs")))

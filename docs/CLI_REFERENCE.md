@@ -311,11 +311,15 @@ an edited, removed or reordered line is detected. `evidence` verifies the chain
 (exit `1` and a `PROBLEM` line per finding when it is broken) and, with
 `--export`, writes the entries and the verdict as one JSON document.
 
+The chain detects accidents, not attacks: it has no key and no outside anchor, so
+someone who edits the files on purpose can rebuild it, and removing the last
+lines (or the whole file) is not detected. It is a record against mistakes.
+
 ## Settings
 
 `~/.eh3d_updater_settings.json` (written atomically) holds the remembered
-choices: `lang`, `workspace_root`, `backups_to_keep` (default 2),
-`signature_policy` (`warn`, the default: an unsigned revision is installed and the steps say so; `require`: it is refused; the older `require_signed_commits: true` means `require`; a value that is not recognised, such as `"required"` or `"on"`, is treated as `require` and the steps warn about it) / `allowed_signers_file`, and station profiles:
+choices: `lang`, `workspace_root`, `backups_to_keep` (default 2; an update always keeps at least 1),
+`signature_policy` (`warn`, the default: an unsigned revision is installed and the steps say so; `require`: it is refused; the older `require_signed_commits: true` means `require`; a value that is not recognised, such as `"required"` or `"on"`, is treated as `require` and the steps warn about it) / `allowed_signers_file`. A good signature is accepted only when git trusts its key (status `G`); `signature_accept_unknown_trust: true` also accepts a key of unknown trust (status `U`), and `signature_expected_fingerprint` (or `EH3D_UPDATER_EXPECTED_FINGERPRINT`) binds the signature to one key: the signing key or its primary key must have that fingerprint. `allow_foreign_origin: true` lets a checkout whose `origin` is not the official repository be updated (refused by default). If the health check a project declares fails after an update, the previous installation is put back by itself and the failed one is kept as `<name>.failed-xxxxxxxx`. Station profiles:
 
 ```json
 {
