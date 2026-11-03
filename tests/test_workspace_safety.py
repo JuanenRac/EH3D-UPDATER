@@ -202,3 +202,16 @@ def test_without_any_gui_the_exit_code_is_not_success(monkeypatch):
     monkeypatch.setattr(sys, "argv", ["eh3d-updater"])
     monkeypatch.setattr(builtins, "__import__", refuse)
     assert main_module.main() == 2
+
+
+def test_a_manifest_saved_in_a_legacy_codepage_is_reported_and_does_not_stop_the_scan(tmp_path: Path):
+    legacy = tmp_path / "EH3D-LEGACY"
+    legacy.mkdir()
+    # the notes carry an accent written in cp1252 (one byte 0xE9), which is not valid UTF-8
+    (legacy / "eh3d.project.json").write_bytes(_manifest("EH3D-LEGACY").replace("Test manifest.", "Calibración").encode("cp1252"))
+    good = tmp_path / "EH3D-GOOD"
+    good.mkdir()
+    (good / "eh3d.project.json").write_text(_manifest("EH3D-GOOD"), encoding="utf-8")
+    found = discover_workspace(tmp_path)
+    assert [p.entry.name for p in found.projects] == ["EH3D-GOOD"]
+    assert len(found.errors) == 1 and found.errors[0].startswith("EH3D-LEGACY: invalid manifest")
