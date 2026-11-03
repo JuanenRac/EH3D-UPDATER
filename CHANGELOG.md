@@ -3,6 +3,7 @@
 All notable changes to this project are documented here.
 
 ## [Unreleased]
+- **Shared checks updated:** the validator also compares the badge and the Version row of the README with the manifest, fails when one of its checks cannot run, and the CHANGELOG step of the workflow reads the base branch from the environment.
 - **Answers from GitHub have a size limit:** an answer bigger than 8 MB is refused instead of filling the memory.
 - **A manifest pattern that can backtrack for ever is refused:** a version pattern longer than 300 characters or with a repeat inside a repeat is rejected when the manifest is read, and a pattern already stored is read as an unknown version.
 - **The CHANGELOG step of the workflow no longer expands the base branch inside the script:** the name goes through an environment variable.
