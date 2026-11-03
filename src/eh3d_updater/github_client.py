@@ -164,6 +164,21 @@ def describe_http_error(exc: urllib.error.HTTPError) -> str:
     return f"HTTP {exc.code}"
 
 
+#: The largest answer the updater accepts from GitHub (manifests and repository listings are a few hundred KB at most).
+MAX_RESPONSE_BYTES = 8_000_000
+
+
+def _read_limited(response) -> bytes:   # noqa: ANN001 - a urllib response or a test double
+    """The body of an answer, refusing one bigger than MAX_RESPONSE_BYTES instead of filling the memory."""
+    try:
+        body = response.read(MAX_RESPONSE_BYTES + 1)
+    except TypeError:  # a stand-in whose read() takes no size
+        body = response.read()
+    if len(body) > MAX_RESPONSE_BYTES:
+        raise RuntimeError(f"the answer is bigger than {MAX_RESPONSE_BYTES // 1_000_000} MB and is not read")
+    return body
+
+
 def _urlopen_with_retries(
     request: urllib.request.Request,
     *,
@@ -196,9 +211,10 @@ def _urlopen_with_retries(
         attempt += 1
         try:
             with opener(request, timeout=timeout) as response:
+                body = _read_limited(response)
                 if with_headers:
-                    return response.read(), getattr(response, "headers", None)
-                return response.read()
+                    return body, getattr(response, "headers", None)
+                return body
         except urllib.error.HTTPError as exc:
             retry_after = _retry_after_seconds(exc)
             if retry_after is None or attempt >= max_attempts:

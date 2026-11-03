@@ -3,6 +3,9 @@
 All notable changes to this project are documented here.
 
 ## [Unreleased]
+- **Answers from GitHub have a size limit:** an answer bigger than 8 MB is refused instead of filling the memory.
+- **A manifest pattern that can backtrack for ever is refused:** a version pattern longer than 300 characters or with a repeat inside a repeat is rejected when the manifest is read, and a pattern already stored is read as an unknown version.
+- **The CHANGELOG step of the workflow no longer expands the base branch inside the script:** the name goes through an environment variable.
 
 ## [0.0.7] - Closed signature policy, dependencies from the windows and a harder evidence log
 - **A mistyped signature policy fails closed:** a value that is not recognised (`"required"`, `"on"`, a text instead of `true`, an unknown `EH3D_UPDATER_REQUIRE_SIGNED`) is treated as `require` and the install warns, in the eight languages, naming the value.

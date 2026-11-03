@@ -108,6 +108,15 @@ def _require_string(data: dict[str, Any], field: str) -> str:
     return value
 
 
+def _check_pattern(pattern: str) -> None:
+    """A pattern that is too long or that can backtrack for ever is refused when the manifest is read."""
+    from .version_parse import unsafe_pattern
+
+    reason = unsafe_pattern(pattern)
+    if reason:
+        raise ManifestValidationError(f"native_version.pattern is refused: {reason}")
+
+
 def parse_manifest(text: str, *, expected_name: str | None = None) -> ProjectManifest:
     """Parse and validate a v1 manifest without a third-party JSON Schema lib."""
     try:
@@ -205,6 +214,7 @@ def parse_manifest(text: str, *, expected_name: str | None = None) -> ProjectMan
     if isinstance(native_version_pattern, str):
         if not native_version_pattern:
             raise ManifestValidationError("native_version.pattern cannot be empty")
+        _check_pattern(native_version_pattern)
         try:
             re.compile(native_version_pattern)
         except re.error as exc:
@@ -217,6 +227,7 @@ def parse_manifest(text: str, *, expected_name: str | None = None) -> ProjectMan
                 "native_version.pattern mapping must contain non-empty major, minor and patch regexes (and optionally build)"
             )
         for value in native_version_pattern.values():
+            _check_pattern(value)
             try:
                 re.compile(value)
             except re.error as exc:

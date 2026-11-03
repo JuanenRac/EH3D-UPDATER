@@ -56,10 +56,28 @@ class Version:
         return self._key() <= other._key()
 
 
+MAX_PATTERN_LENGTH = 300
+MAX_TEXT_LENGTH = 1_000_000
+# a group that repeats something already repeated inside it, such as (a+)+ or (.*)*: the shape of catastrophic backtracking
+_NESTED_REPEAT = re.compile(r"\((?:[^()\\]|\\.)*[+*](?:[^()\\]|\\.)*\)[+*{]")
+
+
+def unsafe_pattern(pattern: str) -> str | None:
+    """Why a manifest pattern is refused before it runs (too long, or a repeat inside a repeat), or None when it is fine."""
+    if len(pattern) > MAX_PATTERN_LENGTH:
+        return f"longer than {MAX_PATTERN_LENGTH} characters"
+    if _NESTED_REPEAT.search(pattern):
+        return "it repeats a group that already repeats (backtracking can take forever)"
+    return None
+
+
 def parse_version(text: str, pattern) -> Version | None:
     """The version the pattern of a manifest finds in `text`, or None when the pattern is wrong, does not match or finds no number (it never raises)."""
+    patterns = pattern.values() if isinstance(pattern, dict) else [pattern]
+    if any(not isinstance(item, str) or unsafe_pattern(item) for item in patterns):
+        return None
     try:
-        return _parse_version(text, pattern)
+        return _parse_version(text[:MAX_TEXT_LENGTH], pattern)
     except (re.error, ValueError, IndexError, TypeError, KeyError):
         return None
 
