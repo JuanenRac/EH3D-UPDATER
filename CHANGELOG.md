@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.0.6] - CI hardening and monthly dependency updates
+
 - **Monthly dependency updates:** Dependabot opens one grouped pull request a month for the GitHub Actions and the Python dependencies.
 - **A line for every change:** a pull request that changes code must add a line under `[Unreleased]` of this file (`tools/changelog_pr_check.py`; the label `no-changelog` skips it).
 - **Shared checks updated:** the validator of the suite checks the text of the banner against the manifest and reads the files that git tracks.
