@@ -30,3 +30,5 @@ def _signature_policy_off(monkeypatch, tmp_path_factory):
     monkeypatch.setattr(settings, "SETTINGS_PATH", home / ".eh3d_updater_settings.json")
     monkeypatch.setattr(settings, "_LEGACY_LANG_PATH", home / ".eh3d_updater_lang.json")
     monkeypatch.setattr(github_client, "REPO_LIST_CACHE_PATH", home / ".eh3d_updater_repo_cache.json")
+    # the test repositories live in a temporary folder, not on GitHub: the check of the origin is off unless a test turns it on
+    settings.save_settings(allow_foreign_origin=True)

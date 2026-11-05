@@ -160,7 +160,7 @@ def _trust_problem(repo: Path, revision: str, policy: SignaturePolicy) -> str | 
         return coded("sig_trust_unknown" if status == "U" else "sig_not_good", status=status or "?")
     if policy.expected_fingerprint:
         found = {_normalize_fingerprint(value) for value in (signing_key, primary_key) if value}
-        if policy.expected_fingerprint not in found:
+        if _normalize_fingerprint(policy.expected_fingerprint) not in found:
             return coded("sig_fingerprint_mismatch", expected=policy.expected_fingerprint, found=signing_key or primary_key or "?")
     return None
 

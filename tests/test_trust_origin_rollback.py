@@ -107,6 +107,7 @@ def _remote_and_checkout(tmp_path: Path) -> tuple[Path, Path, Path]:
 
 
 def test_a_checkout_whose_origin_is_not_the_official_repository_is_not_updated(tmp_path: Path, monkeypatch):
+    settings.save_settings(allow_foreign_origin=False)
     _remote, _seed, local = _remote_and_checkout(tmp_path)
     monkeypatch.setattr(install, "github_repo_url", lambda _entry: "https://github.com/JuanenRac/" + entry().name)
     head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=local, text=True).strip()
@@ -119,6 +120,7 @@ def test_a_checkout_whose_origin_is_not_the_official_repository_is_not_updated(t
 
 
 def test_the_setting_allows_another_origin(tmp_path: Path, monkeypatch):
+    settings.save_settings(allow_foreign_origin=False)
     _remote, _seed, local = _remote_and_checkout(tmp_path)
     monkeypatch.setattr(install, "github_repo_url", lambda _entry: "https://github.com/JuanenRac/" + entry().name)
     assert install._foreign_origin(local, entry()) is not None
