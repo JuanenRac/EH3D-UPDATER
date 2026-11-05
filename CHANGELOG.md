@@ -3,6 +3,9 @@
 All notable changes to this project are documented here.
 
 ## [Unreleased]
+
+## [0.0.8] - Trusted signatures bound to a key, former project names in manifests and the new icon
+
 - **The test count of the README files is the one of the CI:** 422 tests pass and four more are skipped when a sibling checkout is missing.
 - **A manifest may name the previous name of a renamed project:** the optional field `former_name` is accepted, so a renamed repository no longer fails the check of the manifests.
 - **The window carries the new icon:** the icon files inside the package are the icon of the program, so the title bar and the task bar show it.
