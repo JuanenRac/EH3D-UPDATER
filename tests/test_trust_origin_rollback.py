@@ -185,6 +185,6 @@ def test_an_update_always_keeps_one_previous_installation_even_with_zero_configu
     remote, _seed, _local = _remote_and_checkout(tmp_path)
     monkeypatch.setattr(install, "github_repo_url", lambda _entry: str(remote))
     settings.save_settings(backups_to_keep=0)
-    results = install.install_or_update(entry(), tmp_path, build=False)
+    results = install.install_or_update(entry(), tmp_path)
     assert all(r.ok for r in results), [r.message for r in results]
     assert install.list_backups(tmp_path, entry().name).get(entry().name), "the backup of the previous version survives"
