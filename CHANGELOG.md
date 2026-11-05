@@ -3,6 +3,7 @@
 All notable changes to this project are documented here.
 
 ## [Unreleased]
+- **A manifest may name the previous name of a renamed project:** the optional field `former_name` is accepted, so a renamed repository no longer fails the check of the manifests.
 - **The window carries the new icon:** the icon files inside the package are the icon of the program, so the title bar and the task bar show it.
 - **A signature must be trusted, and may be bound to one key:** a good signature by a key whose trust is unknown is refused unless `signature_accept_unknown_trust` is set, and `signature_expected_fingerprint` (or `EH3D_UPDATER_EXPECTED_FINGERPRINT`) requires the signing key to be a given one.
 - **A checkout of another repository is not updated:** when the `origin` of a checkout is not the official repository of the project the update and the preview refuse with a clear message (`allow_foreign_origin` overrides it).
