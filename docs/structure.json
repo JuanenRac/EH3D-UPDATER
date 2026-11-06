@@ -107,6 +107,19 @@
         },
         {
           "desc": {
+            "en": "the picture mode of the window (--shot): its arguments",
+            "es": "el modo de captura de la ventana (--shot): sus argumentos",
+            "de": "der Bildmodus des Fensters (--shot): seine Argumente",
+            "fr": "le mode capture de la fenêtre (--shot) : ses arguments",
+            "it": "la modalità immagine della finestra (--shot): i suoi argomenti",
+            "ja": "ウィンドウの画像モード（--shot）：その引数",
+            "zh": "窗口的截图模式（--shot）：其参数",
+            "pt": "o modo de captura da janela (--shot): os seus argumentos"
+          },
+          "name": "shot.py"
+        },
+        {
+          "desc": {
             "en": "the eight languages and the messages as codes",
             "es": "los ocho idiomas y los mensajes como códigos",
             "de": "die acht Sprachen und die Meldungen als Codes",

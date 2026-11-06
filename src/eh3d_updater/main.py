@@ -543,7 +543,33 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def take_picture(argv: list[str]) -> int:
+    """The picture mode: ``--shot FILE.png`` opens the window, saves what it draws as a PNG file and closes.  The exit code is 0 when the file was
+    written, 1 when it was not and 2 when the arguments are wrong.  Nothing is written beside the picture."""
+    from . import shot
+
+    try:
+        request = shot.parse_shot_args(argv)
+    except shot.ShotUsageError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return shot.EXIT_USAGE
+    reason = shot.check_output(request)
+    if reason is not None:
+        print(f"error: the picture could not be taken: {reason}", file=sys.stderr)
+        return shot.EXIT_FAILED
+    try:
+        from .qt_gui import launch_qt_shot
+    except ImportError:
+        print("error: the picture could not be taken: the Qt Quick GUI is not installed (run the project build to install PySide6)", file=sys.stderr)
+        return shot.EXIT_FAILED
+    return launch_qt_shot(request)
+
+
 def main() -> int:
+    from . import shot
+
+    if shot.wants_picture(sys.argv[1:]):
+        return take_picture(sys.argv[1:])
     if "--cli" not in sys.argv:
         try:
             from .qt_gui import launch_qt_gui

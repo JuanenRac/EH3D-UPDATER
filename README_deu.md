@@ -18,7 +18,7 @@
 
 ---
 
-**Ehrlichkeitscheck - was heute tatsächlich läuft:** eine Kommandozeile und ein Qt-Quick-Fenster, die die EH3D-Repositories über ihre `eh3d.project.json`-Manifeste finden, jeden lokalen Checkout mit GitHub vergleichen und nach einer Bestätigung eines nach dem anderen installieren oder aktualisieren. Das Update wird geklont, ohne Zwang zusammengeführt und zuerst in einem Staging-Klon gebaut und geprüft, und die vorherige Installation bleibt als Sicherung erhalten. Es ist der Updater der anderen Ökosysteme der Familie mit den Namen von EH3D, mit 432 Tests, die auf einem Computer mit einem falschen GitHub und lokalen Repositories laufen. Es wurde noch nicht für echte Arbeit verwendet und hat nie ein Projekt vom echten GitHub installiert oder aktualisiert.
+**Ehrlichkeitscheck - was heute tatsächlich läuft:** eine Kommandozeile und ein Qt-Quick-Fenster, die die EH3D-Repositories über ihre `eh3d.project.json`-Manifeste finden, jeden lokalen Checkout mit GitHub vergleichen und nach einer Bestätigung eines nach dem anderen installieren oder aktualisieren. Das Update wird geklont, ohne Zwang zusammengeführt und zuerst in einem Staging-Klon gebaut und geprüft, und die vorherige Installation bleibt als Sicherung erhalten. Es ist der Updater der anderen Ökosysteme der Familie mit den Namen von EH3D, mit 458 Tests, die auf einem Computer mit einem falschen GitHub und lokalen Repositories laufen. Es wurde noch nicht für echte Arbeit verwendet und hat nie ein Projekt vom echten GitHub installiert oder aktualisiert.
 
 ---
 
@@ -30,7 +30,7 @@
 |---|---|
 | Version | `0.0.8` |
 | Reifegrad | Funktionsfähig |
-| Tests | 432 |
+| Tests | 458 |
 | Technologie-Stack | Python 3.10+ / PySide6 / Qt Quick |
 | Auf echter Hardware | Nicht zutreffend: Es läuft auf dem PC der Person, die es nutzt |
 
@@ -45,7 +45,7 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 | Bereich | Stand | Was das hier bedeutet |
 |---|---|---|
 | Software | 🟡 | Eine Kommandozeile und ein Qt-Quick-Fenster finden die EH3D-Repositories über ihre Manifeste, vergleichen sie mit GitHub und installieren oder aktualisieren eines nach dem anderen, mit einem Staging-Klon und einer Sicherung der vorherigen Installation. |
-| Tests | 🟡 | 432 Tests bestehen (`pytest`), mit einem falschen GitHub und lokalen Repositories (ohne Netz); vier weitere werden übersprungen, wenn ein dafür nötiger Nachbar-Checkout fehlt. |
+| Tests | 🟡 | 458 Tests bestehen (`pytest`), mit einem falschen GitHub und lokalen Repositories (ohne Netz); vier weitere werden übersprungen, wenn ein dafür nötiger Nachbar-Checkout fehlt. |
 | Erkennung | 🟡 | Öffentliche Repositories sind nur Kandidaten: Ein Projekt gehört zum Ökosystem, wenn sein `eh3d.project.json` im Wurzelverzeichnis gültig ist und `EH3D` sagt; gegen eine falsche Liste getestet, nicht gegen das echte GitHub. |
 | Echter Einsatz | 🟠 | Es wurde noch nicht für echte Arbeit verwendet und hat nie ein Projekt vom echten GitHub installiert oder aktualisiert; es gibt nur wenige EH3D-Repositories zum Installieren. |
 | Oberfläche | 🟡 | Das Fenster arbeitet in acht Sprachen, und seine Python-Brücke ist von Tests abgedeckt; die Kommandozeile braucht nur die Standardbibliothek. |
@@ -144,13 +144,16 @@ Du brauchst Python 3.10 oder neuer; das Fenster braucht zusätzlich PySide6 (`pi
 ./run.sh --cli check           # exit code 10 when something can be updated
 ./run.sh --cli update EH3D-COMMON --preview
 ./run.sh --cli install EH3D-CORE-LIBS
+./run.sh --shot screen.png --size 1500x900   # a picture of the window
 ```
+
+Um ein Bild des Fensters aufzunehmen, ohne es von Hand zu öffnen, starten Sie es mit `--shot DATEI.png` (auch `--size WxH`, `--wait MS`, `--lang CODE`, `--workspace DIR`, `--replace`): Es öffnet sich in dieser Größe, speichert das PNG, behält keine Einstellungen und schließt sich selbst (Exit-Code 0, wenn die Datei geschrieben wurde, 1, wenn nicht, 2 bei falschen Argumenten). `--wait MS` ist die Zeit in Millisekunden, die das Fenster zum Zeichnen bekommt (standardmäßig 1500); das Fenster zeigt einen leeren Arbeitsbereich (oder den Ordner von `--workspace`), fragt GitHub nicht ab und schreibt kein Protokoll.
 
 `run.sh` / `run.bat` ohne `--cli` öffnen das Fenster. `install` und `update` fragen vor jeder Änderung nach einer Bestätigung und nehmen immer einen Projektnamen.
 
 ## 🧪 Tests
 
-Die Suite hat 432 Tests, die bestehen (`pytest tests`), und vier weitere, die übersprungen werden, wenn ein dafür nötiger Nachbar-Checkout nicht neben diesem liegt. Sie laufen mit einem falschen GitHub und lokalen Repositories ohne Netz und decken den Manifestvertrag, die Erkennung, den Versions- und Commit-Vergleich, Installation und Update mit dem Staging-Klon und die Abweisungen (lokale Änderungen, abgewichener Branch, niedrigere Version, ungültiges Manifest, fehlschlagender Build), Sicherungen und Wiederherstellung, die Nachweiskette, die Signaturrichtlinie, Einstellungen und Profile, die Meldungen und die acht Sprachen des Fensters sowie die Python-Brücke des Fensters (offscreen) ab. Ein Test prüft außerdem, dass der Dateibaum jedes READMEs jeden versionierten Eintrag der ersten Ebene auflistet. Die CI führt sie unter Linux und Windows aus, dazu `python tools/ci_validate.py` und eine Syntaxprüfung jeder Python-Datei. Die CI führt sie außerdem ohne das Fenster unter Python 3.10 und 3.13 aus, der ältesten und der neuesten Version, die das Paket verspricht, und ein fehlgeschlagener Befehl nennt seine vollständige Protokolldatei.
+Die Suite hat 458 Tests, die bestehen (`pytest tests`), und vier weitere, die übersprungen werden, wenn ein dafür nötiger Nachbar-Checkout nicht neben diesem liegt. Sie laufen mit einem falschen GitHub und lokalen Repositories ohne Netz und decken den Manifestvertrag, die Erkennung, den Versions- und Commit-Vergleich, Installation und Update mit dem Staging-Klon und die Abweisungen (lokale Änderungen, abgewichener Branch, niedrigere Version, ungültiges Manifest, fehlschlagender Build), Sicherungen und Wiederherstellung, die Nachweiskette, die Signaturrichtlinie, Einstellungen und Profile, die Meldungen und die acht Sprachen des Fensters sowie die Python-Brücke des Fensters (offscreen) ab. Ein Test prüft außerdem, dass der Dateibaum jedes READMEs jeden versionierten Eintrag der ersten Ebene auflistet. Die CI führt sie unter Linux und Windows aus, dazu `python tools/ci_validate.py` und eine Syntaxprüfung jeder Python-Datei. Die CI führt sie außerdem ohne das Fenster unter Python 3.10 und 3.13 aus, der ältesten und der neuesten Version, die das Paket verspricht, und ein fehlgeschlagener Befehl nennt seine vollständige Protokolldatei.
 
 ## 🏗️ Build und Veröffentlichung
 
@@ -174,6 +177,7 @@ EH3D-UPDATER/
 │   ├── install.py commits.py                    Installieren, Update, Sicherung; Commit-Vergleich
 │   ├── evidence.py signature.py                 das Nachweisprotokoll und die Signaturrichtlinie
 │   ├── qt_gui.py qml/                           das Qt-Quick-Fenster und sein QML
+│   ├── shot.py                                  der Bildmodus des Fensters (--shot): seine Argumente
 │   ├── i18n.py messages.py                      die acht Sprachen und die Meldungen als Codes
 │   └── settings.py profiles.py                  was gemerkt wird und die Stationsprofile
 ├── tests/                                       ohne Netz: ein falsches GitHub und lokale Repositories

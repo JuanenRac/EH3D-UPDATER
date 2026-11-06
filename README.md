@@ -18,7 +18,7 @@
 
 ---
 
-**Honesty check - what actually runs today:** a command line and a Qt Quick window that find the EH3D repositories through their `eh3d.project.json` manifests, compare each local checkout with GitHub and install or update one at a time after a confirmation. The update is cloned, merged without force and built and checked in a staging clone first, and the previous installation is kept as a backup. It is the updater of the other ecosystems of the family with the names of EH3D, with 432 tests that run on a computer with a fake GitHub and local repositories. It has not been used for real work yet and has never installed or updated a project from the real GitHub.
+**Honesty check - what actually runs today:** a command line and a Qt Quick window that find the EH3D repositories through their `eh3d.project.json` manifests, compare each local checkout with GitHub and install or update one at a time after a confirmation. The update is cloned, merged without force and built and checked in a staging clone first, and the previous installation is kept as a backup. It is the updater of the other ecosystems of the family with the names of EH3D, with 458 tests that run on a computer with a fake GitHub and local repositories. It has not been used for real work yet and has never installed or updated a project from the real GitHub.
 
 ---
 
@@ -30,7 +30,7 @@
 |---|---|
 | Version | `0.0.8` |
 | Maturity | Functional |
-| Tests | 432 |
+| Tests | 458 |
 | Stack | Python 3.10+ / PySide6 / Qt Quick |
 | On real hardware | Not applicable: it runs on the PC of the person using it |
 
@@ -45,7 +45,7 @@ Each line is one part of this repository and the light says how far it is today.
 | Area | State | What it means here |
 |---|---|---|
 | Software | 🟡 | A command line and a Qt Quick window find the EH3D repositories by their manifests, compare them with GitHub and install or update one at a time, with a staging clone and a backup of the previous installation. |
-| Tests | 🟡 | 432 tests pass (`pytest`), with a fake GitHub and local repositories (no network); four more are skipped when a sibling checkout they need is missing. |
+| Tests | 🟡 | 458 tests pass (`pytest`), with a fake GitHub and local repositories (no network); four more are skipped when a sibling checkout they need is missing. |
 | Discovery | 🟡 | Public repositories are only candidates: a project joins the ecosystem when its root `eh3d.project.json` validates and says `EH3D`; tested against a fake listing, not run against the real GitHub. |
 | Real use | 🟠 | It has not been used for real work yet and has never installed or updated a project from the real GitHub; only a few EH3D repositories exist to be installed. |
 | Interface | 🟡 | The window works in eight languages and its Python bridge is covered by tests; the command line needs only the standard library. |
@@ -144,13 +144,16 @@ You need Python 3.10 or newer; the window also needs PySide6 (`pip install ".[gu
 ./run.sh --cli check           # exit code 10 when something can be updated
 ./run.sh --cli update EH3D-COMMON --preview
 ./run.sh --cli install EH3D-CORE-LIBS
+./run.sh --shot screen.png --size 1500x900   # a picture of the window
 ```
+
+To take a picture of the window without opening it by hand, run it with `--shot FILE.png` (also `--size WxH`, `--wait MS`, `--lang CODE`, `--workspace DIR`, `--replace`): it opens at that size, saves the PNG, keeps no settings and closes by itself (exit code 0 when the file was written, 1 when it was not, 2 for wrong arguments). `--wait MS` is the time in milliseconds the window is given to draw (1500 by default); the window shows an empty workspace (or the folder of `--workspace`), asks nothing of GitHub and writes no log.
 
 `run.sh` / `run.bat` without `--cli` open the window. `install` and `update` ask for a confirmation before they touch anything, and always take one project name.
 
 ## 🧪 Testing
 
-The suite has 432 tests that pass (`pytest tests`), and four more that are skipped when a sibling checkout they need is not next to this one. They run with a fake GitHub and local repositories, with no network, and cover the manifest contract, the discovery, the version and commit comparison, install and update with the staging clone and the refusals (local changes, a diverged branch, a lower version, an invalid manifest, a failing build), backups and restore, the evidence chain, the signature policy, the settings and profiles, the messages and the eight languages of the window, and the Python bridge of the window (offscreen). A test also checks that the file tree of every README lists each versioned first-level entry. The CI runs them on Linux and on Windows, plus `python tools/ci_validate.py` and a syntax check of every Python file. The CI also runs them without the window on Python 3.10 and 3.13, the oldest and the newest the package promises, and a command that fails names its full log file.
+The suite has 458 tests that pass (`pytest tests`), and four more that are skipped when a sibling checkout they need is not next to this one. They run with a fake GitHub and local repositories, with no network, and cover the manifest contract, the discovery, the version and commit comparison, install and update with the staging clone and the refusals (local changes, a diverged branch, a lower version, an invalid manifest, a failing build), backups and restore, the evidence chain, the signature policy, the settings and profiles, the messages and the eight languages of the window, and the Python bridge of the window (offscreen). A test also checks that the file tree of every README lists each versioned first-level entry. The CI runs them on Linux and on Windows, plus `python tools/ci_validate.py` and a syntax check of every Python file. The CI also runs them without the window on Python 3.10 and 3.13, the oldest and the newest the package promises, and a command that fails names its full log file.
 
 ## 🏗️ Build & Release
 
@@ -174,6 +177,7 @@ EH3D-UPDATER/
 │   ├── install.py commits.py                    install, update, backup, restore; commit comparison
 │   ├── evidence.py signature.py                 the evidence log and the signed-commit policy
 │   ├── qt_gui.py qml/                           the Qt Quick window and its QML
+│   ├── shot.py                                  the picture mode of the window (--shot): its arguments
 │   ├── i18n.py messages.py                      the eight languages and the messages as codes
 │   └── settings.py profiles.py                  what is remembered and the station profiles
 ├── tests/                                       no network: a fake GitHub and local repositories

@@ -19,17 +19,20 @@ from __future__ import annotations
 import ctypes
 import logging
 import sys
+import tempfile
 import threading
 import time
 import traceback
 import webbrowser
 from pathlib import Path
 
-from PySide6.QtCore import Property, QCoreApplication, QEvent, QObject, QUrl, Signal, Slot
+from PySide6.QtCore import Property, QCoreApplication, QEvent, QObject, QTimer, QUrl, Signal, Slot
 from PySide6.QtGui import QGuiApplication, QIcon
 from PySide6.QtQml import QQmlApplicationEngine
+from PySide6.QtQuick import QQuickWindow
+from shiboken6 import getCppPointer, wrapInstance
 
-from . import __version__, i18n, profiles, settings
+from . import __version__, i18n, profiles, settings, shot
 from .commits import NEW_COMMITS, commit_states
 from .detect import LocalStatus, discover_workspace
 from .github_client import RemoteStatus, discover_remote_projects, fetch_all
@@ -119,9 +122,20 @@ class UpdaterBridge(QObject):
     _logLines = Signal(object)
     _restoreDone = Signal(str, object)
 
-    def __init__(self, workspace_root: Path, log_file_path: Path | None = None):
+    def __init__(
+        self,
+        workspace_root: Path,
+        log_file_path: Path | None = None,
+        *,
+        ephemeral: bool = False,
+        lang: str | None = None,
+        workspace_label: str | None = None,
+    ):
+        """`ephemeral` is the picture mode: no saved preference or profile is read, GitHub is not asked, and `lang` and
+        `workspace_label` (what the window shows as the workspace) stand in for what the person had chosen."""
         super().__init__()
         self._workspace_root = workspace_root
+        self._workspace_label = workspace_label
         self._logFilePath = str(log_file_path) if log_file_path else ""
         self._locals: list[LocalStatus] = []
         self._remotes: dict[str, RemoteStatus] = {}
@@ -143,15 +157,15 @@ class UpdaterBridge(QObject):
         self._batch_current = 1
         self._batch_total = 1
         self._batch_project = ""
-        self._lang = i18n.resolve_initial_lang()
-        self._profile = self._load_profile()
+        self._lang = lang or ("en" if ephemeral else i18n.resolve_initial_lang())
+        self._profile = None if ephemeral else self._load_profile()
         self._remoteResult.connect(self._on_remote_result)
         self._actionResult.connect(self._on_action_result)
         self._operationCheckpoint.connect(self._on_operation_checkpoint)
         self._batchProject.connect(self._on_batch_project)
         self._logLines.connect(self._on_log_lines)
         self._restoreDone.connect(self._on_restore_done)
-        self.refresh(False)
+        self.refresh(ephemeral)
 
     @staticmethod
     def _load_profile() -> profiles.Profile | None:
@@ -187,7 +201,7 @@ class UpdaterBridge(QObject):
 
     @Property(str, notify=summaryChanged)
     def workspaceRoot(self) -> str:
-        return str(self._workspace_root)
+        return self._workspace_label or str(self._workspace_root)
 
     @Property("QStringList", notify=activityChanged)
     def activity(self) -> list[str]:
@@ -820,3 +834,76 @@ def launch_qt_gui(workspace_root: Path) -> int:
     del engine
     del bridge
     return code
+
+
+def launch_qt_shot(request: shot.ShotRequest) -> int:
+    """Open the window at the size asked, wait, save what it drew as a PNG file and close; the exit code is 0 when the file was written and 1 when it was not.
+
+    The window keeps no settings and writes no log, asks nothing of GitHub and shows an empty workspace (or the folder of `--workspace`), so a run
+    leaves nothing of the person's changed and the picture holds no folder of theirs. The arguments and the file to write are checked before, by `main.take_picture`.
+    """
+    _set_windows_app_id()
+    app = QGuiApplication.instance() or QGuiApplication(sys.argv[:1])
+    app.setApplicationName("EH3D-UPDATER")
+    app.setApplicationDisplayName("EH3D Updater")
+    assets = Path(__file__).with_name("assets")
+    icon = assets / "EH3D_UPDATER_ICON.ico"
+    if not icon.is_file():
+        icon = assets / "EH3D_UPDATER_ICON.svg"
+    app.setWindowIcon(QIcon(str(icon)))
+    width, height = request.size
+    outcome = {"code": shot.EXIT_FAILED}
+    with tempfile.TemporaryDirectory(prefix="eh3d-updater-shot-") as empty_workspace:
+        root = request.workspace if request.workspace is not None else Path(empty_workspace)
+        label = None if request.workspace is not None else "~/EH3D"
+        engine = QQmlApplicationEngine()
+        bridge = UpdaterBridge(root, None, ephemeral=True, lang=request.lang, workspace_label=label)
+        engine.rootContext().setContextProperty("backend", bridge)
+        # the window opens in a normal state at the size asked, not maximized; the smallest size it keeps is lowered when the picture is smaller than that
+        engine.setInitialProperties({
+            "visibility": 2,
+            "width": width,
+            "height": height,
+            "minimumWidth": min(width, 1100),
+            "minimumHeight": min(height, 680),
+        })
+        engine.load(QUrl.fromLocalFile(str(Path(__file__).with_name("qml") / "Main.qml")))
+        windows = engine.rootObjects()
+        if not windows:
+            print("error: the picture could not be taken: the window did not open", file=sys.stderr)
+            return shot.EXIT_FAILED
+        window = windows[0]
+        if hasattr(window, "setIcon"):
+            window.setIcon(app.windowIcon())
+
+        def take_picture() -> None:
+            try:
+                # the root object is a plain QWindow for Python; the picture is asked of the Qt Quick window it is
+                image = wrapInstance(getCppPointer(window)[0], QQuickWindow).grabWindow()
+            except Exception as exc:  # the run must end with its reason, not wait for the patience to run out
+                print(f"error: the picture could not be taken: {exc}", file=sys.stderr)
+                app.exit(shot.EXIT_FAILED)
+                return
+            if image.isNull():
+                print("error: the picture could not be taken: the window gave no picture", file=sys.stderr)
+            elif request.output.exists() and not request.replace:
+                print(f"error: the picture could not be taken: {request.output} exists; give --replace to write over it", file=sys.stderr)
+            elif not image.save(str(request.output), "PNG"):
+                print(f"error: the picture could not be taken: {request.output} could not be written", file=sys.stderr)
+            else:
+                outcome["code"] = shot.EXIT_WRITTEN
+            app.exit(outcome["code"])
+
+        def give_up() -> None:
+            print("error: the picture could not be taken: the picture did not come back from the window", file=sys.stderr)
+            app.exit(shot.EXIT_FAILED)
+
+        QTimer.singleShot(request.wait_ms, take_picture)
+        QTimer.singleShot(request.wait_ms + shot.PATIENCE_MS, give_up)
+        app.exec()
+        for root_object in engine.rootObjects():
+            root_object.deleteLater()
+        QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+        del engine
+        del bridge
+    return outcome["code"]
