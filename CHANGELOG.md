@@ -3,6 +3,7 @@
 All notable changes to this project are documented here.
 
 ## [Unreleased]
+- **The manifest may carry `min_common`:** the oldest version of the shared contracts repository the project works with. The field is read when it is a version and ignored when it is not, never refused, and a misspelled name is still refused; nothing is decided by it yet (the same rule as the other updaters of the family).
 
 ## [0.0.8] - Trusted signatures bound to a key, former project names in manifests and the new icon
 
