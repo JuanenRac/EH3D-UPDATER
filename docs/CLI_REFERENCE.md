@@ -43,7 +43,7 @@ options:
 
 ```
 $ eh3d-updater --cli --version
-eh3d-updater 0.1.1
+eh3d-updater 0.0.8
 ```
 
 `install`/`update` are deliberately separate from `status` and always
@@ -388,3 +388,9 @@ meant to be scripted/piped). The text of every checkpoint and failure of an
 install or update is shown in the selected language. Projects at the same
 version as GitHub that have new commits show as `NEW COMMITS` and offer Update.
 The window keeps its newest 20 log files under `~/.eh3d_updater/logs`.
+
+To take a picture of the window without opening it by hand, run it with `--shot FILE.png`
+(also `--size WxH`, `--wait MS`, `--lang CODE`, `--workspace DIR` and `--replace`; it needs the
+`gui` extra). It opens at that size, saves the PNG, keeps no settings, asks nothing of GitHub,
+writes no log and closes by itself. The exit code is 0 when the file was written, 1 when it was
+not and 2 for wrong arguments.
