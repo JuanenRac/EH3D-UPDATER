@@ -21,6 +21,8 @@ import os
 from pathlib import Path
 from typing import Any
 
+from .common_gate import parse_mode as _parse_mode
+
 #: One JSON file in the user's own home directory - holds every real,
 #: remembered preference (`lang`, `workspace_root`, ...) as a single flat
 #: object, read-modify-write on every save so setting one key never
@@ -104,3 +106,9 @@ def get_saved_lang() -> str | None:
 
 def save_lang(lang: str) -> None:
     save_settings(lang=lang)
+
+def min_common_mode() -> str:
+    """`warn` (the default) or `off`: whether a project that asks for a newer shared contracts repository than the installed one is told.
+
+    The environment variable `EH3D_UPDATER_MIN_COMMON` wins over the saved setting `min_common_check`; anything else is the default. It never holds an update back."""
+    return _parse_mode(os.environ.get("EH3D_UPDATER_MIN_COMMON") or load_settings().get("min_common_check"))

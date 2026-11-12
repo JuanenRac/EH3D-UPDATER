@@ -129,6 +129,7 @@ EH3D-UPDATER 是获取套件并保持最新的途径。位于四个生态系统�
 | `signature_accept_unknown_trust` | 关 | 开或关 | 也接受信任状态未知的密钥所作的有效签名（状态 U） |
 | `allow_foreign_origin` | 关 | 开或关 | 更新 `origin` 不是项目官方仓库的检出（默认拒绝） |
 | `validation_unavailable` / `EH3D_UPDATER_ACCEPT_UNAVAILABLE_VALIDATION=1` | 拒绝 | 拒绝或接受 | 项目的验证因缺少工具而无法运行时怎么办 |
+| `min_common_check` / `EH3D_UPDATER_MIN_COMMON` | 警告 | 警告或关闭 | 当项目（其清单的 `min_common`）要求比已安装版本更新的 EH3D-COMMON 时提示；只警告，不会阻止任何更新 |
 | `GITHUB_TOKEN` | 无 | GitHub 令牌 | 只会提高列表的速率限制；从不是必需的 |
 | `--no-build`（install、update） | 关 | 开或关 | 只克隆或拉取，不运行项目自己的构建检查（简单的快进） |
 

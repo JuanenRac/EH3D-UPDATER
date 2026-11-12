@@ -34,7 +34,7 @@ import os
 import sys
 from pathlib import Path
 
-from . import __version__, commits, logs, profiles, settings
+from . import __version__, commits, common_gate, logs, profiles, settings
 from .dependencies import DependencyError, install_order
 from .detect import LocalStatus, discover_workspace
 from .evidence import export_evidence, verify_chain
@@ -49,6 +49,7 @@ from .install import (
     restore_backup,
 )
 from .notify import send_notification
+from .registry import COMMON_REPO
 
 
 def default_workspace_root() -> Path:
@@ -137,6 +138,12 @@ def _say_ignored(ignored: list[dict[str, str]]) -> None:
         print(f"IGNORED {item['folder']}: {item['reason']}", file=sys.stderr)
 
 
+def _common_notices(locals_: list[LocalStatus]) -> list[common_gate.CommonNotice]:
+    """The projects that ask for a newer shared contracts repository than the installed one (a notice only, never a hold)."""
+    installed = next((str(ls.version) for ls in locals_ if ls.installed and ls.version and ls.entry.name == COMMON_REPO), None)
+    return common_gate.notices_for(((ls.entry.name, ls.entry.min_common) for ls in locals_), installed, settings.min_common_mode())
+
+
 def cmd_status(args: argparse.Namespace) -> int:
     workspace_root = Path(args.workspace).resolve() if args.workspace else default_workspace_root()
     # Real bug fixed here, found while adding --json: this line (and the
@@ -187,6 +194,8 @@ def cmd_status(args: argparse.Namespace) -> int:
         for name, entry in sorted(entries.items(), key=lambda item: item[0].casefold())
     ]
     commit_map = {} if args.offline else _commit_states(locals_, remotes)
+    for notice in _common_notices(locals_):
+        print(f"WARNING: {common_gate.describe(notice, COMMON_REPO)}", file=sys.stderr)
 
     if args.json:
         # Real, scripting-friendly shape - every field the human-readable

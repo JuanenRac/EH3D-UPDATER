@@ -18,6 +18,9 @@ from .project_manifest import ManifestComponent, MANIFEST_FILE, ProjectManifest
 
 
 GITHUB_OWNER = "JuanenRac"
+
+#: The shared contracts repository of the family: the one a manifest's `min_common` is compared with.
+COMMON_REPO = "EH3D-COMMON"
 GITHUB_BRANCH = "main"
 
 
@@ -48,6 +51,8 @@ class ProjectEntry:
     components: tuple[ManifestComponent, ...] = ()
     #: The sibling repositories that have to be installed before this one (schema 1.1).
     depends_on: tuple[str, ...] = ()
+    #: The oldest version of the shared contracts the project says it works with (`min_common` of the manifest); None when it says nothing.
+    min_common: str | None = None
 
 
 def entry_from_manifest(manifest: ProjectManifest) -> ProjectEntry:
@@ -70,6 +75,7 @@ def entry_from_manifest(manifest: ProjectManifest) -> ProjectEntry:
         service_systemd_unit=manifest.service_systemd_unit,
         components=manifest.components,
         depends_on=manifest.depends_on,
+        min_common=manifest.min_common,
     )
 
 

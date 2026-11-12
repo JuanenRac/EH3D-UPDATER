@@ -129,6 +129,7 @@ EH3D-UPDATER は、スイートを入手して最新に保つための手段で�
 | `signature_accept_unknown_trust` | オフ | オンまたはオフ | 信頼が不明な鍵による有効な署名（状態 U）も受け入れます |
 | `allow_foreign_origin` | オフ | オンまたはオフ | `origin` がプロジェクトの公式リポジトリではないチェックアウトを更新します（既定では拒否） |
 | `validation_unavailable` / `EH3D_UPDATER_ACCEPT_UNAVAILABLE_VALIDATION=1` | 拒否 | 拒否または受け入れ | ツール不足でプロジェクトの検証を実行できないときの動作 |
+| `min_common_check` / `EH3D_UPDATER_MIN_COMMON` | 警告 | 警告またはオフ | プロジェクトがマニフェストの `min_common` でインストール済みより新しい EH3D-COMMON を求めているときに知らせる（警告のみで、更新は止めない） |
 | `GITHUB_TOKEN` | なし | GitHub トークン | 一覧のレート制限を上げるだけで、必須ではありません |
 | `--no-build`（install、update） | オフ | オンまたはオフ | プロジェクト自身のビルド検証なしで、クローンまたは取得のみ（単純な fast-forward） |
 

@@ -129,6 +129,7 @@ Zum Start muss nichts konfiguriert werden. Die gemerkten Entscheidungen liegen i
 | `signature_accept_unknown_trust` | aus | an oder aus | akzeptiert auch eine gültige Signatur eines Schlüssels mit unbekanntem Vertrauen (Status U) |
 | `allow_foreign_origin` | aus | an oder aus | aktualisiert einen Checkout, dessen `origin` nicht das offizielle Repository des Projekts ist (standardmäßig abgelehnt) |
 | `validation_unavailable` / `EH3D_UPDATER_ACCEPT_UNAVAILABLE_VALIDATION=1` | abweisen | abweisen oder akzeptieren | was zu tun ist, wenn die Prüfung eines Projekts wegen eines fehlenden Werkzeugs nicht laufen kann |
+| `min_common_check` / `EH3D_UPDATER_MIN_COMMON` | warnen | warnen oder aus | melden, wenn ein Projekt (`min_common` seines Manifests) ein neueres EH3D-COMMON verlangt als das installierte; es warnt nur, nichts wird zurückgehalten |
 | `GITHUB_TOKEN` | keines | ein GitHub-Token | hebt nur das Anfragelimit der Liste an; nie erforderlich |
 | `--no-build` (install, update) | aus | an oder aus | nur klonen oder holen, ohne die Build-Prüfung des Projekts (ein einfacher Fast-Forward) |
 

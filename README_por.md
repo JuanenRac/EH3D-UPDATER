@@ -129,6 +129,7 @@ Não é preciso configurar nada para começar. As escolhas que ficam lembradas v
 | `signature_accept_unknown_trust` | desativado | ativado ou desativado | aceita também uma assinatura boa de uma chave de confiança desconhecida (estado U) |
 | `allow_foreign_origin` | desativado | ativado ou desativado | atualiza uma cópia cujo `origin` não é o repositório oficial do projeto (recusado por defeito) |
 | `validation_unavailable` / `EH3D_UPDATER_ACCEPT_UNAVAILABLE_VALIDATION=1` | recusar | recusar ou aceitar | o que fazer quando a validação de um projeto não pode correr porque falta uma ferramenta |
+| `min_common_check` / `EH3D_UPDATER_MIN_COMMON` | avisar | avisar ou desligado | avisar quando um projeto pede (`min_common` do seu manifesto) um EH3D-COMMON mais recente do que o instalado; só avisa, nada fica retido |
 | `GITHUB_TOKEN` | nenhum | um token do GitHub | só sobe o limite de pedidos da listagem; nunca é obrigatório |
 | `--no-build` (install, update) | desativado | ativado ou desativado | só clonar ou trazer, sem a verificação de construção do projeto (um simples avanço rápido) |
 
