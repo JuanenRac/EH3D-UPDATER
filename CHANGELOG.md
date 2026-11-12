@@ -3,6 +3,7 @@
 All notable changes to this project are documented here.
 
 ## [Unreleased]
+- **The test count of the README files is the one of the CI:** 422 tests pass and four more are skipped when a sibling checkout is missing.
 - **A picture mode for the window:** `--shot FILE.png` (the window needs the `gui` extra) opens the window at the size of `--size WxH` (320 to 8192, 1500x900 by default) in the language of `--lang CODE`, waits `--wait MS` milliseconds (0 to 60000, 1500 by default), saves what it drew as a PNG file and closes by itself. An existing file is never replaced unless `--replace` is given, the window shows an empty workspace (or the folder of `--workspace DIR`), asks nothing of GitHub, reads no saved preference or profile and writes no settings and no log in this mode, the exit code is 0 when the file was written, 1 when it was not (also when the picture does not come back within 30 seconds) and 2 for wrong arguments. The arguments are read by plain Python with its tests, so the command line refuses them on a machine without a screen.
 - **The manifest may carry `min_common`:** the oldest version of the shared contracts repository the project works with. The field is read when it is a version and ignored when it is not, never refused, and a misspelled name is still refused; nothing is decided by it yet (the same rule as the other updaters of the family).
 
