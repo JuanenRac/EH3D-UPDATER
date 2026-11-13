@@ -3,6 +3,9 @@
 All notable changes to this project are documented here.
 
 ## [Unreleased]
+
+## [0.0.9] - Manifest contract, min_common and a picture mode for the window
+
 - **The manifest contract is checked like in the other updaters:** `tests/test_manifest_contract.py` checks that this updater reads the fields every manifest carries and the optional ones none may refuse (`min_common` among them), compares its reader with the readers of the other updaters when they are next to this repository (skipped when they are not), and checks that `min_common` is read when it is a version, ignored when it is not and that a misspelled field is still refused.
 - **A project that asks for a newer EH3D-COMMON than the installed one is told:** the `min_common` of a manifest is read into the project entry and `status` writes a warning on the error stream for every project whose minimum is above the installed EH3D-COMMON (or says that the installed version is not known). It only warns and never holds an update back; the setting `min_common_check` (or `EH3D_UPDATER_MIN_COMMON`) is `warn` by default and `off` turns it off. The reader is the same file as in the other updaters (`common_gate.py`), pinned by a digest test.
 - **The test count of the README files is the one of the CI:** 455 tests pass and eleven more are skipped when a sibling checkout is missing.
