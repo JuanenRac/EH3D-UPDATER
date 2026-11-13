@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The CI validation checks the workflows and the lessons of past CI failures against a baseline:** `tools/workflow_hygiene.py` and `tools/lessons_lint.py` (copies of the shared tools) run in the validation, and only findings that are not in `tools/workflow_hygiene_baseline.json` and `tools/lessons_lint_baseline.json` fail it, so what exists today stays as it is and a new one is caught. `python tools/workflow_hygiene.py --root . --detail` and `python tools/lessons_lint.py --repo .` list the findings.
+
 ## [0.0.9] - Manifest contract, min_common and a picture mode for the window
 
 - **The manifest contract is checked like in the other updaters:** `tests/test_manifest_contract.py` checks that this updater reads the fields every manifest carries and the optional ones none may refuse (`min_common` among them), compares its reader with the readers of the other updaters when they are next to this repository (skipped when they are not), and checks that `min_common` is read when it is a version, ignored when it is not and that a misspelled field is still refused.
