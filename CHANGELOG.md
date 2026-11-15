@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **A campaign of faults in an update (`tests/test_fault_campaign.py`):** the commands that an update runs against the fake GitHub of the tests are counted, and then a different one of them, chosen by a fixed seed, fails in two ways (it exits with an error, or the program cannot be started). Three new tests (458 in all) check that nothing escapes as an exception, that the installation is left at the old version or at the new one and never between, that its working tree stays clean, and that the next run without a fault finishes the update and leaves no staging folder. The tests that already existed break one named step at a time; this one tries a step chosen by seed. A first installation is not covered, because it clones from the official address. It has only run on a computer with a fake GitHub: no real update was interrupted.
+
 - **The shared validation tools are updated:** the validator also runs the workflow and lessons checks of the suite with their latest rules, including a check to run before every push.
 - **The CI validation checks the workflows and the lessons of past CI failures against a baseline:** `tools/workflow_hygiene.py` and `tools/lessons_lint.py` (copies of the shared tools) run in the validation, and only findings that are not in `tools/workflow_hygiene_baseline.json` and `tools/lessons_lint_baseline.json` fail it, so what exists today stays as it is and a new one is caught. `python tools/workflow_hygiene.py --root . --detail` and `python tools/lessons_lint.py --repo .` list the findings.
 
