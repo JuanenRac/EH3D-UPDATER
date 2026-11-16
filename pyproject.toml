@@ -27,7 +27,7 @@ gui = ["PySide6>=6.8,<7"]
 # install.py stays usable with zero external dependencies either way
 # (see that module's own header comment), this only adds real durability
 # when installed.
-durable-journal = ["hydra-umc-sdk @ git+https://github.com/JuanenRac/HYDRA-UMC-SDK.git@main#subdirectory=clients/python"]
+durable-journal = ["hydra-umc-sdk @ git+https://github.com/JuanenRac/HYDRA-UMC-SDK.git@ac9a4e7315e0314c3f7cf18f10bc9b9f56ccf769#subdirectory=clients/python"]
 
 [project.urls]
 Homepage = "https://github.com/JuanenRac/EH3D-UPDATER"

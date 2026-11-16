@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **The optional journal dependency is fixed to a full commit:** `durable-journal` no longer follows a branch of the shared package, so an install is reproducible and runs reviewed code, as the updaters of the suite already do; a test fails if any git dependency is not a full commit hash.
+
 - **A campaign of faults in an update (`tests/test_fault_campaign.py`):** the commands that an update runs against the fake GitHub of the tests are counted, and then a different one of them, chosen by a fixed seed, fails in two ways (it exits with an error, or the program cannot be started). Three new tests (458 in all) check that nothing escapes as an exception, that the installation is left at the old version or at the new one and never between, that its working tree stays clean, and that the next run without a fault finishes the update and leaves no staging folder. The tests that already existed break one named step at a time; this one tries a step chosen by seed. A first installation is not covered, because it clones from the official address. It has only run on a computer with a fake GitHub: no real update was interrupted.
 
 - **The shared validation tools are updated:** the validator also runs the workflow and lessons checks of the suite with their latest rules, including a check to run before every push.
