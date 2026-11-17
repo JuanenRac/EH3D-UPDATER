@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+- **An update that does not raise the version number can be refused:** the setting `require_version_bump` of the settings file (or the environment variable `EH3D_UPDATER_REQUIRE_VERSION_BUMP`) is off by default; when it is on, a candidate with the installed version and another commit is refused, in the eight languages, and nothing on disk changes.
+
 - **An update that brings the same version number with another commit says so:** when the candidate has the version that is installed but a different commit, the update goes on as before and the progress shows a line with both commits and that the version number was not raised (in the 8 languages). Tested with a remote that adds a commit without a version change.
 
 - **A command that never ends no longer holds the update:** git commands are stopped after `git_timeout_s` (600 s by default) and build or test scripts after `build_timeout_s` (1800 s by default), both settings of the saved preferences (0 means no limit), and the whole tree of processes the command started is stopped with it, not only the first one. Git no longer waits for a password on a terminal (`GIT_TERMINAL_PROMPT=0`), so a repository that asks for one fails at once. A stopped command is reported with the new message `inst_timed_out` in the eight languages and nothing is installed. Tests stop a sleeping command and its child, check the settings with wrong values and check the text in every language.

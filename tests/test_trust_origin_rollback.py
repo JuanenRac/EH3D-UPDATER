@@ -204,3 +204,56 @@ def test_the_same_version_with_another_commit_is_installed_but_said(tmp_path: Pa
     assert len(said) == 1, [str(t) for _p, t in seen]
     assert "1.0.0" in localize("en", said[0]) and "not raised" in localize("en", said[0])
     assert "no se subió" in localize("es", said[0])
+
+
+def _same_version_other_commit(tmp_path: Path, monkeypatch):
+    remote, seed, local = _remote_and_checkout(tmp_path)
+    monkeypatch.setattr(install, "github_repo_url", lambda _entry: str(remote))
+    write_manifest(seed, "1.0.0")
+    git("add", "-A", cwd=seed)
+    git("commit", "-m", "same version, other content", cwd=seed)
+    git("push", "origin", "HEAD", cwd=seed)
+    return local
+
+
+def test_a_same_version_update_is_refused_when_the_version_bump_is_required(tmp_path: Path, monkeypatch):
+    local = _same_version_other_commit(tmp_path, monkeypatch)
+    before = subprocess.run(["git", "rev-parse", "HEAD"], cwd=local, capture_output=True, text=True, check=True, timeout=30).stdout.strip()
+    monkeypatch.setenv("EH3D_UPDATER_REQUIRE_VERSION_BUMP", "1")
+    result = clone_or_pull(entry(), tmp_path)
+    assert not result.ok
+    assert "require_version_bump" in localize("en", result.message)
+    assert "require_version_bump" in localize("pt", result.message)
+    assert subprocess.run(["git", "rev-parse", "HEAD"], cwd=local, capture_output=True, text=True, check=True, timeout=30).stdout.strip() == before, "a refused update changes nothing"
+
+
+def test_the_version_bump_is_not_required_by_default(tmp_path: Path, monkeypatch):
+    _same_version_other_commit(tmp_path, monkeypatch)
+    monkeypatch.delenv("EH3D_UPDATER_REQUIRE_VERSION_BUMP", raising=False)
+    monkeypatch.setattr(settings, "load_settings", lambda: {})
+    assert settings.require_version_bump() is False
+    assert clone_or_pull(entry(), tmp_path).ok
+
+
+def test_the_version_bump_setting_reads_the_file_and_the_environment(monkeypatch):
+    monkeypatch.delenv("EH3D_UPDATER_REQUIRE_VERSION_BUMP", raising=False)
+    monkeypatch.setattr(settings, "load_settings", lambda: {"require_version_bump": True})
+    assert settings.require_version_bump() is True
+    monkeypatch.setattr(settings, "load_settings", lambda: {"require_version_bump": "nonsense"})
+    assert settings.require_version_bump() is False
+    monkeypatch.setenv("EH3D_UPDATER_REQUIRE_VERSION_BUMP", "yes")
+    assert settings.require_version_bump() is True
+    monkeypatch.setattr(settings, "load_settings", lambda: {"require_version_bump": True})
+    monkeypatch.setenv("EH3D_UPDATER_REQUIRE_VERSION_BUMP", "off")
+    assert settings.require_version_bump() is False
+
+
+def test_a_higher_version_passes_when_the_version_bump_is_required(tmp_path: Path, monkeypatch):
+    remote, seed, local = _remote_and_checkout(tmp_path)
+    monkeypatch.setattr(install, "github_repo_url", lambda _entry: str(remote))
+    write_manifest(seed, "1.0.1")
+    git("add", "-A", cwd=seed)
+    git("commit", "-m", "next", cwd=seed)
+    git("push", "origin", "HEAD", cwd=seed)
+    monkeypatch.setenv("EH3D_UPDATER_REQUIRE_VERSION_BUMP", "1")
+    assert clone_or_pull(entry(), tmp_path).ok
