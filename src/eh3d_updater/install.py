@@ -632,6 +632,12 @@ def clone_or_pull(
         return InstallResult(False, coded("remote_manifest_invalid", reason=str(exc)))
     if _version_tuple(candidate) < _version_tuple(installed):
         return InstallResult(False, coded("anti_rollback", candidate=candidate.version, installed=installed.version))
+    if _version_tuple(candidate) == _version_tuple(installed):
+        # the same version number with other content: it is installed as before, but the person is told that nothing was bumped
+        head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(path), check=False, capture_output=True, text=True, timeout=30)
+        installed_sha = head.stdout.strip() if head.returncode == 0 else ""
+        if installed_sha and installed_sha != candidate_sha:
+            _checkpoint(progress, "validation", "cp_same_version_new_commit", installed=installed_sha[:12], candidate=candidate_sha[:12], version=installed.version)
 
     if not verify_build:
         _checkpoint(progress, "validation", "cp_merge_in_place")

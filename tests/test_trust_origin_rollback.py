@@ -188,3 +188,19 @@ def test_an_update_always_keeps_one_previous_installation_even_with_zero_configu
     results = install.install_or_update(entry(), tmp_path)
     assert all(r.ok for r in results), [r.message for r in results]
     assert install.list_backups(tmp_path, entry().name).get(entry().name), "the backup of the previous version survives"
+
+
+def test_the_same_version_with_another_commit_is_installed_but_said(tmp_path: Path, monkeypatch):
+    remote, seed, local = _remote_and_checkout(tmp_path)
+    monkeypatch.setattr(install, "github_repo_url", lambda _entry: str(remote))
+    write_manifest(seed, "1.0.0")
+    git("add", "-A", cwd=seed)
+    git("commit", "-m", "same version, other content", cwd=seed)
+    git("push", "origin", "HEAD", cwd=seed)
+    seen: list[tuple[str, object]] = []
+    result = clone_or_pull(entry(), tmp_path, progress=lambda phase, text: seen.append((phase, text)))
+    assert result.ok, result.message
+    said = [text for _phase, text in seen if getattr(text, "code", "") == "cp_same_version_new_commit"]
+    assert len(said) == 1, [str(t) for _p, t in seen]
+    assert "1.0.0" in localize("en", said[0]) and "not raised" in localize("en", said[0])
+    assert "no se subió" in localize("es", said[0])
