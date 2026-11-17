@@ -637,6 +637,10 @@ def clone_or_pull(
         head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=str(path), check=False, capture_output=True, text=True, timeout=30)
         installed_sha = head.stdout.strip() if head.returncode == 0 else ""
         if installed_sha and installed_sha != candidate_sha:
+            from .settings import require_version_bump
+
+            if require_version_bump():
+                return InstallResult(False, coded("version_not_bumped", version=installed.version, installed=installed_sha[:12], candidate=candidate_sha[:12]))
             _checkpoint(progress, "validation", "cp_same_version_new_commit", installed=installed_sha[:12], candidate=candidate_sha[:12], version=installed.version)
 
     if not verify_build:

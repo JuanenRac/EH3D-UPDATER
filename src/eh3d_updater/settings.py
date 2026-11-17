@@ -125,3 +125,17 @@ def min_common_mode() -> str:
 
     The environment variable `EH3D_UPDATER_MIN_COMMON` wins over the saved setting `min_common_check`; anything else is the default. It never holds an update back."""
     return _parse_mode(os.environ.get("EH3D_UPDATER_MIN_COMMON") or load_settings().get("min_common_check"))
+
+
+def require_version_bump() -> bool:
+    """Whether an update that changes the commit but keeps the version number is refused (default: off).
+
+    The environment variable `EH3D_UPDATER_REQUIRE_VERSION_BUMP` (1/true/yes/on or 0/false/no/off) wins over the saved setting `require_version_bump`; anything else is the default, so the check stays off until someone turns it on."""
+    raw = os.environ.get("EH3D_UPDATER_REQUIRE_VERSION_BUMP")
+    if raw is None or not raw.strip():
+        raw = load_settings().get("require_version_bump")
+    if isinstance(raw, bool):
+        return raw
+    if isinstance(raw, str):
+        return raw.strip().lower() in {"1", "true", "yes", "on"}
+    return False
