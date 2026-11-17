@@ -143,12 +143,34 @@ class InstallResult:
     unavailable: bool = False
 
 
+def _stop_tree(process: subprocess.Popen) -> None:
+    """Ends the process this module started and everything it started (a build script leaves children behind that a plain kill would not reach)."""
+    if os.name == "nt":
+        subprocess.run(["taskkill", "/F", "/T", "/PID", str(process.pid)], capture_output=True, check=False, creationflags=subprocess.CREATE_NO_WINDOW, timeout=60)
+    else:
+        import signal
+
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except OSError:
+            process.kill()
+
+
+def _timeout_for(cmd: list[str]) -> float | None:
+    """How long a git command or a build/test script may run (settings `git_timeout_s` and `build_timeout_s`; 0 means no limit)."""
+    from .settings import get_timeout
+
+    return get_timeout("git_timeout_s" if cmd and Path(cmd[0]).stem.lower() == "git" else "build_timeout_s")
+
+
 def _run(
-    cmd: list[str], cwd: Path, *, capture_output: bool = False
+    cmd: list[str], cwd: Path, *, capture_output: bool = False, timeout: float | None = None
 ) -> subprocess.CompletedProcess[str]:
     kwargs: dict[str, object] = {"cwd": str(cwd), "check": False}
     if capture_output:
         kwargs.update({"capture_output": True, "text": True})
+    # A git that wants a password must fail at once instead of waiting for a person who is not at the keyboard.
+    kwargs["env"] = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}
     # The GUI is started with pythonw on Windows. Do not let git or a child
     # build script create a surprise console while its output is captured for
     # the in-window checkpoint log.
@@ -159,10 +181,43 @@ def _run(
         # captured evidence instead, so provide one harmless newline and do
         # not leave a hidden child waiting forever for a keypress.
         kwargs["input"] = "\n"
+    limit = _timeout_for(cmd) if timeout is None else (timeout or None)
     try:
-        return subprocess.run(cmd, **kwargs)  # type: ignore[arg-type]
+        return _run_limited(cmd, kwargs, limit)
     except FileNotFoundError as exc:
         raise InstallError(coded("tool_missing", tool=cmd[0], error=str(exc))) from exc
+    except subprocess.TimeoutExpired as exc:
+        raise InstallError(coded("timed_out", tool=cmd[0], seconds=int(exc.timeout))) from exc
+
+
+def _run_limited(cmd: list[str], kwargs: dict[str, object], limit: float | None) -> subprocess.CompletedProcess[str]:
+    """`subprocess.run` that, when the time runs out, stops the whole tree of the command and not only its first process."""
+    if limit is None:
+        return subprocess.run(cmd, timeout=limit, **kwargs)  # type: ignore[arg-type]
+    options = dict(kwargs)
+    options.pop("check", None)
+    capture = bool(options.pop("capture_output", False))
+    feed = options.pop("input", None)
+    if capture:
+        options["stdout"] = options["stderr"] = subprocess.PIPE
+    if feed is not None:
+        options["stdin"] = subprocess.PIPE
+    if os.name == "nt":
+        options["creationflags"] = int(options.get("creationflags", 0)) | subprocess.CREATE_NEW_PROCESS_GROUP  # type: ignore[call-overload]
+    else:
+        options["start_new_session"] = True
+    with subprocess.Popen(cmd, **options) as process:  # type: ignore[call-overload]
+        try:
+            out, err = process.communicate(feed, timeout=limit)
+        except subprocess.TimeoutExpired:
+            _stop_tree(process)
+            process.communicate()
+            raise
+        except BaseException:
+            _stop_tree(process)
+            process.communicate()
+            raise
+        return subprocess.CompletedProcess(cmd, process.returncode, out, err)
 
 
 def _rmtree_best_effort(path: Path) -> None:

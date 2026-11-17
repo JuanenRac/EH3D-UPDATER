@@ -113,6 +113,7 @@ def test_a_missing_git_is_reported_as_a_coded_result(tmp_path: Path, monkeypatch
         raise FileNotFoundError("git")
 
     monkeypatch.setattr(install.subprocess, "run", no_git)
+    monkeypatch.setattr(install.subprocess, "Popen", no_git)  # a command with a time limit starts through Popen
     (result,) = install_or_update(entry(), tmp_path)
     assert not result.ok
     assert isinstance(result.message, CodedText) and result.message.code == "tool_missing"

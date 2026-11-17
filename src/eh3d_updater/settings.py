@@ -69,6 +69,19 @@ def save_settings(**updates: Any) -> None:
             pass
 
 
+#: How long a git command and a build/test script may run before the update gives up on it, in seconds (settings `git_timeout_s` and
+#: `build_timeout_s` in the settings file; 0 means no limit).
+DEFAULT_TIMEOUTS = {"git_timeout_s": 600, "build_timeout_s": 1800}
+
+
+def get_timeout(key: str) -> float | None:
+    """The limit in seconds for `key` (`git_timeout_s` or `build_timeout_s`): the saved value when it is a number from 0 to 86400, else the default. `None` means no limit."""
+    value = load_settings().get(key)
+    if isinstance(value, bool) or not isinstance(value, (int, float)) or not 0 <= value <= 86400:
+        value = DEFAULT_TIMEOUTS[key]
+    return float(value) or None
+
+
 def get_saved_workspace_root() -> Path | None:
     """The real, previously chosen workspace root, only when it is still
     a real, existing directory on this machine - a saved path pointing
