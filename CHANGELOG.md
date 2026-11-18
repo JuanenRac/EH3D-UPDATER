@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.1.0] - Updates that can be refused without a version rise, a fault campaign and a command that no longer holds the update
+
 - **An update that does not raise the version number can be refused:** the setting `require_version_bump` of the settings file (or the environment variable `EH3D_UPDATER_REQUIRE_VERSION_BUMP`) is off by default; when it is on, a candidate with the installed version and another commit is refused, in the eight languages, and nothing on disk changes.
 
 - **An update that brings the same version number with another commit says so:** when the candidate has the version that is installed but a different commit, the update goes on as before and the progress shows a line with both commits and that the version number was not raised (in the 8 languages). Tested with a remote that adds a commit without a version change.
