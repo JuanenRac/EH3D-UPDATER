@@ -1583,6 +1583,78 @@ for _language, _install_copy in _INSTALL_COPY.items():
     TRANSLATIONS[_language].update(_install_copy)
 
 
+# The switch that makes the window refuse commits that are not signed (the setting `signature_policy`): warn by default, require on request.
+_SIGNATURE_COPY: dict[str, dict[str, str]] = {
+    "en": {
+        "sig_require_switch": "Require signed commits",
+        "sig_require_off_hint": "Off: an unsigned commit is installed and the steps say that it is not signed.",
+        "sig_require_on_hint": "On: an unsigned or untrusted commit is refused and nothing is installed.",
+        "sig_locked_by_env": "Set by the environment variable EH3D_UPDATER_REQUIRE_SIGNED; it cannot be changed here.",
+        "log_signature_require": "Commit signatures are now required.",
+        "log_signature_warn": "Commit signatures are no longer required: an unsigned commit is installed with a warning.",
+    },
+    "es": {
+        "sig_require_switch": "Exigir commits firmados",
+        "sig_require_off_hint": "Desactivado: un commit sin firma se instala y los pasos avisan de que no está firmado.",
+        "sig_require_on_hint": "Activado: un commit sin firma o sin confianza se rechaza y no se instala nada.",
+        "sig_locked_by_env": "Fijado por la variable de entorno EH3D_UPDATER_REQUIRE_SIGNED; aquí no se puede cambiar.",
+        "log_signature_require": "Ahora se exigen commits firmados.",
+        "log_signature_warn": "Ya no se exigen commits firmados: un commit sin firma se instala con un aviso.",
+    },
+    "fr": {
+        "sig_require_switch": "Exiger des commits signés",
+        "sig_require_off_hint": "Désactivé : un commit non signé est installé et les étapes indiquent qu'il n'est pas signé.",
+        "sig_require_on_hint": "Activé : un commit non signé ou non fiable est refusé et rien n'est installé.",
+        "sig_locked_by_env": "Défini par la variable d'environnement EH3D_UPDATER_REQUIRE_SIGNED ; impossible de le modifier ici.",
+        "log_signature_require": "Les commits signés sont désormais exigés.",
+        "log_signature_warn": "Les commits signés ne sont plus exigés : un commit non signé est installé avec un avertissement.",
+    },
+    "it": {
+        "sig_require_switch": "Richiedi commit firmati",
+        "sig_require_off_hint": "Disattivato: un commit non firmato viene installato e i passaggi avvisano che non è firmato.",
+        "sig_require_on_hint": "Attivato: un commit non firmato o non attendibile viene rifiutato e non viene installato nulla.",
+        "sig_locked_by_env": "Impostato dalla variabile d'ambiente EH3D_UPDATER_REQUIRE_SIGNED; qui non si può cambiare.",
+        "log_signature_require": "Ora i commit firmati sono obbligatori.",
+        "log_signature_warn": "I commit firmati non sono più obbligatori: un commit non firmato viene installato con un avviso.",
+    },
+    "de": {
+        "sig_require_switch": "Signierte Commits verlangen",
+        "sig_require_off_hint": "Aus: Ein nicht signierter Commit wird installiert und die Schritte weisen darauf hin, dass er nicht signiert ist.",
+        "sig_require_on_hint": "An: Ein nicht signierter oder nicht vertrauenswürdiger Commit wird abgelehnt und es wird nichts installiert.",
+        "sig_locked_by_env": "Durch die Umgebungsvariable EH3D_UPDATER_REQUIRE_SIGNED festgelegt; hier nicht änderbar.",
+        "log_signature_require": "Signierte Commits werden jetzt verlangt.",
+        "log_signature_warn": "Signierte Commits werden nicht mehr verlangt: Ein nicht signierter Commit wird mit einer Warnung installiert.",
+    },
+    "zh": {
+        "sig_require_switch": "要求提交已签名",
+        "sig_require_off_hint": "关闭：未签名的提交会被安装，步骤中会提示它未签名。",
+        "sig_require_on_hint": "开启：未签名或不受信任的提交会被拒绝，且不会安装任何内容。",
+        "sig_locked_by_env": "由环境变量 EH3D_UPDATER_REQUIRE_SIGNED 决定，无法在此更改。",
+        "log_signature_require": "现在要求提交已签名。",
+        "log_signature_warn": "不再要求提交已签名：未签名的提交会带警告安装。",
+    },
+    "ja": {
+        "sig_require_switch": "署名済みコミットを必須にする",
+        "sig_require_off_hint": "オフ：署名のないコミットもインストールされ、手順にその旨が表示されます。",
+        "sig_require_on_hint": "オン：署名のないコミットや信頼できないコミットは拒否され、何もインストールされません。",
+        "sig_locked_by_env": "環境変数 EH3D_UPDATER_REQUIRE_SIGNED で設定されているため、ここでは変更できません。",
+        "log_signature_require": "署名済みコミットが必須になりました。",
+        "log_signature_warn": "署名済みコミットは必須ではなくなりました。署名のないコミットは警告付きでインストールされます。",
+    },
+    "pt": {
+        "sig_require_switch": "Exigir commits assinados",
+        "sig_require_off_hint": "Desativado: um commit sem assinatura é instalado e os passos avisam que não está assinado.",
+        "sig_require_on_hint": "Ativado: um commit sem assinatura ou sem confiança é recusado e não é instalado nada.",
+        "sig_locked_by_env": "Definido pela variável de ambiente EH3D_UPDATER_REQUIRE_SIGNED; não pode ser alterado aqui.",
+        "log_signature_require": "Os commits assinados passam a ser exigidos.",
+        "log_signature_warn": "Os commits assinados deixam de ser exigidos: um commit sem assinatura é instalado com um aviso.",
+    },
+}
+
+for _language, _signature_copy in _SIGNATURE_COPY.items():
+    TRANSLATIONS[_language].update(_signature_copy)
+
+
 def t(lang: str, key: str, **kwargs: object) -> str:
     """Real translation lookup with real `{placeholder}` substitution
     (str.format, not a template engine) - falls back to English on an

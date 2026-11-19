@@ -221,3 +221,28 @@ def test_a_refresh_whose_worker_fails_unexpectedly_does_not_leave_the_window_bus
     bridge.refresh(False)
     _wait_until_not_busy(bridge)
     assert bridge._busy is False
+
+
+def test_the_signature_switch_saves_the_choice_and_logs_it(bridge, tmp_path: Path, monkeypatch):
+    from eh3d_updater import settings
+
+    monkeypatch.setattr(settings, "SETTINGS_PATH", tmp_path / "settings.json")
+    monkeypatch.delenv("EH3D_UPDATER_REQUIRE_SIGNED", raising=False)
+    assert bridge.requireSigned is False and bridge.signatureLocked is False
+    bridge.setRequireSigned(True)
+    assert bridge.requireSigned is True
+    assert bridge.activity[-1] == i18n.t("pt", "log_signature_require")
+    bridge.setRequireSigned(False)
+    assert bridge.requireSigned is False
+    assert bridge.activity[-1] == i18n.t("pt", "log_signature_warn")
+
+
+def test_the_signature_switch_cannot_change_what_the_environment_decides(bridge, tmp_path: Path, monkeypatch):
+    from eh3d_updater import settings
+
+    monkeypatch.setattr(settings, "SETTINGS_PATH", tmp_path / "settings.json")
+    monkeypatch.setenv("EH3D_UPDATER_REQUIRE_SIGNED", "1")
+    assert bridge.signatureLocked is True and bridge.requireSigned is True
+    bridge.setRequireSigned(False)
+    assert bridge.requireSigned is True
+    assert not (tmp_path / "settings.json").exists()

@@ -12,13 +12,13 @@ illustrative of the shape, with made-up project names and versions.
 ```
 $ eh3d-updater --cli -h
 usage: eh3d-updater --cli [-h] [--version] [--log-file FILE] [--no-log]
-                          {status,install,update,check,clean-backups,restore-backup,evidence} ...
+                          {status,install,update,check,clean-backups,restore-backup,signature,evidence} ...
 
 Detects, installs, and manually updates the EH3D ecosystem's own repositories
 on this machine.
 
 positional arguments:
-  {status,install,update,check,clean-backups,restore-backup,evidence}
+  {status,install,update,check,clean-backups,restore-backup,signature,evidence}
     status              Show what's installed, its version, and the latest
                         GitHub version of every project.
     install             Clone and build ONE project that isn't installed yet.
@@ -29,6 +29,9 @@ positional arguments:
                         staging folders) beyond the newest N per project.
     restore-backup      Put the newest kept previous installation of ONE
                         project back in place (the current one is kept too).
+    signature           Show whether an unsigned commit is installed with a
+                        warning (warn, the default) or refused (require);
+                        --set changes it.
     evidence            Verify the hash chain of the evidence log, optionally
                         exporting it as one JSON file.
 
@@ -287,6 +290,20 @@ Puts a kept previous installation back in place with the same guarantees as an
 update: the installation being replaced is itself kept (as a new backup, so the
 swap can be undone), nothing is deleted, a failure between the two renames puts
 the original back, and the program running right now is never replaced.
+
+### `signature [--set {warn,require}]`
+
+Shows the commit-signature policy in force and how to change it. `warn` (the
+default) installs an unsigned commit and the steps say that it is not signed;
+`require` refuses an unsigned or untrusted commit before anything is built and
+installs nothing. `--set` saves the choice as `signature_policy` in the settings
+file and clears the older `require_signed_commits` flag, so `--set warn` really
+turns the strict mode off. The window has the same switch ("Require signed
+commits"). The environment variable `EH3D_UPDATER_REQUIRE_SIGNED` wins over the
+saved choice: while it is set, `--set` saves nothing and exits with 1, and the
+switch of the window is shown but cannot change it. `update --preview` shows
+whether the candidate commit is signed in both modes, and `status` prints the
+mode in force.
 
 ### `evidence [--workspace PATH] [--export FILE]`
 

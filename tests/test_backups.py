@@ -298,7 +298,7 @@ def test_preview_describes_the_candidate_without_changing_the_checkout(tmp_path:
     assert preview.commit == sha
     assert preview.author == "Contract <contract@example.invalid>"
     assert (preview.installed_version, preview.version) == ("1.0.0", "1.1.0")
-    assert preview.signature == "not required"
+    assert preview.signature.startswith("not required")
     assert sorted(preview.changed_scripts) == ["build-test.sh", "tools/extra.py"]
     assert "tools/extra.py" in preview.diffstat
     assert git("rev-parse", "HEAD", cwd=remote.checkout) == before

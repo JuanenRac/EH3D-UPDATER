@@ -155,6 +155,7 @@ def cmd_status(args: argparse.Namespace) -> int:
     # those needed no change.
     if not args.json:
         print(f"Workspace root: {workspace_root}")
+        print(signature_summary())
     local_discovery = discover_workspace(workspace_root)
     ignored = _ignored(local_discovery)
     _say_ignored(ignored)
@@ -470,6 +471,31 @@ def _install_or_update(args: argparse.Namespace, *, expect_installed: bool) -> i
     return 0 if ok else 1
 
 
+def signature_summary() -> str:
+    """The one line `status` prints about the commit-signature policy in force."""
+    from . import signature
+
+    policy = signature.current_policy()
+    if policy.required:
+        return "Commit signatures: require (an unsigned commit is refused; `signature` shows how to change it)"
+    return "Commit signatures: warn (an unsigned commit is installed with a warning; `signature --set require` refuses it)"
+
+
+def cmd_signature(args: argparse.Namespace) -> int:
+    """Shows the commit-signature policy in force and, with `--set`, saves `warn` or `require` in the settings file."""
+    from . import signature
+
+    if args.set:
+        if signature.mode_locked_by_environment():
+            print("EH3D_UPDATER_REQUIRE_SIGNED is set and wins over the saved choice: unset it first, nothing was saved.", file=sys.stderr)
+            return 1
+        signature.save_policy_mode(args.set)
+        print(f"Saved: commit signatures are now '{args.set}'.")
+    for line in signature.describe_policy(signature.current_policy()):
+        print(line)
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="eh3d-updater --cli",
@@ -543,6 +569,12 @@ def build_parser() -> argparse.ArgumentParser:
     restore_p.add_argument("--backup", help="Folder name of the backup to restore (default: the newest).")
     restore_p.add_argument("--list", action="store_true", help="Only list the kept previous installations of the project.")
     restore_p.set_defaults(func=cmd_restore_backup)
+
+    signature_p = subparsers.add_parser(
+        "signature", help="Show whether an unsigned commit is installed with a warning (warn, the default) or refused (require); --set changes it.",
+    )
+    signature_p.add_argument("--set", choices=("warn", "require"), help="Save this choice in the settings file (the environment variable EH3D_UPDATER_REQUIRE_SIGNED wins over it).")
+    signature_p.set_defaults(func=cmd_signature)
 
     evidence_p = subparsers.add_parser("evidence", help="Verify the hash chain of the evidence log, optionally exporting it as one JSON file.")
     evidence_p.add_argument("--workspace", help="Workspace root (default: this tool's own parent directory).")

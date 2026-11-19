@@ -470,6 +470,19 @@ ApplicationWindow {
                     LabelText { text: backend.workspaceRoot; color: window.textPrimary; font.pixelSize: 11; wrapMode: Text.WrapAnywhere; Layout.fillWidth: true }
                     GameButton { text: ui("browse_button"); Layout.fillWidth: true; accent: "#265c89"; onClicked: workspaceDialog.open() }
                     Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 1; color: window.border }
+                    GameCheck {
+                        id: signatureCheck
+                        Layout.fillWidth: true
+                        text: ui("sig_require_switch")
+                        checked: backend.requireSigned
+                        enabled: !backend.signatureLocked && !backend.busy
+                        onToggled: backend.setRequireSigned(checked)
+                    }
+                    LabelText {
+                        text: backend.signatureLocked ? ui("sig_locked_by_env") : (backend.requireSigned ? ui("sig_require_on_hint") : ui("sig_require_off_hint"))
+                        color: window.textMuted; font.pixelSize: 10; wrapMode: Text.WordWrap; Layout.fillWidth: true
+                    }
+                    Rectangle { Layout.fillWidth: true; Layout.preferredHeight: 1; color: window.border }
                     MetricCard { Layout.fillWidth: true; caption: ui("metric_detected"); value: String(backend.discoveredCount); accent: window.cyan }
                     MetricCard { Layout.fillWidth: true; caption: ui("metric_installed"); value: String(backend.installedCount); accent: window.green }
                     MetricCard { Layout.fillWidth: true; caption: ui("metric_updates"); value: String(backend.updateCount); accent: window.amber }

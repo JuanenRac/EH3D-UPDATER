@@ -18,7 +18,7 @@
 
 ---
 
-**Comprobación de honestidad - lo que se ejecuta hoy:** una línea de comandos y una ventana Qt Quick que encuentran los repositorios EH3D por sus manifiestos `eh3d.project.json`, comparan cada copia local con GitHub e instalan o actualizan de uno en uno tras una confirmación. La actualización se clona, se fusiona sin forzar y se construye y comprueba antes en un clon de preparación, y la instalación anterior se guarda como copia de seguridad. Es el actualizador de los otros ecosistemas de la familia con los nombres de EH3D, con 458 pruebas que se ejecutan en un ordenador con un GitHub simulado y repositorios locales. Todavía no se ha usado para trabajo real y nunca ha instalado ni actualizado un proyecto desde el GitHub real.
+**Comprobación de honestidad - lo que se ejecuta hoy:** una línea de comandos y una ventana Qt Quick que encuentran los repositorios EH3D por sus manifiestos `eh3d.project.json`, comparan cada copia local con GitHub e instalan o actualizan de uno en uno tras una confirmación. La actualización se clona, se fusiona sin forzar y se construye y comprueba antes en un clon de preparación, y la instalación anterior se guarda como copia de seguridad. Es el actualizador de los otros ecosistemas de la familia con los nombres de EH3D, con 491 pruebas que se ejecutan en un ordenador con un GitHub simulado y repositorios locales. Todavía no se ha usado para trabajo real y nunca ha instalado ni actualizado un proyecto desde el GitHub real.
 
 ---
 
@@ -30,7 +30,7 @@
 |---|---|
 | Versión | `0.1.0` |
 | Madurez | Funcional |
-| Pruebas | 458 |
+| Pruebas | 491 |
 | Pila tecnológica | Python 3.10+ / PySide6 / Qt Quick |
 | En hardware real | No aplica: se ejecuta en el PC de la persona que lo usa |
 
@@ -45,7 +45,7 @@ Cada línea es una parte de este repositorio y la luz dice hasta dónde llega ho
 | Área | Estado | Qué significa aquí |
 |---|---|---|
 | Software | 🟡 | Una línea de comandos y una ventana Qt Quick encuentran los repositorios EH3D por sus manifiestos, los comparan con GitHub e instalan o actualizan de uno en uno, con un clon de preparación y una copia de la instalación anterior. |
-| Pruebas | 🟡 | Pasan 458 pruebas (`pytest`), con un GitHub simulado y repositorios locales (sin red); otras once se omiten cuando falta una copia hermana que necesitan. Una campaña con semilla fija hace fallar un comando de una actualización en un paso elegido, de dos maneras, y comprueba que la instalación nunca queda a medias y que la siguiente ejecución termina la actualización. |
+| Pruebas | 🟡 | Pasan 491 pruebas (`pytest`), con un GitHub simulado y repositorios locales (sin red); otras once se omiten cuando falta una copia hermana que necesitan. Una campaña con semilla fija hace fallar un comando de una actualización en un paso elegido, de dos maneras, y comprueba que la instalación nunca queda a medias y que la siguiente ejecución termina la actualización. |
 | Descubrimiento | 🟡 | Los repositorios públicos son solo candidatos: un proyecto entra en el ecosistema cuando su `eh3d.project.json` de la raíz valida y dice `EH3D`; probado con un listado simulado, no ejecutado contra el GitHub real. |
 | Uso real | 🟠 | Todavía no se ha usado para trabajo real y nunca ha instalado ni actualizado un proyecto desde el GitHub real; solo existen unos pocos repositorios EH3D para instalar. |
 | Interfaz | 🟡 | La ventana funciona en ocho idiomas y su puente de Python está cubierto por pruebas; la línea de comandos solo necesita la biblioteca estándar. |
@@ -125,6 +125,7 @@ No hay que configurar nada para empezar. Las elecciones que se recuerdan viven e
 | `profile` / `--profile` | ninguno (todos los proyectos) | un nombre de perfil definido; uno no definido es un error | restringe `status`, `check`, `install` y `update` a los proyectos de un perfil de estación |
 | `backups_to_keep` / `clean-backups --keep` | 2 | un número entero de 0 o más | cuántas instalaciones anteriores se conservan por proyecto; una actualización siempre conserva al menos 1 |
 | `require_signed_commits`, `allowed_signers_file` / `EH3D_UPDATER_REQUIRE_SIGNED=1`, `EH3D_UPDATER_ALLOWED_SIGNERS` | desactivado | activado o desactivado | rechazar commits que no firme un firmante permitido; un valor que no se reconoce cuenta como activado, con un aviso |
+| `signature_policy` / `signature --set warn\|require`, el interruptor «Exigir commits firmados» de la ventana | warn | warn o require | el interruptor visible de la línea anterior: `warn` instala un commit sin firma y lo dice, `require` lo rechaza; `EH3D_UPDATER_REQUIRE_SIGNED` manda sobre lo guardado y entonces el interruptor no puede cambiarlo |
 | `signature_expected_fingerprint` / `EH3D_UPDATER_EXPECTED_FINGERPRINT` | ninguna (cualquier clave de confianza) | la huella de una clave | con la política de commits firmados activa, la clave de firma debe tener esta huella; una firma buena solo se acepta si git confía en la clave (estado G) |
 | `signature_accept_unknown_trust` | desactivado | activado o desactivado | acepta también una firma buena de una clave de confianza desconocida (estado U) |
 | `allow_foreign_origin` | desactivado | activado o desactivado | actualiza una copia cuyo `origin` no es el repositorio oficial del proyecto (se rechaza por defecto) |
@@ -154,7 +155,7 @@ Para sacar una captura de la ventana sin abrirla a mano, ejecútelo con `--shot 
 
 ## 🧪 Pruebas
 
-La suite tiene 458 pruebas que pasan (`pytest tests`), y otras once que se omiten cuando una copia hermana que necesitan no está junto a esta. Se ejecutan con un GitHub simulado y repositorios locales, sin red, y cubren el contrato del manifiesto, el descubrimiento, la comparación de versiones y commits, la instalación y la actualización con el clon de preparación y los rechazos (cambios locales, una rama divergente, una versión menor, un manifiesto no válido, una compilación que falla), las copias de seguridad y su restauración, la cadena de evidencias, la política de firmas, los ajustes y perfiles, los mensajes y los ocho idiomas de la ventana, y el puente de Python de la ventana (sin pantalla). Una prueba también comprueba que el árbol de ficheros de cada README lista cada entrada versionada de primer nivel. El CI las ejecuta en Linux y en Windows, más `python tools/ci_validate.py` y una comprobación de sintaxis de cada fichero de Python. El CI también las ejecuta sin la ventana en Python 3.10 y 3.13, la más antigua y la más nueva que promete el paquete, y un comando que falla nombra su fichero de registro completo.
+La suite tiene 491 pruebas que pasan (`pytest tests`), y otras once que se omiten cuando una copia hermana que necesitan no está junto a esta. Se ejecutan con un GitHub simulado y repositorios locales, sin red, y cubren el contrato del manifiesto, el descubrimiento, la comparación de versiones y commits, la instalación y la actualización con el clon de preparación y los rechazos (cambios locales, una rama divergente, una versión menor, un manifiesto no válido, una compilación que falla), las copias de seguridad y su restauración, la cadena de evidencias, la política de firmas, los ajustes y perfiles, los mensajes y los ocho idiomas de la ventana, y el puente de Python de la ventana (sin pantalla). Una prueba también comprueba que el árbol de ficheros de cada README lista cada entrada versionada de primer nivel. El CI las ejecuta en Linux y en Windows, más `python tools/ci_validate.py` y una comprobación de sintaxis de cada fichero de Python. El CI también las ejecuta sin la ventana en Python 3.10 y 3.13, la más antigua y la más nueva que promete el paquete, y un comando que falla nombra su fichero de registro completo.
 
 ## 🏗️ Compilación y publicación
 

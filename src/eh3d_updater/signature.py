@@ -49,7 +49,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from .messages import coded
-from .settings import load_settings
+from .settings import load_settings, save_settings
 
 
 @dataclass(frozen=True)
@@ -171,3 +171,36 @@ def verify_revision(repo: Path, revision: str, policy: SignaturePolicy) -> str |
     if not policy.required:
         return None
     return unsigned_reason(repo, revision, policy)
+
+
+MODES = ("warn", "require")
+
+
+def mode_locked_by_environment() -> bool:
+    """True when `EH3D_UPDATER_REQUIRE_SIGNED` is set: it wins over the saved choice, so the switch of the window and `signature --set` cannot change what is in force."""
+    return bool(os.environ.get("EH3D_UPDATER_REQUIRE_SIGNED", "").strip())
+
+
+def save_policy_mode(mode: str) -> None:
+    """Saves the choice of the switch (`warn` or `require`) in the settings file.
+
+    It writes `signature_policy` and also clears the older `require_signed_commits`, which would otherwise keep the strict mode on after the person chose `warn`.
+    Any other value raises `ValueError` and nothing is saved."""
+    if mode not in MODES:
+        raise ValueError(f"signature mode must be one of {', '.join(MODES)}, not {mode!r}")
+    save_settings(signature_policy=mode, require_signed_commits=False)
+
+
+def describe_policy(policy: SignaturePolicy) -> list[str]:
+    """The lines that tell what the policy in force does, and how to change it. Used by `signature` and by the preview of an installation."""
+    if policy.required:
+        lines = ["Commit signatures: require (an unsigned or untrusted commit is refused and nothing is installed)."]
+    else:
+        lines = ["Commit signatures: warn (the default: an unsigned commit is installed and the steps say that it is not signed)."]
+    if policy.invalid:
+        lines.append(f"WARNING: the setting {policy.invalid} is not recognised and is treated as require.")
+    if mode_locked_by_environment():
+        lines.append("It is set by the environment variable EH3D_UPDATER_REQUIRE_SIGNED, which wins over the saved choice.")
+    else:
+        lines.append("Change it with `eh3d-updater --cli signature --set require` (or warn), or with the switch of the window.")
+    return lines

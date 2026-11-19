@@ -40,6 +40,7 @@ from .install import InstallError, install_with_dependencies, is_running_checkou
 from .logs import prune_logs
 from .messages import localize
 from .registry import GITHUB_OWNER
+from .signature import current_policy, mode_locked_by_environment, save_policy_mode
 
 
 DEPLOY_ORDER = ("all", "cm5", "user-pc", "mobile", "wearable", "dev-server")
@@ -115,6 +116,7 @@ class UpdaterBridge(QObject):
     operationChanged = Signal()
     languageChanged = Signal()
     deployOptionsChanged = Signal()
+    signatureChanged = Signal()
     _remoteResult = Signal(object, object, object)
     _actionResult = Signal(str, object)
     _operationCheckpoint = Signal(str, object, str)
@@ -134,6 +136,7 @@ class UpdaterBridge(QObject):
         """`ephemeral` is the picture mode: no saved preference or profile is read, GitHub is not asked, and `lang` and
         `workspace_label` (what the window shows as the workspace) stand in for what the person had chosen."""
         super().__init__()
+        self._ephemeral = ephemeral
         self._workspace_root = workspace_root
         self._workspace_label = workspace_label
         self._logFilePath = str(log_file_path) if log_file_path else ""
@@ -376,6 +379,25 @@ class UpdaterBridge(QObject):
         self.deployOptionsChanged.emit()
         self.projectsChanged.emit()
         self.summaryChanged.emit()
+
+    @Property(bool, notify=signatureChanged)
+    def requireSigned(self) -> bool:
+        """The switch of the window: whether an unsigned or untrusted commit is refused (`require`) or installed with a warning (`warn`, the default)."""
+        return False if self._ephemeral else current_policy().required
+
+    @Property(bool, notify=signatureChanged)
+    def signatureLocked(self) -> bool:
+        """True when the environment variable decides the mode, so the switch is shown but cannot change it."""
+        return mode_locked_by_environment()
+
+    @Slot(bool)
+    def setRequireSigned(self, required: bool) -> None:
+        if self._ephemeral or mode_locked_by_environment():
+            self.signatureChanged.emit()
+            return
+        save_policy_mode("require" if required else "warn")
+        self._append_activity(self.text("log_signature_require" if required else "log_signature_warn"))
+        self.signatureChanged.emit()
 
     @Slot(str)
     def setDeploy(self, deploy: str) -> None:

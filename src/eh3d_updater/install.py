@@ -1301,7 +1301,7 @@ def plan_install(entry: ProjectEntry, workspace_root: Path, missing_needed: list
     for needed in missing_needed:
         lines.append(f"  - first install {needed.name}, which {entry.name} needs: clone {github_repo_url(needed)} into {workspace_root / needed.name}")
     lines.append(f"  - clone {github_repo_url(entry)} into {workspace_root / entry.name} (through a hidden staging folder, moved into place when the clone is accepted)")
-    lines.append(f"  - commit signatures: {'required, an unsigned commit is refused' if policy.required else 'not required, an unsigned commit is installed with a warning'}")
+    lines.append(f"  - commit signatures: {'required, an unsigned commit is refused' if policy.required else 'not required, an unsigned commit is installed with a warning'} (see `signature`)")
     if policy.invalid:
         lines.append(f"  - WARNING: the signature setting {policy.invalid} is not recognised and is treated as require")
     lines.append("  - the manifest of the clone must be valid and name this project")
@@ -1354,7 +1354,14 @@ def preview_update(entry: ProjectEntry, workspace_root: Path) -> UpdatePreview:
             raise InstallError(coded("remote_manifest_invalid", reason=str(exc))) from exc
         policy = current_policy()
         refusal = verify_revision(path, sha, policy)
-        signature = refusal if refusal else ("accepted" if policy.required else "not required")
+        if refusal:
+            signature = refusal
+        elif policy.required:
+            signature = "accepted"
+        else:
+            # the default mode installs it anyway, but the preview still tells whether the commit is signed
+            unsigned = unsigned_reason(path, sha, policy)
+            signature = "not required, and the commit is signed and trusted" if unsigned is None else f"not required, and the commit is not signed: {unsigned}"
         author = subprocess.run(
             ["git", "log", "-1", "--format=%an <%ae>", sha], cwd=str(path), check=False, capture_output=True, text=True
         ).stdout.strip()
