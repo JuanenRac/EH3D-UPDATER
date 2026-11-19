@@ -4,6 +4,8 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+## [0.1.1] - Switch to require signed commits, signature command and clearer signature messages
+
 - **A visible switch to require signed commits:** the window has a "Require signed commits" switch (the setting `signature_policy` of the settings file) with a line that says what each position does. It is off by default, so the updater still warns and installs an unsigned commit, as before; turned on, an unsigned or untrusted commit is refused before anything is built and nothing is installed. Choosing warn also clears the older `require_signed_commits` flag that would keep the strict mode on. When the environment variable `EH3D_UPDATER_REQUIRE_SIGNED` is set it wins, and the switch is shown but cannot change it. The text is in the eight languages and a choice is written to the activity log.
 - **A `signature` command shows and sets the policy:** `eh3d-updater --cli signature` says whether an unsigned commit is installed with a warning or refused and how to change it; `signature --set require` (or `warn`) saves the choice, and it saves nothing when the environment variable decides.
 - **The update preview says whether the commit is signed even when signatures are not required:** it now reads "not required, and the commit is signed and trusted" or "not required, and the commit is not signed: <reason>", so the choice of turning the switch on can be made with the facts in front of the person; the strict mode shows "accepted" or the reason for the refusal as before.
