@@ -5,6 +5,7 @@ All notable changes to this project are documented here.
 ## [Unreleased]
 
 - **The universal manifest accepts the record of the evidence:** the optional text field `evidence_record`, in which the maintainer writes what was tried on real hardware, is no longer refused as an unknown field, and an empty or non-text value is refused by name, as in the other updaters of the family.
+
 ## [0.1.1] - Switch to require signed commits, signature command and clearer signature messages
 
 - **A visible switch to require signed commits:** the window has a "Require signed commits" switch (the setting `signature_policy` of the settings file) with a line that says what each position does. It is off by default, so the updater still warns and installs an unsigned commit, as before; turned on, an unsigned or untrusted commit is refused before anything is built and nothing is installed. Choosing warn also clears the older `require_signed_commits` flag that would keep the strict mode on. When the environment variable `EH3D_UPDATER_REQUIRE_SIGNED` is set it wins, and the switch is shown but cannot change it. The text is in the eight languages and a choice is written to the activity log.
