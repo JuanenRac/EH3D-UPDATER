@@ -319,3 +319,19 @@ def test_a_typo_in_the_name_of_the_field_is_still_refused():
     data["min_comon"] = "0.8.0.7"
     with pytest.raises(ManifestValidationError, match="unknown field"):
         parse_manifest(json.dumps(data))
+
+
+def test_accepts_the_record_of_what_was_tried_on_real_hardware():
+    data = valid_manifest()
+    data["evidence"] = "bench"
+    data["evidence_record"] = "Ran a job on the real board for ten minutes without faults."
+    manifest = parse_manifest(json.dumps(data), expected_name="HYDRA-UMC-EXAMPLE")
+    assert manifest.evidence == "bench"
+
+
+@pytest.mark.parametrize("record", ["", "   ", 7, None, ["a"]])
+def test_rejects_an_empty_or_non_text_evidence_record(record):
+    data = valid_manifest()
+    data["evidence_record"] = record
+    with pytest.raises(ManifestValidationError, match="evidence_record"):
+        parse_manifest(json.dumps(data), expected_name="HYDRA-UMC-EXAMPLE")

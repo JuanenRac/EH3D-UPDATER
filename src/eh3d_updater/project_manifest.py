@@ -149,7 +149,7 @@ def parse_manifest(text: str, *, expected_name: str | None = None) -> ProjectMan
     # isn't self-evident from the enum alone (e.g. "dev-server" is not
     # the same physical role as "cm5") - optional because most
     # deployment_target values need no such note.
-    optional_fields = {"service", "deployment_target_note", "components", "evidence", "hardware_bound", "depends_on", "binary", "former_name", "min_common"}
+    optional_fields = {"service", "deployment_target_note", "components", "evidence", "hardware_bound", "depends_on", "binary", "former_name", "min_common", "evidence_record"}
     unknown = sorted(set(data) - expected_fields - optional_fields)
     missing = sorted(expected_fields - set(data))
     if missing:
@@ -251,6 +251,10 @@ def parse_manifest(text: str, *, expected_name: str | None = None) -> ProjectMan
     evidence = data.get("evidence")
     if evidence is not None and evidence not in VALID_EVIDENCE:
         raise ManifestValidationError("evidence must be one of " + ", ".join(VALID_EVIDENCE) + f", got {evidence!r}")
+
+    # "evidence_record": the free text in which the maintainer records what was tried on real hardware when "evidence" is bench or field.
+    if "evidence_record" in data and (not isinstance(data["evidence_record"], str) or not data["evidence_record"].strip()):
+        raise ManifestValidationError("evidence_record must be a non-empty string")
 
     hardware_bound = data.get("hardware_bound")
     if hardware_bound is not None and not isinstance(hardware_bound, bool):
