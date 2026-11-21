@@ -18,7 +18,7 @@
 
 ---
 
-**Vérification d'honnêteté - ce qui tourne aujourd'hui :** une ligne de commande et une fenêtre Qt Quick qui trouvent les dépôts EH3D par leurs manifestes `eh3d.project.json`, comparent chaque copie locale à GitHub et installent ou mettent à jour un projet à la fois après une confirmation. La mise à jour est clonée, fusionnée sans forcer, puis construite et vérifiée d'abord dans un clone de préparation, et l'installation précédente est gardée en sauvegarde. C'est l'outil de mise à jour des autres écosystèmes de la famille avec les noms d'EH3D, avec 491 tests qui tournent sur un ordinateur avec un faux GitHub et des dépôts locaux. Il n'a pas encore servi à un travail réel et n'a jamais installé ni mis à jour un projet depuis le vrai GitHub.
+**Vérification d'honnêteté - ce qui tourne aujourd'hui :** une ligne de commande et une fenêtre Qt Quick qui trouvent les dépôts EH3D par leurs manifestes `eh3d.project.json`, comparent chaque copie locale à GitHub et installent ou mettent à jour un projet à la fois après une confirmation. La mise à jour est clonée, fusionnée sans forcer, puis construite et vérifiée d'abord dans un clone de préparation, et l'installation précédente est gardée en sauvegarde. C'est l'outil de mise à jour des autres écosystèmes de la famille avec les noms d'EH3D, avec 538 tests qui tournent sur un ordinateur avec un faux GitHub et des dépôts locaux. Il n'a pas encore servi à un travail réel et n'a jamais installé ni mis à jour un projet depuis le vrai GitHub.
 
 ---
 
@@ -30,7 +30,7 @@
 |---|---|
 | Version | `0.1.1` |
 | Maturité | Fonctionnel |
-| Tests | 491 |
+| Tests | 538 |
 | Pile technique | Python 3.10+ / PySide6 / Qt Quick |
 | Sur du matériel réel | Sans objet : il tourne sur le PC de la personne qui l'utilise |
 
@@ -45,7 +45,7 @@ Chaque ligne est une partie de ce dépôt et le feu dit où elle en est aujourd'
 | Domaine | État | Ce que cela veut dire ici |
 |---|---|---|
 | Logiciel | 🟡 | Une ligne de commande et une fenêtre Qt Quick trouvent les dépôts EH3D par leurs manifestes, les comparent à GitHub et installent ou mettent à jour un projet à la fois, avec un clone de préparation et une sauvegarde de l'installation précédente. |
-| Tests | 🟡 | 491 tests réussissent (`pytest`), avec un faux GitHub et des dépôts locaux (sans réseau) ; onze autres sont ignorés quand une copie voisine dont ils ont besoin manque. Une campagne à graine fixe fait échouer une commande d'une mise à jour à une étape choisie, de deux façons, et vérifie que l'installation ne reste jamais à moitié mise à jour et que l'exécution suivante termine la mise à jour. |
+| Tests | 🟡 | 538 tests réussissent (`pytest`), avec un faux GitHub et des dépôts locaux (sans réseau) ; onze autres sont ignorés quand une copie voisine dont ils ont besoin manque. Une campagne à graine fixe fait échouer une commande d'une mise à jour à une étape choisie, de deux façons, et vérifie que l'installation ne reste jamais à moitié mise à jour et que l'exécution suivante termine la mise à jour. |
 | Découverte | 🟡 | Les dépôts publics ne sont que des candidats : un projet entre dans l'écosystème quand son `eh3d.project.json` à la racine est valide et dit `EH3D` ; testé contre une fausse liste, pas contre le vrai GitHub. |
 | Usage réel | 🟠 | Il n'a pas encore servi à un travail réel et n'a jamais installé ni mis à jour un projet depuis le vrai GitHub ; seuls quelques dépôts EH3D existent à installer. |
 | Interface | 🟡 | La fenêtre fonctionne en huit langues et son pont Python est couvert par des tests ; la ligne de commande n'a besoin que de la bibliothèque standard. |
@@ -155,7 +155,7 @@ Pour prendre une capture de la fenêtre sans l'ouvrir à la main, lancez-la avec
 
 ## 🧪 Tests
 
-La suite compte 491 tests qui réussissent (`pytest tests`), et onze autres qui sont ignorés quand une copie voisine dont ils ont besoin n'est pas à côté de celle-ci. Ils tournent avec un faux GitHub et des dépôts locaux, sans réseau, et couvrent le contrat du manifeste, la découverte, la comparaison des versions et des commits, l'installation et la mise à jour avec le clone de préparation et les refus (modifications locales, branche divergente, version inférieure, manifeste invalide, construction qui échoue), les sauvegardes et la restauration, la chaîne de preuves, la politique de signature, les réglages et profils, les messages et les huit langues de la fenêtre, et le pont Python de la fenêtre (hors écran). Un test vérifie aussi que l'arborescence de chaque README liste chaque entrée versionnée de premier niveau. La CI les exécute sous Linux et sous Windows, plus `python tools/ci_validate.py` et un contrôle de syntaxe de chaque fichier Python. La CI les exécute aussi sans la fenêtre sous Python 3.10 et 3.13, la plus ancienne et la plus récente que le paquet promet, et une commande qui échoue nomme son fichier de journal complet.
+La suite compte 538 tests qui réussissent (`pytest tests`), et onze autres qui sont ignorés quand une copie voisine dont ils ont besoin n'est pas à côté de celle-ci. Ils tournent avec un faux GitHub et des dépôts locaux, sans réseau, et couvrent le contrat du manifeste, la découverte, la comparaison des versions et des commits, l'installation et la mise à jour avec le clone de préparation et les refus (modifications locales, branche divergente, version inférieure, manifeste invalide, construction qui échoue), les sauvegardes et la restauration, la chaîne de preuves, la politique de signature, les réglages et profils, les messages et les huit langues de la fenêtre, et le pont Python de la fenêtre (hors écran). Un test vérifie aussi que l'arborescence de chaque README liste chaque entrée versionnée de premier niveau. La CI les exécute sous Linux et sous Windows, plus `python tools/ci_validate.py` et un contrôle de syntaxe de chaque fichier Python. La CI les exécute aussi sans la fenêtre sous Python 3.10 et 3.13, la plus ancienne et la plus récente que le paquet promet, et une commande qui échoue nomme son fichier de journal complet.
 
 ## 🏗️ Compilation et publication
 
@@ -195,6 +195,7 @@ EH3D-UPDATER/
 ├── run-gui.vbs                                  ouvre la fenêtre sans console sous Windows
 ├── pyproject.toml                               le paquet Python et ses extras
 ├── CHANGELOG.md                                 ce qui a changé dans chaque version
+├── AGENTS.md                                    les règles pour qui modifie le dépôt
 ├── SECURITY.md SUPPORT.md                       signaler une vulnérabilité et poser des questions
 ├── CONTRIBUTING.md CODE_OF_CONDUCT.md LICENSE   contribuer, code de conduite et licence
 └── LICENSE.md                                   le texte de la licence en Markdown
@@ -234,6 +235,11 @@ Le README et les textes existent en anglais, espagnol, français, italien, allem
 * [Référence de la ligne de commande](docs/CLI_REFERENCE.md) : chaque commande, option et code de sortie.
 * [La fenêtre de bureau](docs/QML_DESKTOP_GUI.md) : comment la fenêtre Qt Quick repose sur les mêmes services que la ligne de commande.
 * [Journal des modifications](CHANGELOG.md)
+* [Périmètre](docs/SCOPE.md): à quoi sert le programme, ce qu'il ne fera pas et ce qu'il ne décide jamais.
+* [Exigences](docs/REQUIREMENTS.md): le registre des capacités, l'état de chacune et le test qui la montre.
+* [État](docs/STATUS.md): ce qui existe, ce qui manque et ce qui reste ouvert.
+* [Pas encore](docs/NOT_YET.md): de bonnes idées laissées de côté dans cette version.
+* [Règles pour modifier le dépôt](AGENTS.md): les règles pour qui modifie le dépôt.
 
 ## 🤝 Contribuer et communauté
 

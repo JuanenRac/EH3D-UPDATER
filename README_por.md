@@ -18,7 +18,7 @@
 
 ---
 
-**Verificação de honestidade - o que funciona hoje:** uma linha de comandos e uma janela Qt Quick que encontram os repositórios EH3D pelos seus manifestos `eh3d.project.json`, comparam cada cópia local com o GitHub e instalam ou atualizam um de cada vez após uma confirmação. A atualização é clonada, fundida sem forçar, e construída e verificada primeiro num clone de preparação, e a instalação anterior fica guardada como cópia de segurança. É o atualizador dos outros ecossistemas da família com os nomes do EH3D, com 491 testes que correm num computador com um GitHub simulado e repositórios locais. Ainda não foi usado para trabalho real e nunca instalou nem atualizou um projeto a partir do GitHub real.
+**Verificação de honestidade - o que funciona hoje:** uma linha de comandos e uma janela Qt Quick que encontram os repositórios EH3D pelos seus manifestos `eh3d.project.json`, comparam cada cópia local com o GitHub e instalam ou atualizam um de cada vez após uma confirmação. A atualização é clonada, fundida sem forçar, e construída e verificada primeiro num clone de preparação, e a instalação anterior fica guardada como cópia de segurança. É o atualizador dos outros ecossistemas da família com os nomes do EH3D, com 538 testes que correm num computador com um GitHub simulado e repositórios locais. Ainda não foi usado para trabalho real e nunca instalou nem atualizou um projeto a partir do GitHub real.
 
 ---
 
@@ -30,7 +30,7 @@
 |---|---|
 | Versão | `0.1.1` |
 | Maturidade | Funcional |
-| Testes | 491 |
+| Testes | 538 |
 | Tecnologias | Python 3.10+ / PySide6 / Qt Quick |
 | Em hardware real | Não se aplica: corre no PC da pessoa que o usa |
 
@@ -45,7 +45,7 @@ Cada linha é uma parte deste repositório e a luz diz até onde chega hoje. É 
 | Área | Estado | O que significa aqui |
 |---|---|---|
 | Software | 🟡 | Uma linha de comandos e uma janela Qt Quick encontram os repositórios EH3D pelos seus manifestos, comparam-nos com o GitHub e instalam ou atualizam um de cada vez, com um clone de preparação e uma cópia da instalação anterior. |
-| Testes | 🟡 | Passam 491 testes (`pytest`), com um GitHub simulado e repositórios locais (sem rede); mais onze são ignorados quando falta uma cópia vizinha de que precisam. Uma campanha com semente fixa faz falhar um comando de uma atualização num passo escolhido, de duas maneiras, e verifica que a instalação nunca fica a meio e que a execução seguinte conclui a atualização. |
+| Testes | 🟡 | Passam 538 testes (`pytest`), com um GitHub simulado e repositórios locais (sem rede); mais onze são ignorados quando falta uma cópia vizinha de que precisam. Uma campanha com semente fixa faz falhar um comando de uma atualização num passo escolhido, de duas maneiras, e verifica que a instalação nunca fica a meio e que a execução seguinte conclui a atualização. |
 | Descoberta | 🟡 | Os repositórios públicos são só candidatos: um projeto entra no ecossistema quando o seu `eh3d.project.json` da raiz valida e diz `EH3D`; testado contra uma listagem simulada, não executado contra o GitHub real. |
 | Uso real | 🟠 | Ainda não foi usado para trabalho real e nunca instalou nem atualizou um projeto a partir do GitHub real; só existem poucos repositórios EH3D para instalar. |
 | Interface | 🟡 | A janela funciona em oito idiomas e a sua ponte Python está coberta por testes; a linha de comandos só precisa da biblioteca padrão. |
@@ -155,7 +155,7 @@ Para tirar uma captura da janela sem a abrir à mão, execute-o com `--shot FICH
 
 ## 🧪 Testes
 
-A suite tem 491 testes que passam (`pytest tests`), e mais onze que são ignorados quando uma cópia vizinha de que precisam não está junto a esta. Correm com um GitHub simulado e repositórios locais, sem rede, e cobrem o contrato do manifesto, a descoberta, a comparação de versões e commits, a instalação e a atualização com o clone de preparação e as recusas (alterações locais, ramo divergente, versão inferior, manifesto inválido, construção que falha), as cópias de segurança e o restauro, a cadeia de evidências, a política de assinaturas, as definições e os perfis, as mensagens e os oito idiomas da janela, e a ponte Python da janela (fora do ecrã). Um teste verifica também que a árvore de ficheiros de cada README lista cada entrada versionada de primeiro nível. A CI executa-os em Linux e Windows, mais `python tools/ci_validate.py` e uma verificação de sintaxe de cada ficheiro Python. A CI executa-os também sem o ecrã em Python 3.10 e 3.13, a mais antiga e a mais recente que o pacote promete, e um comando que falha indica o seu ficheiro de registo completo.
+A suite tem 538 testes que passam (`pytest tests`), e mais onze que são ignorados quando uma cópia vizinha de que precisam não está junto a esta. Correm com um GitHub simulado e repositórios locais, sem rede, e cobrem o contrato do manifesto, a descoberta, a comparação de versões e commits, a instalação e a atualização com o clone de preparação e as recusas (alterações locais, ramo divergente, versão inferior, manifesto inválido, construção que falha), as cópias de segurança e o restauro, a cadeia de evidências, a política de assinaturas, as definições e os perfis, as mensagens e os oito idiomas da janela, e a ponte Python da janela (fora do ecrã). Um teste verifica também que a árvore de ficheiros de cada README lista cada entrada versionada de primeiro nível. A CI executa-os em Linux e Windows, mais `python tools/ci_validate.py` e uma verificação de sintaxe de cada ficheiro Python. A CI executa-os também sem o ecrã em Python 3.10 e 3.13, a mais antiga e a mais recente que o pacote promete, e um comando que falha indica o seu ficheiro de registo completo.
 
 ## 🏗️ Compilação e publicação
 
@@ -195,6 +195,7 @@ EH3D-UPDATER/
 ├── run-gui.vbs                                  abre a janela sem consola no Windows
 ├── pyproject.toml                               o pacote Python e os seus extras
 ├── CHANGELOG.md                                 o que mudou em cada versão
+├── AGENTS.md                                    as regras para quem altera o repositório
 ├── SECURITY.md SUPPORT.md                       como comunicar uma vulnerabilidade e onde perguntar
 ├── CONTRIBUTING.md CODE_OF_CONDUCT.md LICENSE   como contribuir, o código de conduta e a licença
 └── LICENSE.md                                   o texto da licença em Markdown
@@ -234,6 +235,11 @@ O README e os textos existem em inglês, espanhol, francês, italiano, alemão, 
 * [Referência da linha de comandos](docs/CLI_REFERENCE.md): cada comando, opção e código de saída.
 * [A janela de ambiente de trabalho](docs/QML_DESKTOP_GUI.md): como a janela Qt Quick assenta nos mesmos serviços que a linha de comandos.
 * [Registo de alterações](CHANGELOG.md)
+* [Âmbito](docs/SCOPE.md): para que serve o programa, o que não fará e o que nunca decide.
+* [Requisitos](docs/REQUIREMENTS.md): o registo das capacidades, o estado de cada uma e o teste que a mostra.
+* [Estado](docs/STATUS.md): o que existe, o que falta e o que continua em aberto.
+* [Ainda não](docs/NOT_YET.md): boas ideias que ficam fora desta versão.
+* [Regras para alterar o repositório](AGENTS.md): as regras para quem altera o repositório.
 
 ## 🤝 Contribuir e comunidade
 

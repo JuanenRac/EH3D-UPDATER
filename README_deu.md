@@ -18,7 +18,7 @@
 
 ---
 
-**Ehrlichkeitscheck - was heute tatsächlich läuft:** eine Kommandozeile und ein Qt-Quick-Fenster, die die EH3D-Repositories über ihre `eh3d.project.json`-Manifeste finden, jeden lokalen Checkout mit GitHub vergleichen und nach einer Bestätigung eines nach dem anderen installieren oder aktualisieren. Das Update wird geklont, ohne Zwang zusammengeführt und zuerst in einem Staging-Klon gebaut und geprüft, und die vorherige Installation bleibt als Sicherung erhalten. Es ist der Updater der anderen Ökosysteme der Familie mit den Namen von EH3D, mit 491 Tests, die auf einem Computer mit einem falschen GitHub und lokalen Repositories laufen. Es wurde noch nicht für echte Arbeit verwendet und hat nie ein Projekt vom echten GitHub installiert oder aktualisiert.
+**Ehrlichkeitscheck - was heute tatsächlich läuft:** eine Kommandozeile und ein Qt-Quick-Fenster, die die EH3D-Repositories über ihre `eh3d.project.json`-Manifeste finden, jeden lokalen Checkout mit GitHub vergleichen und nach einer Bestätigung eines nach dem anderen installieren oder aktualisieren. Das Update wird geklont, ohne Zwang zusammengeführt und zuerst in einem Staging-Klon gebaut und geprüft, und die vorherige Installation bleibt als Sicherung erhalten. Es ist der Updater der anderen Ökosysteme der Familie mit den Namen von EH3D, mit 538 Tests, die auf einem Computer mit einem falschen GitHub und lokalen Repositories laufen. Es wurde noch nicht für echte Arbeit verwendet und hat nie ein Projekt vom echten GitHub installiert oder aktualisiert.
 
 ---
 
@@ -30,7 +30,7 @@
 |---|---|
 | Version | `0.1.1` |
 | Reifegrad | Funktionsfähig |
-| Tests | 491 |
+| Tests | 538 |
 | Technologie-Stack | Python 3.10+ / PySide6 / Qt Quick |
 | Auf echter Hardware | Nicht zutreffend: Es läuft auf dem PC der Person, die es nutzt |
 
@@ -45,7 +45,7 @@ Jede Zeile ist ein Teil dieses Repositorys, und die Ampel sagt, wie weit er heut
 | Bereich | Stand | Was das hier bedeutet |
 |---|---|---|
 | Software | 🟡 | Eine Kommandozeile und ein Qt-Quick-Fenster finden die EH3D-Repositories über ihre Manifeste, vergleichen sie mit GitHub und installieren oder aktualisieren eines nach dem anderen, mit einem Staging-Klon und einer Sicherung der vorherigen Installation. |
-| Tests | 🟡 | 491 Tests bestehen (`pytest`), mit einem falschen GitHub und lokalen Repositories (ohne Netz); elf weitere werden übersprungen, wenn ein dafür nötiger Nachbar-Checkout fehlt. Eine Kampagne mit festem Startwert lässt einen Befehl einer Aktualisierung an einem gewählten Schritt auf zwei Arten scheitern und prüft, dass die Installation nie halb aktualisiert bleibt und der nächste Lauf die Aktualisierung abschließt. |
+| Tests | 🟡 | 538 Tests bestehen (`pytest`), mit einem falschen GitHub und lokalen Repositories (ohne Netz); elf weitere werden übersprungen, wenn ein dafür nötiger Nachbar-Checkout fehlt. Eine Kampagne mit festem Startwert lässt einen Befehl einer Aktualisierung an einem gewählten Schritt auf zwei Arten scheitern und prüft, dass die Installation nie halb aktualisiert bleibt und der nächste Lauf die Aktualisierung abschließt. |
 | Erkennung | 🟡 | Öffentliche Repositories sind nur Kandidaten: Ein Projekt gehört zum Ökosystem, wenn sein `eh3d.project.json` im Wurzelverzeichnis gültig ist und `EH3D` sagt; gegen eine falsche Liste getestet, nicht gegen das echte GitHub. |
 | Echter Einsatz | 🟠 | Es wurde noch nicht für echte Arbeit verwendet und hat nie ein Projekt vom echten GitHub installiert oder aktualisiert; es gibt nur wenige EH3D-Repositories zum Installieren. |
 | Oberfläche | 🟡 | Das Fenster arbeitet in acht Sprachen, und seine Python-Brücke ist von Tests abgedeckt; die Kommandozeile braucht nur die Standardbibliothek. |
@@ -155,7 +155,7 @@ Um ein Bild des Fensters aufzunehmen, ohne es von Hand zu öffnen, starten Sie e
 
 ## 🧪 Tests
 
-Die Suite hat 491 Tests, die bestehen (`pytest tests`), und elf weitere, die übersprungen werden, wenn ein dafür nötiger Nachbar-Checkout nicht neben diesem liegt. Sie laufen mit einem falschen GitHub und lokalen Repositories ohne Netz und decken den Manifestvertrag, die Erkennung, den Versions- und Commit-Vergleich, Installation und Update mit dem Staging-Klon und die Abweisungen (lokale Änderungen, abgewichener Branch, niedrigere Version, ungültiges Manifest, fehlschlagender Build), Sicherungen und Wiederherstellung, die Nachweiskette, die Signaturrichtlinie, Einstellungen und Profile, die Meldungen und die acht Sprachen des Fensters sowie die Python-Brücke des Fensters (offscreen) ab. Ein Test prüft außerdem, dass der Dateibaum jedes READMEs jeden versionierten Eintrag der ersten Ebene auflistet. Die CI führt sie unter Linux und Windows aus, dazu `python tools/ci_validate.py` und eine Syntaxprüfung jeder Python-Datei. Die CI führt sie außerdem ohne das Fenster unter Python 3.10 und 3.13 aus, der ältesten und der neuesten Version, die das Paket verspricht, und ein fehlgeschlagener Befehl nennt seine vollständige Protokolldatei.
+Die Suite hat 538 Tests, die bestehen (`pytest tests`), und elf weitere, die übersprungen werden, wenn ein dafür nötiger Nachbar-Checkout nicht neben diesem liegt. Sie laufen mit einem falschen GitHub und lokalen Repositories ohne Netz und decken den Manifestvertrag, die Erkennung, den Versions- und Commit-Vergleich, Installation und Update mit dem Staging-Klon und die Abweisungen (lokale Änderungen, abgewichener Branch, niedrigere Version, ungültiges Manifest, fehlschlagender Build), Sicherungen und Wiederherstellung, die Nachweiskette, die Signaturrichtlinie, Einstellungen und Profile, die Meldungen und die acht Sprachen des Fensters sowie die Python-Brücke des Fensters (offscreen) ab. Ein Test prüft außerdem, dass der Dateibaum jedes READMEs jeden versionierten Eintrag der ersten Ebene auflistet. Die CI führt sie unter Linux und Windows aus, dazu `python tools/ci_validate.py` und eine Syntaxprüfung jeder Python-Datei. Die CI führt sie außerdem ohne das Fenster unter Python 3.10 und 3.13 aus, der ältesten und der neuesten Version, die das Paket verspricht, und ein fehlgeschlagener Befehl nennt seine vollständige Protokolldatei.
 
 ## 🏗️ Build und Veröffentlichung
 
@@ -195,6 +195,7 @@ EH3D-UPDATER/
 ├── run-gui.vbs                                  startet das Fenster unter Windows ohne Konsole
 ├── pyproject.toml                               das Python-Paket und seine Extras
 ├── CHANGELOG.md                                 was sich in jeder Version geändert hat
+├── AGENTS.md                                    die Regeln für alle, die das Repository ändern
 ├── SECURITY.md SUPPORT.md                       Schwachstellen melden und Fragen stellen
 ├── CONTRIBUTING.md CODE_OF_CONDUCT.md LICENSE   Mitwirken, Verhaltenskodex und Lizenz
 └── LICENSE.md                                   der Lizenztext in Markdown
@@ -234,6 +235,11 @@ README und Texte gibt es auf Englisch, Spanisch, Französisch, Italienisch, Deut
 * [Kommandozeilenreferenz](docs/CLI_REFERENCE.md): jeder Befehl, jede Option und jeder Exit-Code.
 * [Das Desktop-Fenster](docs/QML_DESKTOP_GUI.md): wie das Qt-Quick-Fenster auf denselben Diensten wie die Kommandozeile sitzt.
 * [Änderungsprotokoll](CHANGELOG.md)
+* [Umfang](docs/SCOPE.md): wofür das Programm da ist, was es nicht tut und was es nie entscheidet.
+* [Anforderungen](docs/REQUIREMENTS.md): das Register der Fähigkeiten, der Stand jeder einzelnen und der Test, der sie zeigt.
+* [Stand](docs/STATUS.md): was es gibt, was fehlt und was noch offen ist.
+* [Noch nicht](docs/NOT_YET.md): gute Ideen, die in dieser Version fehlen.
+* [Regeln für Änderungen am Repository](AGENTS.md): die Regeln für alle, die das Repository ändern.
 
 ## 🤝 Mitwirken und Community
 
