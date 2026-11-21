@@ -25,7 +25,7 @@ SCHEMA_VERSION = "1.0"
 SCHEMA_VERSION_COMPONENTS = "1.1"
 SUPPORTED_SCHEMA_VERSIONS = frozenset({SCHEMA_VERSION, SCHEMA_VERSION_COMPONENTS})
 ECOSYSTEM_ID = "EH3D"
-VERSION_RE = re.compile(r"^\d+\.\d+\.\d+(?:\.\d+)?$")
+VERSION_RE = re.compile(r"^\d+\.\d+\.\d+(?:\.\d+)?$", re.ASCII)
 #: ``node`` is a firmware board of the EH3D suite and ``docs`` the documentation hub; both are projects the updater lists.
 VALID_ROLES = frozenset({"api", "ui", "cli", "firmware", "library", "service", "tool", "node", "docs"})
 VALID_MATURITY = frozenset({"scaffolding", "functional", "established", "production"})
@@ -108,6 +108,14 @@ def _read_min_common(value: object) -> str | None:
 
 
 BINARY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+#: What a repository name is: the one shape that the dependencies already had to follow, so a name never holds a separator, a space or a dot at its start.
+NAME_RE = re.compile(r"[A-Za-z0-9][A-Za-z0-9._-]*")
+
+
+def _is_repository_relative(path: str) -> bool:
+    """A path inside the repository: not absolute, no drive, no `..` and no NUL."""
+    norm = path.replace("\\", "/")
+    return not norm.startswith("/") and ".." not in norm.split("/") and ":" not in norm and "\x00" not in norm
 
 
 def _require_string(data: dict[str, Any], field: str) -> str:
@@ -174,6 +182,8 @@ def parse_manifest(text: str, *, expected_name: str | None = None) -> ProjectMan
         )
 
     name = _require_string(data, "name")
+    if not NAME_RE.fullmatch(name):
+        raise ManifestValidationError("name must be a repository name (letters, digits, dot, dash and underscore; no folder)")
     if expected_name is not None and name != expected_name:
         raise ManifestValidationError(
             f"name {name!r} does not match expected repository {expected_name!r}"
@@ -217,7 +227,7 @@ def parse_manifest(text: str, *, expected_name: str | None = None) -> ProjectMan
     if not isinstance(native_version, dict) or set(native_version) != {"file", "pattern"}:
         raise ManifestValidationError("native_version must contain exactly file and pattern")
     native_version_file = _require_string(native_version, "file")
-    if native_version_file.startswith(("/", "\\")) or ".." in native_version_file.replace("\\", "/").split("/"):
+    if not _is_repository_relative(native_version_file):
         raise ManifestValidationError("native_version.file must be a repository-relative path")
     native_version_pattern = native_version.get("pattern")
     if isinstance(native_version_pattern, str):
@@ -343,7 +353,7 @@ def _parse_components(raw: Any) -> tuple[ManifestComponent, ...]:
             if not isinstance(source, dict) or set(source) != {"file", "prefix"}:
                 raise ManifestValidationError(f"{where}.source must contain exactly file and prefix")
             source_file = _require_string(source, "file")
-            if source_file.startswith(("/", "\\")) or ".." in source_file.replace("\\", "/").split("/"):
+            if not _is_repository_relative(source_file):
                 raise ManifestValidationError(f"{where}.source.file must be a repository-relative path")
             source_prefix = _require_string(source, "prefix")
         components.append(ManifestComponent(name, kind, version, target, source_file, source_prefix))
