@@ -19,6 +19,9 @@ import re
 from dataclasses import dataclass, field
 
 
+_DIGITS = re.compile(r"[0-9]+")
+
+
 @dataclass(frozen=True)
 class Version:
     """MAJOR.MINOR.PATCH, with an optional fourth BUILD component.
@@ -35,6 +38,9 @@ class Version:
 
     @classmethod
     def from_string(cls, text: str) -> "Version":
+        # int() alone takes a sign, spaces, underscores and the digits of any script: only plain digits are a number of a version
+        if not all(_DIGITS.fullmatch(part) for part in text.split(".")):
+            raise ValueError(f"not a MAJOR.MINOR.PATCH[.BUILD] version: {text!r}")
         parts = [int(part) for part in text.split(".")]
         if len(parts) == 3:
             return cls(parts[0], parts[1], parts[2])
@@ -60,6 +66,8 @@ MAX_PATTERN_LENGTH = 300
 MAX_TEXT_LENGTH = 1_000_000
 # a group that repeats something already repeated inside it, such as (a+)+ or (.*)*: the shape of catastrophic backtracking
 _NESTED_REPEAT = re.compile(r"\((?:[^()\\]|\\.)*[+*](?:[^()\\]|\\.)*\)[+*{]")
+# a group of alternatives that repeats without end, such as (a|aa)+: the same shape of catastrophic backtracking
+_REPEATED_ALTERNATION = re.compile(r"\((?:[^()\\]|\\.)*\|(?:[^()\\]|\\.)*\)[+*]")
 
 
 def unsafe_pattern(pattern: str) -> str | None:
@@ -68,6 +76,8 @@ def unsafe_pattern(pattern: str) -> str | None:
         return f"longer than {MAX_PATTERN_LENGTH} characters"
     if _NESTED_REPEAT.search(pattern):
         return "it repeats a group that already repeats (backtracking can take forever)"
+    if _REPEATED_ALTERNATION.search(pattern):
+        return "it repeats a group of alternatives without end (backtracking can take forever)"
     return None
 
 
