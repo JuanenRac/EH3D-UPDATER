@@ -334,7 +334,7 @@ def _real_untracked_paths(path: Path) -> list[str]:
     trying to solve."""
     result = subprocess.run(
         ["git", "status", "--porcelain", "--ignored", "-z"],
-        cwd=str(path), check=False, capture_output=True, text=True,
+        cwd=str(path), check=False, capture_output=True, text=True, encoding="utf-8", errors="surrogateescape",
     )
     if result.returncode != 0 or not result.stdout:
         return []
@@ -392,7 +392,7 @@ def _tracked_dirty_paths(path: Path) -> list[str]:
     being able to verify clean is not the same as clean."""
     result = subprocess.run(
         ["git", "status", "--porcelain", "-z"],
-        cwd=str(path), check=False, capture_output=True, text=True,
+        cwd=str(path), check=False, capture_output=True, text=True, encoding="utf-8", errors="replace",
     )
     if result.returncode != 0:
         raise DirtyCheckError(
@@ -488,6 +488,8 @@ def _manifest_from_revision(path: Path, revision: str, entry: ProjectEntry) -> P
         check=False,
         capture_output=True,
         text=True,
+        encoding="utf-8",
+        errors="replace",
     )
     if result.returncode != 0:
         raise ManifestValidationError("candidate revision has no readable eh3d.project.json")

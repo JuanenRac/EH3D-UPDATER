@@ -25,7 +25,8 @@ SCHEMA_VERSION = "1.0"
 SCHEMA_VERSION_COMPONENTS = "1.1"
 SUPPORTED_SCHEMA_VERSIONS = frozenset({SCHEMA_VERSION, SCHEMA_VERSION_COMPONENTS})
 ECOSYSTEM_ID = "EH3D"
-VERSION_RE = re.compile(r"^\d+\.\d+\.\d+(?:\.\d+)?$", re.ASCII)
+# at most nine digits in a number: a longer one cannot be turned into an integer for ever and no version gets near it
+VERSION_RE = re.compile(r"^\d{1,9}\.\d{1,9}\.\d{1,9}(?:\.\d{1,9})?$", re.ASCII)
 #: ``node`` is a firmware board of the EH3D suite and ``docs`` the documentation hub; both are projects the updater lists.
 VALID_ROLES = frozenset({"api", "ui", "cli", "firmware", "library", "service", "tool", "node", "docs"})
 VALID_MATURITY = frozenset({"scaffolding", "functional", "established", "production"})
@@ -140,6 +141,8 @@ def parse_manifest(text: str, *, expected_name: str | None = None) -> ProjectMan
         data = json.loads(text)
     except json.JSONDecodeError as exc:
         raise ManifestValidationError(f"invalid JSON: {exc.msg}") from exc
+    except (ValueError, RecursionError) as exc:  # a number too long to read, or arrays nested without end
+        raise ManifestValidationError(f"invalid JSON: it cannot be read ({type(exc).__name__})") from exc
 
     if not isinstance(data, dict):
         raise ManifestValidationError("manifest root must be an object")
