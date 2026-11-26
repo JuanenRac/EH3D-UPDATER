@@ -18,7 +18,7 @@
 
 ---
 
-**Verifica di onestà - cosa funziona oggi:** una riga di comando e una finestra Qt Quick che trovano i repository EH3D tramite i loro manifesti `eh3d.project.json`, confrontano ogni copia locale con GitHub e installano o aggiornano un progetto alla volta dopo una conferma. L'aggiornamento viene clonato, unito senza forzare, e costruito e verificato prima in un clone di staging, e l'installazione precedente è conservata come backup. È l'aggiornatore degli altri ecosistemi della famiglia con i nomi di EH3D, con 683 test che girano su un computer con un GitHub finto e repository locali. Non è ancora stato usato per lavoro reale e non ha mai installato né aggiornato un progetto dal vero GitHub.
+**Verifica di onestà - cosa funziona oggi:** una riga di comando e una finestra Qt Quick che trovano i repository EH3D tramite i loro manifesti `eh3d.project.json`, confrontano ogni copia locale con GitHub e installano o aggiornano un progetto alla volta dopo una conferma. L'aggiornamento viene clonato, unito senza forzare, e costruito e verificato prima in un clone di staging, e l'installazione precedente è conservata come backup. È l'aggiornatore degli altri ecosistemi della famiglia con i nomi di EH3D, con 709 test che girano su un computer con un GitHub finto e repository locali. Non è ancora stato usato per lavoro reale e non ha mai installato né aggiornato un progetto dal vero GitHub.
 
 ---
 
@@ -30,7 +30,7 @@
 |---|---|
 | Versione | `0.1.1` |
 | Maturità | Funzionale |
-| Test | 683 |
+| Test | 709 |
 | Stack tecnologico | Python 3.10+ / PySide6 / Qt Quick |
 | Su hardware reale | Non applicabile: gira sul PC della persona che lo usa |
 
@@ -45,7 +45,7 @@ Ogni riga è una parte di questo repository e il semaforo dice a che punto è og
 | Area | Stato | Cosa significa qui |
 |---|---|---|
 | Software | 🟡 | Una riga di comando e una finestra Qt Quick trovano i repository EH3D tramite i loro manifesti, li confrontano con GitHub e installano o aggiornano un progetto alla volta, con un clone di staging e un backup dell'installazione precedente. |
-| Test | 🟡 | Passano 683 test (`pytest`), con un GitHub finto e repository locali (senza rete); altri undici vengono saltati quando manca una copia vicina di cui hanno bisogno. Una campagna a seme fisso fa fallire un comando di un aggiornamento a un passo scelto, in due modi, e verifica che l'installazione non resti mai a metà e che l'esecuzione successiva completi l'aggiornamento. |
+| Test | 🟡 | Passano 709 test (`pytest`), con un GitHub finto e repository locali (senza rete); altri undici vengono saltati quando manca una copia vicina di cui hanno bisogno. Una campagna a seme fisso fa fallire un comando di un aggiornamento a un passo scelto, in due modi, e verifica che l'installazione non resti mai a metà e che l'esecuzione successiva completi l'aggiornamento. |
 | Rilevamento | 🟡 | I repository pubblici sono solo candidati: un progetto entra nell'ecosistema quando il suo `eh3d.project.json` alla radice è valido e dice `EH3D`; provato contro un elenco finto, non eseguito contro il vero GitHub. |
 | Uso reale | 🟠 | Non è ancora stato usato per lavoro reale e non ha mai installato né aggiornato un progetto dal vero GitHub; esistono solo pochi repository EH3D da installare. |
 | Interfaccia | 🟡 | La finestra funziona in otto lingue e il suo ponte Python è coperto da test; la riga di comando richiede solo la libreria standard. |
@@ -155,7 +155,7 @@ Per fare un'immagine della finestra senza aprirla a mano, eseguila con `--shot F
 
 ## 🧪 Test
 
-La suite ha 683 test che passano (`pytest tests`), e undici che vengono saltati quando una copia vicina di cui hanno bisogno non è accanto a questa. Girano con un GitHub finto e repository locali, senza rete, e coprono il contratto del manifesto, il rilevamento, il confronto di versioni e commit, l'installazione e l'aggiornamento con il clone di staging e i rifiuti (modifiche locali, ramo divergente, versione inferiore, manifesto non valido, build che fallisce), i backup e il ripristino, la catena di prove, la politica delle firme, le impostazioni e i profili, i messaggi e le otto lingue della finestra, e il ponte Python della finestra (offscreen). Un test verifica anche che l'albero dei file di ogni README elenchi ogni voce versionata di primo livello. La CI li esegue su Linux e Windows, più `python tools/ci_validate.py` e un controllo di sintassi di ogni file Python. La CI li esegue anche senza la finestra su Python 3.10 e 3.13, la più vecchia e la più nuova che il pacchetto promette, e un comando che fallisce indica il suo file di registro completo.
+La suite ha 709 test che passano (`pytest tests`), e undici che vengono saltati quando una copia vicina di cui hanno bisogno non è accanto a questa. Girano con un GitHub finto e repository locali, senza rete, e coprono il contratto del manifesto, il rilevamento, il confronto di versioni e commit, l'installazione e l'aggiornamento con il clone di staging e i rifiuti (modifiche locali, ramo divergente, versione inferiore, manifesto non valido, build che fallisce), i backup e il ripristino, la catena di prove, la politica delle firme, le impostazioni e i profili, i messaggi e le otto lingue della finestra, e il ponte Python della finestra (offscreen). Un test verifica anche che l'albero dei file di ogni README elenchi ogni voce versionata di primo livello. La CI li esegue su Linux e Windows, più `python tools/ci_validate.py` e un controllo di sintassi di ogni file Python. La CI li esegue anche senza la finestra su Python 3.10 e 3.13, la più vecchia e la più nuova che il pacchetto promette, e un comando che fallisce indica il suo file di registro completo.
 
 ## 🏗️ Compilazione e rilascio
 
