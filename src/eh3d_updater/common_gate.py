@@ -18,7 +18,7 @@ import re
 from dataclasses import dataclass
 from typing import Iterable
 
-VERSION_RE = re.compile(r"^\d+\.\d+\.\d+(?:\.\d+)?$")
+VERSION_RE = re.compile(r"^\d{1,9}\.\d{1,9}\.\d{1,9}(?:\.\d{1,9})?$")
 MODES: tuple[str, ...] = ("warn", "off")
 DEFAULT_MODE = "warn"
 

@@ -64,19 +64,56 @@ class Version:
 
 MAX_PATTERN_LENGTH = 300
 MAX_TEXT_LENGTH = 1_000_000
-# a group that repeats something already repeated inside it, such as (a+)+ or (.*)*: the shape of catastrophic backtracking
-_NESTED_REPEAT = re.compile(r"\((?:[^()\\]|\\.)*[+*](?:[^()\\]|\\.)*\)[+*{]")
-# a group of alternatives that repeats without end, such as (a|aa)+: the same shape of catastrophic backtracking
-_REPEATED_ALTERNATION = re.compile(r"\((?:[^()\\]|\\.)*\|(?:[^()\\]|\\.)*\)[+*]")
+# `{2,}` and `{,}`: a repeat with no upper limit, like `+` and `*`
+_OPEN_BRACES = re.compile(r"\{[0-9]*,\}")
+
+
+def _repeated_group(pattern: str) -> str | None:
+    """"repeat" when a group that holds a repeat is repeated, such as (a+)+ or ((a+))*, "alternatives" when a group that holds alternatives repeats without end, such as (a|aa)+.
+    What is inside a group counts for every group around it, so extra parentheses hide nothing."""
+    stack = [[False, False]]  # for each open group: it holds a repeat, it holds alternatives
+    in_class = False
+    index = 0
+    while index < len(pattern):
+        char = pattern[index]
+        if char == "\\":
+            index += 2
+            continue
+        if in_class:
+            in_class = char != "]"
+        elif char == "[":
+            in_class = True
+            if pattern[index + 1:index + 2] == "^":
+                index += 1
+            if pattern[index + 1:index + 2] == "]":  # a `]` right at the start is one of the characters
+                index += 1
+        elif char == "(":
+            stack.append([False, False])
+        elif char == ")" and len(stack) > 1:
+            repeats, alternates = stack.pop()
+            following = pattern[index + 1:index + 2]
+            if repeats and following in ("+", "*", "{"):
+                return "repeat"
+            if alternates and following in ("+", "*"):
+                return "alternatives"
+            stack[-1][0] = stack[-1][0] or repeats
+            stack[-1][1] = stack[-1][1] or alternates
+        elif char in "+*" or (char == "{" and _OPEN_BRACES.match(pattern, index)):
+            stack[-1][0] = True
+        elif char == "|":
+            stack[-1][1] = True
+        index += 1
+    return None
 
 
 def unsafe_pattern(pattern: str) -> str | None:
     """Why a manifest pattern is refused before it runs (too long, or a repeat inside a repeat), or None when it is fine."""
     if len(pattern) > MAX_PATTERN_LENGTH:
         return f"longer than {MAX_PATTERN_LENGTH} characters"
-    if _NESTED_REPEAT.search(pattern):
+    found = _repeated_group(pattern)
+    if found == "repeat":
         return "it repeats a group that already repeats (backtracking can take forever)"
-    if _REPEATED_ALTERNATION.search(pattern):
+    if found == "alternatives":
         return "it repeats a group of alternatives without end (backtracking can take forever)"
     return None
 

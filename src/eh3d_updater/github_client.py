@@ -37,6 +37,7 @@
 
 from __future__ import annotations
 
+import http.client
 import json
 import os
 import socket
@@ -220,7 +221,7 @@ def _urlopen_with_retries(
             if retry_after is None or attempt >= max_attempts:
                 raise
             sleep(retry_after)
-        except (urllib.error.URLError, TimeoutError, socket.timeout, OSError):
+        except (urllib.error.URLError, TimeoutError, socket.timeout, OSError, http.client.HTTPException):
             if attempt >= max_attempts:
                 raise
             sleep(backoff_base_s * (2 ** (attempt - 1)))
@@ -284,7 +285,7 @@ def _fetch_discovered_manifest(owner: str, name: str, branch: str) -> RemoteStat
         if exc.code == 404:
             return None
         raise RuntimeError(f"{name}: manifest {describe_http_error(exc)}") from exc
-    except (urllib.error.URLError, TimeoutError, socket.timeout, OSError) as exc:
+    except (urllib.error.URLError, TimeoutError, socket.timeout, OSError, http.client.HTTPException) as exc:
         raise RuntimeError(f"{name}: manifest lookup failed: {exc}") from exc
 
     try:
@@ -383,7 +384,7 @@ def discover_remote_projects(
             # resets, or that GITHUB_TOKEN raises the limit - all of
             # which describe_http_error() already knows how to say.
             raise RuntimeError(f"unable to list GitHub repositories for {owner}: {describe_http_error(exc)}") from exc
-        except (urllib.error.URLError, TimeoutError, socket.timeout, OSError, json.JSONDecodeError) as exc:
+        except (urllib.error.URLError, TimeoutError, socket.timeout, OSError, http.client.HTTPException, ValueError, RecursionError) as exc:
             raise RuntimeError(f"unable to list GitHub repositories for {owner}: {exc}") from exc
         if not isinstance(payload, list):
             raise RuntimeError(f"unexpected GitHub repository-list response for {owner}")
